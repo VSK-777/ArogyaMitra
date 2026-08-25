@@ -1,25 +1,17 @@
 # ============================================
 # Stage 1: Build the application with Maven
 # ============================================
-FROM eclipse-temurin:21-jdk AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml first for dependency caching
+# Copy pom.xml first for dependency caching
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
+RUN mvn dependency:go-offline -B
 
-# If mvnw doesn't exist, use system Maven
-RUN if [ -f mvnw ]; then chmod +x mvnw && ./mvnw dependency:go-offline -B; \
-    else apt-get update && apt-get install -y maven && mvn dependency:go-offline -B; fi
-
-# Copy source code
+# Copy source code and build
 COPY src ./src
-
-# Build the JAR (skip tests for faster builds; tests run in CI)
-RUN if [ -f mvnw ]; then ./mvnw package -DskipTests -B; \
-    else mvn package -DskipTests -B; fi
+RUN mvn package -DskipTests -B
 
 # ============================================
 # Stage 2: Production runtime image
@@ -43,5 +35,4 @@ USER appuser
 EXPOSE 8080
 
 # Run the Spring Boot application
-# PORT env var is read by Spring Boot via server.port=${PORT:8080}
 ENTRYPOINT ["java", "-jar", "app.jar"]
