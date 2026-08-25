@@ -6,7 +6,7 @@ The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation Sy
 ## 2. Technology Stack
 - **Language**: Java 21 LTS
 - **Framework**: Spring Boot 3.3.4 (with Java 21 Virtual Threads enabled for maximum concurrency)
-- **Database**: MySQL 8.0+
+- **Database**: PostgreSQL 8.0+
 - **ORM**: Spring Data JPA / Hibernate
 - **Security**: Spring Security + JWT
 - **AI Integration**: Groq API (LLM) & Groq Whisper (Speech-to-Text)
@@ -159,7 +159,7 @@ The frontend API testing console allows testing these real endpoints:
 
 ### Prerequisites
 - Docker Engine 20+ (or Docker Desktop)
-- A running MySQL database accessible from the container
+- A running PostgreSQL database accessible from the container
 
 ### Dockerfile Location
 `hospital-backend/Dockerfile` — a multi-stage build (JDK 21 build → JRE 21 runtime).
@@ -175,7 +175,7 @@ docker build -t sih-hospital-backend .
 docker run -d \
   --name hospital-api \
   -p 8080:8080 \
-  -e DB_URL="jdbc:mysql://host.docker.internal:3306/hospital_db?createDatabaseIfNotExist=true&serverTimezone=UTC" \
+  -e DB_URL="jdbc:PostgreSQL://host.docker.internal:5432/hospital_db?createDatabaseIfNotExist=true&serverTimezone=UTC" \
   -e DB_USERNAME="root" \
   -e DB_PASSWORD="<your-db-password>" \
   -e JWT_SECRET="<your-jwt-secret>" \
@@ -186,16 +186,16 @@ docker run -d \
   sih-hospital-backend
 ```
 
-> **Note:** Use `host.docker.internal` to reach MySQL running on the host machine from inside the container.
+> **Note:** Use `host.docker.internal` to reach PostgreSQL running on the host machine from inside the container.
 
 ### Required Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `PORT` | Server port (default: `8080`) | No |
-| `DB_URL` | Full JDBC MySQL URL | Yes |
-| `DB_USERNAME` | MySQL username | Yes |
-| `DB_PASSWORD` | MySQL password | Yes |
+| `DB_URL` | Full JDBC PostgreSQL URL | Yes |
+| `DB_USERNAME` | PostgreSQL username | Yes |
+| `DB_PASSWORD` | PostgreSQL password | Yes |
 | `JWT_SECRET` | Secret key for JWT signing | Yes |
 | `DEMO_MODE` | `true` = mock OTP, `false` = real MSG91 | Yes |
 | `GROQ_API_KEY` | Groq API key for AI features | Yes |
@@ -222,6 +222,6 @@ The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`.
 
 ### Troubleshooting
 - **Container exits immediately**: Check logs with `docker logs hospital-api`. Usually a missing env var or unreachable database.
-- **Cannot connect to MySQL**: Use `host.docker.internal` instead of `localhost` for host-machine databases. On Linux, add `--network host`.
+- **Cannot connect to PostgreSQL**: Use `host.docker.internal` instead of `localhost` for host-machine databases. On Linux, add `--network host`.
 - **Port conflict**: Change the host port mapping: `-p 9090:8080`.
 
