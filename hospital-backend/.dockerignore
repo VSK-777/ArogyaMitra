@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Environment / Secrets
+.env
+.env.*
+*.env
+
+# Build artifacts
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed in image)
+README.md
+POSTMAN_TESTING_GUIDE.md
+MASTER_DOCUMENTATION.md

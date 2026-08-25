@@ -152,3 +152,76 @@ The frontend API testing console allows testing these real endpoints:
 | Create Appointment| POST | /api/appointments | JWT | PASS | Creates new appointment |
 | Get Appointments | GET | /api/appointments/patient | JWT | PASS | Retrieves patient's appointments |
 | Submit Pre-consult| POST | /api/pre-consultation/1 | JWT | PASS | Submits patient symptoms/history |
+
+---
+
+## Backend Docker Deployment
+
+### Prerequisites
+- Docker Engine 20+ (or Docker Desktop)
+- A running MySQL database accessible from the container
+
+### Dockerfile Location
+`hospital-backend/Dockerfile` — a multi-stage build (JDK 21 build → JRE 21 runtime).
+
+### Build Command
+```bash
+cd hospital-backend
+docker build -t sih-hospital-backend .
+```
+
+### Run Command
+```bash
+docker run -d \
+  --name hospital-api \
+  -p 8080:8080 \
+  -e DB_URL="jdbc:mysql://host.docker.internal:3306/hospital_db?createDatabaseIfNotExist=true&serverTimezone=UTC" \
+  -e DB_USERNAME="root" \
+  -e DB_PASSWORD="<your-db-password>" \
+  -e JWT_SECRET="<your-jwt-secret>" \
+  -e DEMO_MODE="true" \
+  -e GROQ_API_KEY="<your-groq-key>" \
+  -e MSG91_AUTHKEY="<your-msg91-key>" \
+  -e MSG91_TEMPLATE_ID="<your-template-id>" \
+  sih-hospital-backend
+```
+
+> **Note:** Use `host.docker.internal` to reach MySQL running on the host machine from inside the container.
+
+### Required Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `PORT` | Server port (default: `8080`) | No |
+| `DB_URL` | Full JDBC MySQL URL | Yes |
+| `DB_USERNAME` | MySQL username | Yes |
+| `DB_PASSWORD` | MySQL password | Yes |
+| `JWT_SECRET` | Secret key for JWT signing | Yes |
+| `DEMO_MODE` | `true` = mock OTP, `false` = real MSG91 | Yes |
+| `GROQ_API_KEY` | Groq API key for AI features | Yes |
+| `MSG91_AUTHKEY` | MSG91 auth key for OTP | Only if `DEMO_MODE=false` |
+| `MSG91_TEMPLATE_ID` | MSG91 template ID | Only if `DEMO_MODE=false` |
+
+### Port Configuration
+The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`. Deployment platforms like Render inject `PORT` automatically.
+
+### Render Deployment
+1. Push this repository to GitHub.
+2. Create a new **Web Service** on [Render](https://render.com).
+3. Connect to `VSK-777/sih-hospital-management`.
+4. Set **Root Directory** to `hospital-backend`.
+5. Set **Environment** to `Docker`.
+6. Add all required environment variables in the Render dashboard.
+7. Render will auto-detect the Dockerfile, build, and deploy.
+
+### Security Notes
+- The Docker image runs as a non-root user (`appuser`).
+- No secrets, `.env` files, or API keys are baked into the image.
+- All credentials are injected at runtime via environment variables.
+- The `.dockerignore` excludes `.env`, `target/`, `.git/`, and IDE files.
+
+### Troubleshooting
+- **Container exits immediately**: Check logs with `docker logs hospital-api`. Usually a missing env var or unreachable database.
+- **Cannot connect to MySQL**: Use `host.docker.internal` instead of `localhost` for host-machine databases. On Linux, add `--network host`.
+- **Port conflict**: Change the host port mapping: `-p 9090:8080`.
+
