@@ -1,0 +1,28 @@
+# Java/Spring Boot
+hospital-backend/target/
+hospital-backend/*.jar
+hospital-backend/*.war
+hospital-backend/.mvn/wrapper/maven-wrapper.jar
+hospital-backend/logs/
+
+# Frontend/Node
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Env files
+.env
+*.env
+.env.*
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.iml
+.metadata/
+
+
+#other files
+.pdf
