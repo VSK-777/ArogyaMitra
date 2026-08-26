@@ -59,7 +59,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/auth/patient/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.success").value(false));
     }
 
