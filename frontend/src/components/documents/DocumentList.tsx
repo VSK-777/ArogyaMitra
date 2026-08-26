@@ -40,16 +40,16 @@ export const DocumentList: React.FC<DocumentListProps> = ({ appointmentId }) => 
   return (
     <div className="space-y-3">
       {documents.map((doc) => (
-        <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
-          <div>
-            <p className="text-sm font-medium text-gray-800">{doc.fileName}</p>
-            <p className="text-xs text-gray-500">
+        <div key={doc.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-slate-900 truncate" title={doc.fileName}>{doc.fileName}</p>
+            <p className="text-xs text-slate-500 mt-0.5">
               {doc.documentType} • {new Date(doc.uploadedAt).toLocaleDateString()} • {(doc.fileSize / 1024 / 1024).toFixed(2)} MB
             </p>
           </div>
           <button 
             onClick={() => handleDownload(doc.id)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap shrink-0 transition-colors"
           >
             View / Download
           </button>
