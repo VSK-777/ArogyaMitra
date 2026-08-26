@@ -2,11 +2,13 @@ package com.hospital.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "doctor_schedules")
 @Data
 @NoArgsConstructor

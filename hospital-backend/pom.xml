@@ -94,6 +94,13 @@
 			<version>4.0.0</version>
 		</dependency>
 	
+        
+        <!-- Jackson Hibernate Module to fix proxy serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate6</artifactId>
+        </dependency>
+
         <!-- Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
