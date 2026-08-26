@@ -1,20 +1,22 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Stethoscope, User, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   
   const role = location.pathname.includes('/doctor') ? 'Doctor' 
     : location.pathname.includes('/admin') ? 'Admin' 
     : 'Patient';
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('user_role');
-    navigate('/auth');
+    
+    
+    logout();
   };
 
   const getNavItems = () => {
