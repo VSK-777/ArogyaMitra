@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, UserPlus, FileText, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Loader2 } from 'lucide-react';
 import { receptionistApi } from '../../api/receptionistApi';
 
 export default function ReceptionistDashboard() {
