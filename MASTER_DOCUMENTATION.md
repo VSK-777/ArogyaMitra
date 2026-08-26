@@ -203,3 +203,100 @@ The following environment variables must be provided in Render:
 - `SUPABASE_STORAGE_ACCESS_KEY`
 - `SUPABASE_STORAGE_SECRET_KEY`
 - `SUPABASE_STORAGE_BUCKET`
+
+## 10. API Contracts
+
+### 10.1 Appointment Creation
+**Endpoint:** `POST /api/appointments`
+
+**Authentication:** Required (JWT Bearer Token for `ROLE_PATIENT` or `ROLE_RECEPTIONIST`)
+
+**Request Body (`BookAppointmentRequest`):**
+```json
+{
+  "hospitalId": 3,
+  "departmentId": 5,
+  "doctorId": 2,
+  "appointmentDate": "2026-08-30",
+  "slotStart": "09:00:00"
+}
+```
+
+**Required Fields:**
+- `hospitalId` (Numeric ID)
+- `departmentId` (Numeric ID)
+- `doctorId` (Numeric ID)
+- `appointmentDate` (YYYY-MM-DD)
+- `slotStart` (HH:MM:SS)
+
+**Optional Fields:**
+- `slotEnd` (Auto-defaults to slotStart + 30 min)
+- `appointmentType` (Defaults to `ONLINE`)
+
+**Success Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Appointment booked successfully",
+  "errorCode": null,
+  "data": {
+    "appointmentId": "APT-20260830-1A2B3C",
+    "patientId": "PAT-000001",
+    "doctorName": "Dr. Smith",
+    "departmentName": "Cardiology",
+    "hospitalName": "City General Hospital",
+    "appointmentDate": "2026-08-30",
+    "slotStart": "09:00:00",
+    "status": "BOOKED",
+    "tokenId": "T-15"
+  }
+}
+```
+
+**Global Error Handling Responses (HTTP 4xx/5xx):**
+The API uses a global `GlobalExceptionHandler` to prevent any technical details from reaching the frontend.
+
+- **Validation Error (HTTP 400):**
+```json
+{
+  "success": false,
+  "message": "Please provide all required details.",
+  "errorCode": "VALIDATION_ERROR"
+}
+```
+
+- **Slot Unavailable Error (HTTP 409):**
+```json
+{
+  "success": false,
+  "message": "This appointment slot is no longer available. Please select another slot.",
+  "errorCode": "CONFLICT"
+}
+```
+
+- **Unauthorized Error (HTTP 401):**
+```json
+{
+  "success": false,
+  "message": "Your session has expired. Please log in again.",
+  "errorCode": "UNAUTHORIZED"
+}
+```
+
+- **Forbidden Error (HTTP 403):**
+```json
+{
+  "success": false,
+  "message": "You do not have permission to perform this action.",
+  "errorCode": "FORBIDDEN"
+}
+```
+
+- **Server Error (HTTP 500):**
+```json
+{
+  "success": false,
+  "message": "Something went wrong. Please try again later.",
+  "errorCode": "INTERNAL_ERROR"
+}
+```

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { patientApi } from '../../api/patientApi';
 import { Loader2 } from 'lucide-react';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 export default function BookAppointment() {
   const navigate = useNavigate();
@@ -22,7 +23,9 @@ export default function BookAppointment() {
   const [selectedSlot, setSelectedSlot] = useState<string>('');
 
   useEffect(() => {
-    patientApi.getHospitals().then(res => setHospitals(res.data || []));
+    patientApi.getHospitals()
+      .then(res => setHospitals(res.data || []))
+      .catch(e => setError(getUserFriendlyMessage(e)));
   }, []);
 
   const handleNext = () => setStep(step + 1);
@@ -30,11 +33,17 @@ export default function BookAppointment() {
   const fetchDepartments = (hospital: any) => {
     setSelectedHospital(hospital);
     setLoading(true);
-    patientApi.getDepartments(hospital.id).then(res => {
-      setDepartments(res.data || []);
-      setLoading(false);
-      handleNext();
-    });
+    setError('');
+    patientApi.getDepartments(hospital.id)
+      .then(res => {
+        setDepartments(res.data || []);
+        setLoading(false);
+        handleNext();
+      })
+      .catch(e => {
+        setError(getUserFriendlyMessage(e));
+        setLoading(false);
+      });
   };
 
   const fetchDoctors = (e: any) => {
@@ -42,33 +51,47 @@ export default function BookAppointment() {
     const dept = departments.find(d => d.id == deptId);
     setSelectedDepartment(dept);
     setLoading(true);
-    patientApi.getDoctors(deptId).then(res => {
-      setDoctors(res.data || []);
-      setLoading(false);
-    });
+    setError('');
+    patientApi.getDoctors(deptId)
+      .then(res => {
+        setDoctors(res.data || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(getUserFriendlyMessage(err));
+        setLoading(false);
+      });
   };
 
   const handleFinish = async () => {
     setLoading(true);
+    setError('');
     try {
         const payload = {
-            doctorId: selectedDoctor.id,
+            hospitalId: selectedHospital.id,
             departmentId: selectedDepartment.id,
+            doctorId: selectedDoctor.id,
             appointmentDate: selectedDate,
             slotStart: selectedSlot
         };
         const res = await patientApi.bookAppointment(payload);
         if(res.success) {
-            alert(`Appointment Booked! ID: ${res.data.appointmentId}`);
+            alert(`Appointment booked successfully!\n\nAppointment ID: ${res.data.appointmentId}\nDoctor: ${res.data.doctorName}\nDate: ${res.data.appointmentDate}\nToken: ${res.data.tokenId}`);
             navigate('/patient/dashboard');
         } else {
-            setError(res.message);
+            setError(res.message || 'Unable to book the appointment. Please try again.');
         }
     } catch (e: any) {
-        setError(e.response?.data?.message || 'Error booking appointment');
+        setError(getUserFriendlyMessage(e));
     } finally {
         setLoading(false);
     }
+  };
+
+  // Get tomorrow's date as minimum selectable date
+  const getMinDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
   };
 
   return (
@@ -137,7 +160,7 @@ export default function BookAppointment() {
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <h2 className="text-lg font-semibold">Select Date & Time</h2>
-            <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4" />
+            <input type="date" min={getMinDate()} value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4" />
             
             {selectedDate && (
                 <div className="grid grid-cols-3 gap-3">

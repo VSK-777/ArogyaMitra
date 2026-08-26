@@ -5,6 +5,8 @@ import com.hospital.dto.BookAppointmentRequest;
 import com.hospital.entity.*;
 import com.hospital.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AppointmentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
+
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
@@ -25,20 +29,50 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponse bookAppointment(String mobile, BookAppointmentRequest request) {
+        // 1. Find patient from authenticated mobile
         Patient patient = patientRepository.findByMobile(mobile)
-                .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Patient profile not found. Please complete your registration."));
 
-        Doctor doctor = doctorRepository.findByDoctorId(request.getDoctorId())
-                .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+        // 2. Find hospital by numeric ID
+        Hospital hospital = hospitalRepository.findById(request.getHospitalId())
+                .orElseThrow(() -> new IllegalArgumentException("The selected hospital is no longer available. Please refresh and try again."));
 
-        Hospital hospital = hospitalRepository.findByHospitalId(request.getHospitalId())
-                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+        // 3. Find department by numeric ID
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new IllegalArgumentException("The selected department is no longer available. Please refresh and try again."));
 
-        Department department = departmentRepository.findByDepartmentId(request.getDepartmentId())
-                .orElseThrow(() -> new IllegalArgumentException("Department not found"));
+        // 4. Find doctor by numeric ID
+        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+                .orElseThrow(() -> new IllegalArgumentException("The selected doctor is no longer available. Please refresh and try again."));
 
-        // Slot checking logic should be here.
+        // 5. Validate appointment date is not in the past
+        if (request.getAppointmentDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Appointment date cannot be in the past. Please select a future date.");
+        }
 
+        // 6. Default appointmentType to ONLINE if not provided
+        AppointmentType appointmentType = request.getAppointmentType() != null
+                ? request.getAppointmentType()
+                : AppointmentType.ONLINE;
+
+        // 7. Default slotEnd to slotStart + 30 minutes if not provided
+        var slotEnd = request.getSlotEnd() != null
+                ? request.getSlotEnd()
+                : request.getSlotStart().plusMinutes(30);
+
+        // 8. Check for duplicate booking (same doctor, same date, same slot, not cancelled)
+        boolean slotTaken = appointmentRepository
+                .existsByDoctor_IdAndAppointmentDateAndSlotStartAndStatusNot(
+                        doctor.getId(),
+                        request.getAppointmentDate(),
+                        request.getSlotStart(),
+                        AppointmentStatus.CANCELLED
+                );
+        if (slotTaken) {
+            throw new IllegalStateException("This appointment slot is no longer available. Please select another slot.");
+        }
+
+        // 9. Create the appointment
         String dateStr = request.getAppointmentDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String uniqueId = "APT-" + dateStr + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
@@ -50,15 +84,16 @@ public class AppointmentService {
                 .doctor(doctor)
                 .appointmentDate(request.getAppointmentDate())
                 .slotStart(request.getSlotStart())
-                .slotEnd(request.getSlotEnd())
-                .appointmentType(request.getAppointmentType())
+                .slotEnd(slotEnd)
+                .appointmentType(appointmentType)
                 .status(AppointmentStatus.BOOKED)
                 .reason(request.getReason())
                 .build();
 
         appointment = appointmentRepository.save(appointment);
+        logger.info("Appointment created: {} for patient {} with doctor {}", uniqueId, patient.getPatientId(), doctor.getDoctorId());
 
-        // Atomic token generation
+        // 10. Generate queue token
         QueueToken token = queueService.generateToken(appointment);
         appointment.setTokenId(token.getTokenId());
         appointment = appointmentRepository.save(appointment);

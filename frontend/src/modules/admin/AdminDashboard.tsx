@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Activity, Loader2, Hospital, Stethoscope } from 'lucide-react';
 import { adminApi } from '../../api/adminApi';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 export default function AdminDashboard() {
   const [data, setData] = useState<any>(null);
@@ -16,7 +17,7 @@ export default function AdminDashboard() {
               setError(res.message);
           }
       })
-      .catch(() => setError("Failed to load analytics"))
+      .catch((e) => setError(getUserFriendlyMessage(e)))
       .finally(() => setLoading(false));
   }, []);
 

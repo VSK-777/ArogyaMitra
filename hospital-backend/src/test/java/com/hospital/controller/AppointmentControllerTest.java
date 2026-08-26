@@ -75,13 +75,13 @@ public class AppointmentControllerTest {
     @WithMockUser(username = "1787739252", roles = "PATIENT")
     public void testBookAppointment_Success() throws Exception {
         BookAppointmentRequest req = new BookAppointmentRequest();
-        req.setHospitalId(hospital.getHospitalId());
-        req.setDepartmentId(dept.getDepartmentId());
-        req.setDoctorId(doctor.getDoctorId());
+        req.setHospitalId(hospital.getId());
+        req.setDepartmentId(dept.getId());
+        req.setDoctorId(doctor.getId());
         req.setAppointmentDate(LocalDate.now().plusDays(1));
         req.setSlotStart(LocalTime.of(10, 0));
         req.setSlotEnd(LocalTime.of(10, 30));
-        req.setAppointmentType(com.hospital.entity.AppointmentType.WALK_IN);
+        req.setAppointmentType(com.hospital.entity.AppointmentType.ONLINE);
 
         mockMvc.perform(post("/api/appointments")
                 .contentType(MediaType.APPLICATION_JSON)

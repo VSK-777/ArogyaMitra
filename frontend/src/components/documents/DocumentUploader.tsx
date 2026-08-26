@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { documentApi } from '../../api/documentApi';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 interface DocumentUploaderProps {
   appointmentId: number;
@@ -24,7 +25,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ appointmentI
       setFile(null);
       onUploadSuccess(); // Refresh the list
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Upload failed. Please try again.');
+      setError(getUserFriendlyMessage(err));
     } finally {
       setLoading(false);
     }

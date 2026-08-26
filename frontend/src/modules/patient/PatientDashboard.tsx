@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { patientApi } from '../../api/patientApi';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
@@ -15,10 +16,10 @@ export default function PatientDashboard() {
         if (res.success) {
           setData(res.data);
         } else {
-          setError(res.message);
+          setError(res.message || 'Unable to load dashboard data.');
         }
       })
-      .catch(() => setError('Failed to load dashboard data'))
+      .catch((e) => setError(getUserFriendlyMessage(e)))
       .finally(() => setLoading(false));
   }, []);
 

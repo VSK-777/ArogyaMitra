@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, CheckCircle2, Activity, Loader2 } from 'lucide-react';
 import { doctorApi } from '../../api/doctorApi';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function DoctorDashboard() {
               setError(res.message);
           }
       })
-      .catch(() => setError("Failed to load today's queue"))
+      .catch((e) => setError(getUserFriendlyMessage(e)))
       .finally(() => setLoading(false));
   };
 
