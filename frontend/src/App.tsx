@@ -1,23 +1,39 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
-import PatientAuth from "./pages/PatientAuth";
-import PatientDashboard from "./pages/PatientDashboard";
-import DoctorDashboard from "./pages/DoctorDashboard";
-import ReceptionistDashboard from "./pages/ReceptionistDashboard";
+import Auth from "./pages/Auth";
 import Layout from "./components/Layout";
+
+// Patient
+import PatientDashboard from "./pages/patient/PatientDashboard";
+import BookAppointment from "./pages/patient/BookAppointment";
+import PreConsultation from "./pages/patient/PreConsultation";
+
+// Doctor
+import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import ConsultationMode from "./pages/doctor/ConsultationMode";
+
+// Admin
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/auth" element={<PatientAuth />} />
+        <Route path="/auth" element={<Auth />} />
         
-        {/* Dashboard Routes wrapped in Layout */}
         <Route element={<Layout />}>
+          {/* Patient Routes */}
           <Route path="/patient/dashboard" element={<PatientDashboard />} />
+          <Route path="/patient/book" element={<BookAppointment />} />
+          <Route path="/patient/pre-consultation" element={<PreConsultation />} />
+          
+          {/* Doctor Routes */}
           <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-          <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+          <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
