@@ -23,14 +23,16 @@ export default function Auth() {
       if (role === 'Patient') {
         const endpoint = isLogin ? '/api/auth/patient/login' : '/api/auth/patient/register';
         const res = await axios.post(`${API_BASE_URL}${endpoint}`, { mobile, password });
+        
         if (res.data.success) {
           if (isLogin && res.data.data?.token) {
             localStorage.setItem('jwt_token', res.data.data.token);
             localStorage.setItem('user_role', 'Patient');
-            navigate('/patient/dashboard');
+            window.location.href = '/patient/dashboard';
           } else {
             setIsLogin(true);
             setMsg('Registration successful. Please login.');
+            setPassword(''); // Clear password for login
           }
         }
       } else {
@@ -42,7 +44,8 @@ export default function Auth() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Authentication failed. Please check credentials.');
+      setMsg('');
+      setError(err.response?.data?.message || err.response?.data?.errors || 'Authentication failed. Please check credentials.');
     }
   };
 

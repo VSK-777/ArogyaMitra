@@ -22,10 +22,19 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody PatientRegistrationRequest request) {
         try {
             authService.registerPatient(request.getMobile(), request.getPassword());
-            return ResponseEntity.ok(ApiResponse.success("Patient registration successful", null));
-        } catch (Exception e) {
+            return ResponseEntity.ok(ApiResponse.success("Registration successful. Please login.", null));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage() != null && e.getMessage().contains("already registered")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(ApiResponse.error("Mobile number is already registered.", "DUPLICATE_MOBILE"));
+            }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage(), "REGISTRATION_FAILED"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("An unexpected error occurred.", "SERVER_ERROR"));
         }
     }
 
@@ -35,6 +44,7 @@ public class AuthController {
             AuthResponse response = authService.loginPatient(request.getMobile(), request.getPassword());
             return ResponseEntity.ok(ApiResponse.success("Login successful", response));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Invalid mobile number or password.", "AUTH_FAILED"));
         }

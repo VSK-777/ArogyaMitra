@@ -63,7 +63,7 @@ public class AuthService {
         User user = userRepository.findByMobile(normalizedMobile)
                 .orElseThrow(() -> new RuntimeException("Invalid mobile number or password."));
 
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new RuntimeException("Invalid mobile number or password.");
         }
 
