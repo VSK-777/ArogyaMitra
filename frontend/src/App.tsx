@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import ApiTesting from "./pages/ApiTesting";
-import { Stethoscope, FlaskConical } from "lucide-react";
+import PatientAuth from "./pages/PatientAuth";
+import { Stethoscope, FlaskConical, UserCircle } from "lucide-react";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
               </div>
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <Link to="/" className="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">Home</Link>
+                <Link to="/auth" className="flex items-center text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors">
+                  <UserCircle className="h-4 w-4 mr-2" />
+                  Patient Portal
+                </Link>
                 <Link to="/api-testing" className="flex items-center text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors shadow-sm">
                   <FlaskConical className="h-4 w-4 mr-2" />
                   API Testing
@@ -28,6 +33,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<PatientAuth />} />
             <Route path="/api-testing" element={<ApiTesting />} />
           </Routes>
         </main>
