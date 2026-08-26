@@ -37,7 +37,7 @@ The application strictly follows the Authoritative System Architecture diagram.
                   DATA LAYER (Spring Data JPA)
                       │
                       ▼
-        DATABASES / DOCUMENT STORAGE (MySQL / PostgreSQL, MinIO)
+        DATABASES / DOCUMENT STORAGE (MySQL / PostgreSQL, AWS SDK v2)
 ```
 
 ### 2.1 Identity vs Queue Order
@@ -180,3 +180,26 @@ supabase.storage.bucket=${SUPABASE_STORAGE_BUCKET:hospital-medical-documents}
 
 **DELETE /api/documents/{documentId}**
 - Logically deletes metadata in MySQL and physically removes the object from Supabase Storage.
+
+### Supabase Storage Architecture
+
+- **Database:** Neon PostgreSQL (Metadata only)
+- **Object Storage:** Supabase Storage (Actual Files)
+- **Client Library:** AWS SDK for Java v2 (`software.amazon.awssdk:s3`)
+- **Bucket:** `hospital-medical-documents` (Private)
+- **Upload Flow:** React -> Spring Boot (Authorization & Validation) -> Supabase Storage (via S3Client)
+- **Download Flow:** React -> Spring Boot -> Supabase Storage (Presigned URL generation via S3Presigner)
+- **Deletion:** React -> Spring Boot -> Supabase Storage (DeleteObjectRequest)
+
+**Security:** 
+- The bucket is PRIVATE.
+- Credentials (`SUPABASE_STORAGE_ACCESS_KEY`, `SUPABASE_STORAGE_SECRET_KEY`) must never be exposed to the frontend or committed to source control.
+- Access is strictly mediated by Spring Boot REST API ensuring RBAC (Role Based Access Control).
+
+**Render Deployment:**
+The following environment variables must be provided in Render:
+- `SUPABASE_STORAGE_ENDPOINT`
+- `SUPABASE_STORAGE_REGION`
+- `SUPABASE_STORAGE_ACCESS_KEY`
+- `SUPABASE_STORAGE_SECRET_KEY`
+- `SUPABASE_STORAGE_BUCKET`

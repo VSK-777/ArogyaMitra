@@ -1,19 +1,28 @@
 package com.hospital.integration.storage;
 
-import io.minio.*;
-import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
+import java.time.Duration;
 
 @Service
 @Slf4j
 public class SupabaseStorageService implements StorageService {
 
-    private final MinioClient s3Client;
+    private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     private final String bucketName;
 
     public SupabaseStorageService(
@@ -26,18 +35,28 @@ public class SupabaseStorageService implements StorageService {
         this.bucketName = bucketName;
 
         if (endpoint != null && !endpoint.isEmpty() && accessKey != null && !accessKey.isEmpty()) {
-            MinioClient.Builder builder = MinioClient.builder()
-                    .endpoint(endpoint)
-                    .credentials(accessKey, secretKey);
             
-            if (region != null && !region.isEmpty()) {
-                builder.region(region);
-            }
-            
-            this.s3Client = builder.build();
+            StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(accessKey, secretKey)
+            );
+
+            this.s3Client = S3Client.builder()
+                    .endpointOverride(URI.create(endpoint))
+                    .region(Region.of(region != null && !region.isEmpty() ? region : "us-east-1"))
+                    .credentialsProvider(credentialsProvider)
+                    .forcePathStyle(true)
+                    .build();
+
+            this.s3Presigner = S3Presigner.builder()
+                    .endpointOverride(URI.create(endpoint))
+                    .region(Region.of(region != null && !region.isEmpty() ? region : "us-east-1"))
+                    .credentialsProvider(credentialsProvider)
+                    .build();
+
             log.info("Supabase Storage initialized for bucket: {}", bucketName);
         } else {
             this.s3Client = null;
+            this.s3Presigner = null;
             log.warn("Supabase Storage is not configured. File operations will fail.");
         }
     }
@@ -46,12 +65,13 @@ public class SupabaseStorageService implements StorageService {
     public String upload(InputStream inputStream, String objectKey, String contentType, long contentLength) {
         if (s3Client == null) throw new StorageException("Supabase Storage is not configured");
         try {
-            s3Client.putObject(PutObjectArgs.builder()
+            PutObjectRequest putOb = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .object(objectKey)
-                    .stream(inputStream, contentLength, -1)
+                    .key(objectKey)
                     .contentType(contentType)
-                    .build());
+                    .build();
+
+            s3Client.putObject(putOb, RequestBody.fromInputStream(inputStream, contentLength));
             return objectKey;
         } catch (Exception e) {
             log.error("Failed to upload file to Supabase: {}", objectKey, e);
@@ -63,10 +83,12 @@ public class SupabaseStorageService implements StorageService {
     public InputStream download(String objectKey) {
         if (s3Client == null) throw new StorageException("Supabase Storage is not configured");
         try {
-            return s3Client.getObject(GetObjectArgs.builder()
+            GetObjectRequest getOb = GetObjectRequest.builder()
                     .bucket(bucketName)
-                    .object(objectKey)
-                    .build());
+                    .key(objectKey)
+                    .build();
+
+            return s3Client.getObject(getOb);
         } catch (Exception e) {
             log.error("Failed to download file from Supabase: {}", objectKey, e);
             throw new StorageException("Failed to download file", e);
@@ -77,10 +99,12 @@ public class SupabaseStorageService implements StorageService {
     public void delete(String objectKey) {
         if (s3Client == null) return;
         try {
-            s3Client.removeObject(RemoveObjectArgs.builder()
+            DeleteObjectRequest delOb = DeleteObjectRequest.builder()
                     .bucket(bucketName)
-                    .object(objectKey)
-                    .build());
+                    .key(objectKey)
+                    .build();
+
+            s3Client.deleteObject(delOb);
         } catch (Exception e) {
             log.error("Failed to delete file from Supabase: {}", objectKey, e);
             throw new StorageException("Failed to delete file", e);
@@ -91,11 +115,15 @@ public class SupabaseStorageService implements StorageService {
     public boolean exists(String objectKey) {
         if (s3Client == null) return false;
         try {
-            s3Client.statObject(StatObjectArgs.builder()
+            HeadObjectRequest headOb = HeadObjectRequest.builder()
                     .bucket(bucketName)
-                    .object(objectKey)
-                    .build());
+                    .key(objectKey)
+                    .build();
+
+            s3Client.headObject(headOb);
             return true;
+        } catch (NoSuchKeyException e) {
+            return false;
         } catch (Exception e) {
             return false;
         }
@@ -103,15 +131,22 @@ public class SupabaseStorageService implements StorageService {
 
     @Override
     public String generatePresignedUrl(String objectKey) {
-        if (s3Client == null) return "http://localhost:8080/mock-url/" + objectKey;
+        if (s3Presigner == null) return "http://localhost:8080/mock-url/" + objectKey;
         try {
-            return s3Client.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(bucketName)
-                            .object(objectKey)
-                            .expiry(1, TimeUnit.HOURS)
-                            .build());
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
+
+            GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofHours(1))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedGetObjectRequest =
+                    s3Presigner.presignGetObject(getObjectPresignRequest);
+
+            return presignedGetObjectRequest.url().toString();
         } catch (Exception e) {
             log.error("Failed to generate presigned URL for Supabase: {}", objectKey, e);
             throw new StorageException("Failed to generate presigned URL", e);
