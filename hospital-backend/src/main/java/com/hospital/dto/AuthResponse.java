@@ -8,6 +8,11 @@ import lombok.Data;
 public class AuthResponse {
     private String token;
     private String userId;
+    private String name;
     private String role;
-    private String patientId; // null if not patient
+    private String mobile;
+    private String patientId;
+    private String doctorId;
+    private Long hospitalId;
+    private String department;
 }

@@ -23,7 +23,7 @@ public class DocumentController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<DocumentDTO>> uploadDocument(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("appointmentId") Long appointmentId,
+            @RequestParam("appointmentId") String appointmentId,
             @RequestParam("documentType") String documentType) {
         try {
             String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -39,7 +39,7 @@ public class DocumentController {
     }
 
     @GetMapping("/appointment/{appointmentId}")
-    public ResponseEntity<ApiResponse<List<DocumentDTO>>> getDocuments(@PathVariable Long appointmentId) {
+    public ResponseEntity<ApiResponse<List<DocumentDTO>>> getDocuments(@PathVariable String appointmentId) {
         try {
             String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
             List<DocumentDTO> docs = documentService.getDocumentsForAppointment(appointmentId, mobile);

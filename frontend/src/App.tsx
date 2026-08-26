@@ -13,6 +13,8 @@ import { ProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRo
 import Layout from './components/Layout';
 
 
+import DocumentsPage from './modules/patient/DocumentsPage';
+
 export default function App() {
   
   
@@ -31,6 +33,7 @@ export default function App() {
               <Route path="/patient/dashboard" element={<PatientDashboard />} />
               <Route path="/patient/book" element={<BookAppointment />} />
               <Route path="/patient/pre-consultation" element={<PreConsultation />} />
+              <Route path="/patient/documents" element={<DocumentsPage />} />
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
               <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />

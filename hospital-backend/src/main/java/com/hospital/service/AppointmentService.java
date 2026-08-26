@@ -95,7 +95,7 @@ public class AppointmentService {
 
         // 10. Generate queue token
         QueueToken token = queueService.generateToken(appointment);
-        appointment.setTokenId(token.getTokenId());
+        appointment.setTokenId(String.format("T-%03d", token.getTokenNumber()));
         appointment = appointmentRepository.save(appointment);
 
         return AppointmentResponse.builder()

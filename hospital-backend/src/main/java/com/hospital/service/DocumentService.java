@@ -39,7 +39,7 @@ public class DocumentService {
     private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
     @Transactional
-    public DocumentDTO uploadDocument(MultipartFile file, Long appointmentId, String documentType, String uploaderMobile) {
+    public DocumentDTO uploadDocument(MultipartFile file, String appointmentId, String documentType, String uploaderMobile) {
         // Validate file
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");
         if (file.getSize() > MAX_FILE_SIZE) throw new IllegalArgumentException("File exceeds 50MB limit");
@@ -48,7 +48,7 @@ public class DocumentService {
         }
 
         // Validate appointment & authorization
-        Appointment appointment = appointmentRepository.findById(appointmentId)
+        Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
         User uploader = userRepository.findByMobile(uploaderMobile)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -107,9 +107,11 @@ public class DocumentService {
         }
     }
 
-    public List<DocumentDTO> getDocumentsForAppointment(Long appointmentId, String userMobile) {
+    public List<DocumentDTO> getDocumentsForAppointment(String appointmentId, String userMobile) {
         // Here you would normally verify userMobile authorization to view this appointment's docs
-        List<Document> docs = documentRepository.findByAppointmentIdAndStatus(appointmentId, "ACTIVE");
+        Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        List<Document> docs = documentRepository.findByAppointmentIdAndStatus(appointment.getId(), "ACTIVE");
         return docs.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 

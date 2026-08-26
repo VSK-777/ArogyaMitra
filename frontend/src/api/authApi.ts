@@ -6,8 +6,8 @@ export const authApi = {
         const response = await apiClient.post('/api/auth/patient/login', { mobile, password });
         return response.data;
     },
-    patientRegister: async (mobile: string, password: string): Promise<ApiResponse<string>> => {
-        const response = await apiClient.post('/api/auth/patient/register', { mobile, password });
+    patientRegister: async (mobile: string, password: string, fullName: string): Promise<ApiResponse<string>> => {
+        const response = await apiClient.post('/api/auth/patient/register', { mobile, password, fullName });
         return response.data;
     }
 };

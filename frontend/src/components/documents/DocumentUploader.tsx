@@ -3,7 +3,7 @@ import { documentApi } from '../../api/documentApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 interface DocumentUploaderProps {
-  appointmentId: number;
+  appointmentId: string;
   onUploadSuccess: () => void;
 }
 

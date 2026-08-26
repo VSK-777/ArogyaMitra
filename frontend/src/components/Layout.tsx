@@ -7,7 +7,7 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, name } = useAuth();
   
   const role = location.pathname.includes('/doctor') ? 'Doctor' 
     : location.pathname.includes('/admin') ? 'Admin' 
@@ -86,9 +86,12 @@ export default function Layout() {
             <Menu className="h-6 w-6" />
           </button>
           <div className="ml-auto flex items-center gap-4">
-            <span className="text-sm font-medium text-slate-700">{role} Account</span>
-            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
-              {role[0]}
+            <div className="flex flex-col items-end">
+              <span className="text-sm font-medium text-slate-900">{name || `${role} Account`}</span>
+              <span className="text-xs text-slate-500">{role}</span>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold uppercase border border-blue-200">
+              {name ? name.split(' ').map(n => n[0]).join('').substring(0, 2) : role[0]}
             </div>
           </div>
         </header>

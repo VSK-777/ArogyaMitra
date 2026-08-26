@@ -14,6 +14,10 @@ export const preConsultationApi = {
         });
         return response.data;
     },
+    chat: async (appointmentId: string, message: string): Promise<ApiResponse<string>> => {
+        const response = await apiClient.post(`/api/pre-consultations/${appointmentId}/chat`, { message });
+        return response.data;
+    },
     complete: async (appointmentId: string): Promise<ApiResponse<any>> => {
         const response = await apiClient.post(`/api/pre-consultations/${appointmentId}/complete`);
         return response.data;

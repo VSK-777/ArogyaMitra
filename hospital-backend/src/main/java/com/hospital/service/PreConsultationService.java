@@ -50,20 +50,24 @@ public class PreConsultationService {
     }
 
     @Transactional
-    public String handleAudioInput(String appointmentId, MultipartFile audio) {
-        PreConsultation preConsultation = preConsultationRepository.findByAppointment_Id(
-                appointmentRepository.findByAppointmentId(appointmentId).orElseThrow().getId()
-        ).orElseThrow(() -> new IllegalArgumentException("PreConsultation not found"));
+    public String handleTextInput(String appointmentId, String textInput) {
+        PreConsultation preConsultation = getByAppointmentId(appointmentId);
+        
+        // Fetch previous Q&A for context
+        java.util.List<PreConsultationResponse> previous = responseRepository.findByPreConsultation_IdOrderByTimestampAsc(preConsultation.getId());
+        StringBuilder history = new StringBuilder("Initial complaint: ").append(preConsultation.getChiefComplaint()).append(". ");
+        for (PreConsultationResponse r : previous) {
+            if (r.getQuestion() != null) history.append("Q: ").append(r.getQuestion()).append(" A: ").append(r.getAnswerText()).append(". ");
+        }
 
-        String transcript = speechProvider.transcribeAudio(audio);
-        String question = aiProvider.generateFollowUpQuestion(transcript, "Initial: " + preConsultation.getChiefComplaint());
+        String question = aiProvider.generateFollowUpQuestion(textInput, history.toString());
 
         PreConsultationResponse response = PreConsultationResponse.builder()
                 .responseId("RES-" + UUID.randomUUID().toString().substring(0, 8))
                 .preConsultation(preConsultation)
                 .question(question)
-                .answerText(transcript)
-                .inputType("VOICE")
+                .answerText(textInput)
+                .inputType("TEXT")
                 .timestamp(LocalDateTime.now())
                 .build();
         responseRepository.save(response);
@@ -72,12 +76,30 @@ public class PreConsultationService {
     }
 
     @Transactional
-    public PreConsultation completePreConsultation(String appointmentId) {
-        PreConsultation preConsultation = preConsultationRepository.findByAppointment_Id(
-                appointmentRepository.findByAppointmentId(appointmentId).orElseThrow().getId()
-        ).orElseThrow(() -> new IllegalArgumentException("PreConsultation not found"));
+    public String handleAudioInput(String appointmentId, MultipartFile audio) {
+        String transcript = speechProvider.transcribeAudio(audio);
+        return handleTextInput(appointmentId, transcript);
+    }
 
-        String summary = aiProvider.generateStructuredSummary(preConsultation.getChiefComplaint());
+    private PreConsultation getByAppointmentId(String appointmentId) {
+        Long id = appointmentRepository.findByAppointmentId(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found")).getId();
+        return preConsultationRepository.findByAppointment_Id(id)
+                .orElseThrow(() -> new IllegalArgumentException("PreConsultation not found"));
+    }
+
+    @Transactional
+    public PreConsultation completePreConsultation(String appointmentId) {
+        PreConsultation preConsultation = getByAppointmentId(appointmentId);
+        
+        java.util.List<PreConsultationResponse> previous = responseRepository.findByPreConsultation_IdOrderByTimestampAsc(preConsultation.getId());
+        StringBuilder fullConv = new StringBuilder("Initial complaint: ").append(preConsultation.getChiefComplaint()).append("\n");
+        for (PreConsultationResponse r : previous) {
+            fullConv.append("Doctor AI: ").append(r.getQuestion()).append("\n");
+            fullConv.append("Patient: ").append(r.getAnswerText()).append("\n");
+        }
+
+        String summary = aiProvider.generateStructuredSummary(fullConv.toString());
         preConsultation.setAiSummary(summary);
         preConsultation.setAiGenerated(true);
         preConsultation.setStatus("COMPLETED");

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
@@ -32,11 +33,15 @@ export default function PatientDashboard() {
   }
 
   const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data;
+  const { name } = useAuth();
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Patient Dashboard</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Good morning, {name || 'Patient'}</h1>
+          <p className="text-slate-500 text-sm mt-1">Here is your healthcare summary.</p>
+        </div>
         <button onClick={() => navigate('/patient/book')} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 shadow-sm transition-colors">
           Book New Appointment
         </button>

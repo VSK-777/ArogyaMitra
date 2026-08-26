@@ -2,8 +2,10 @@ package com.hospital.service;
 
 import com.hospital.dto.AuthResponse;
 import com.hospital.entity.Patient;
+import com.hospital.entity.Doctor;
 import com.hospital.entity.Role;
 import com.hospital.entity.User;
+import com.hospital.repository.DoctorRepository;
 import com.hospital.repository.PatientRepository;
 import com.hospital.repository.UserRepository;
 import com.hospital.security.JwtTokenProvider;
@@ -22,14 +24,16 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
 
 
     @Transactional
-    public void registerPatient(String mobile, String password) {
+    public void registerPatient(String mobile, String password, String fullName) {
         String normalizedMobile = MobileUtils.normalizeMobile(mobile);
+        String trimmedName = fullName != null ? fullName.trim() : null;
         
         if (userRepository.findByMobile(normalizedMobile).isPresent()) {
             throw new RuntimeException("Mobile number is already registered.");
@@ -40,6 +44,7 @@ public class AuthService {
         User user = User.builder()
                 .userId("USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                 .mobile(normalizedMobile)
+                .name(trimmedName)
                 .passwordHash(passwordEncoder.encode(password))
                 .role(Role.ROLE_PATIENT)
                 .build();
@@ -48,11 +53,15 @@ public class AuthService {
         if (existingPatientOpt.isPresent()) {
             Patient existingPatient = existingPatientOpt.get();
             existingPatient.setUser(user);
+            if (existingPatient.getFullName() == null || existingPatient.getFullName().trim().isEmpty()) {
+                existingPatient.setFullName(trimmedName);
+            }
             patientRepository.save(existingPatient);
         } else {
             Patient patient = Patient.builder()
                     .patientId("PAT-" + String.format("%06d", userRepository.count()))
                     .user(user)
+                    .fullName(trimmedName)
                     .mobile(normalizedMobile)
                     .build();
             patientRepository.save(patient);
@@ -71,14 +80,23 @@ public class AuthService {
         }
 
         Patient patient = patientRepository.findByUser_Id(user.getId()).orElse(null);
+        Doctor doctor = null;
+        if (user.getRole() == Role.ROLE_DOCTOR) {
+            doctor = doctorRepository.findByUser_Id(user.getId()).orElse(null);
+        }
 
         String token = jwtTokenProvider.generateToken(normalizedMobile, user.getRole().name(), user.getUserId());
 
         return AuthResponse.builder()
                 .token(token)
                 .userId(user.getUserId())
+                .name(user.getName() != null ? user.getName() : (patient != null ? patient.getFullName() : (doctor != null ? doctor.getName() : "User")))
+                .mobile(user.getMobile())
                 .role(user.getRole().name())
                 .patientId(patient != null ? patient.getPatientId() : null)
+                .doctorId(doctor != null ? doctor.getDoctorId() : null)
+                .hospitalId(user.getHospitalId())
+                .department(doctor != null && doctor.getDepartment() != null ? doctor.getDepartment().getName() : null)
                 .build();
     }
 }

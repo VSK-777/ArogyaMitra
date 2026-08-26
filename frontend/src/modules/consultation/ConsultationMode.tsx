@@ -1,7 +1,8 @@
 import { useState,  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorApi } from '../../api/doctorApi';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
+import { DocumentList } from '../../components/documents/DocumentList';
 
 export default function ConsultationMode() {
   const { id } = useParams(); // this is appointmentId
@@ -79,9 +80,14 @@ export default function ConsultationMode() {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Patient Information</h3>
                 <p className="text-sm text-slate-600 mb-2"><strong>AI Summary:</strong> This information is pulled from the pre-consultation workflow.</p>
-                <div className="bg-slate-50 p-3 rounded border text-sm text-slate-700 h-64 overflow-y-auto">
+                <div className="bg-slate-50 p-3 rounded border text-sm text-slate-700 h-64 overflow-y-auto mb-6">
                     Chief Complaint, Symptoms, and AI Notes will appear here if the patient completed the pre-consultation step.
                 </div>
+                
+                <h3 className="font-bold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">
+                   <FileText className="h-5 w-5" /> Patient Documents
+                </h3>
+                {id ? <DocumentList appointmentId={id} /> : <p>No ID available.</p>}
             </div>
         </div>
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { documentApi, type DocumentDTO } from '../../api/documentApi';
 
 interface DocumentListProps {
-  appointmentId: number;
+  appointmentId: string;
 }
 
 export const DocumentList: React.FC<DocumentListProps> = ({ appointmentId }) => {

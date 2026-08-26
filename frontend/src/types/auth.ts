@@ -1,9 +1,13 @@
 export interface AuthResponse {
     token: string;
     userId: string;
+    name?: string;
+    mobile?: string;
     role: string;
     patientId?: string;
     doctorId?: string;
+    hospitalId?: number;
+    department?: string;
 }
 
 export interface ApiResponse<T> {

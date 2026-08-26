@@ -32,6 +32,14 @@ public class PreConsultationController {
         return ResponseEntity.ok(ApiResponse.success("Audio processed", nextQuestion));
     }
 
+    @PostMapping("/{appointmentId}/chat")
+    public ResponseEntity<ApiResponse<String>> handleChat(
+            @PathVariable String appointmentId,
+            @RequestBody java.util.Map<String, String> payload) {
+        String nextQuestion = preConsultationService.handleTextInput(appointmentId, payload.get("message"));
+        return ResponseEntity.ok(ApiResponse.success("Message processed", nextQuestion));
+    }
+
     @PostMapping("/{appointmentId}/complete")
     public ResponseEntity<ApiResponse<PreConsultation>> complete(@PathVariable String appointmentId) {
         PreConsultation pc = preConsultationService.completePreConsultation(appointmentId);

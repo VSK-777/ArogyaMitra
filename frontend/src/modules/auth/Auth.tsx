@@ -8,8 +8,28 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const authSchema = z.object({
+  fullName: z.string().optional(),
   mobile: z.string().regex(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
-  password: z.string().min(8, "Password must be at least 8 characters")
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().optional(),
+  isRegistering: z.boolean().optional()
+}).superRefine((data, ctx) => {
+  if (data.isRegistering) {
+    if (!data.fullName || data.fullName.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['fullName'],
+        message: "Full Name is required"
+      });
+    }
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirmPassword'],
+        message: "Passwords do not match"
+      });
+    }
+  }
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
@@ -23,8 +43,9 @@ export default function Auth() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<AuthFormData>({
-    resolver: zodResolver(authSchema)
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<AuthFormData>({
+    resolver: zodResolver(authSchema),
+    defaultValues: { isRegistering: false }
   });
 
   const onSubmit = async (data: AuthFormData) => {
@@ -37,15 +58,14 @@ export default function Auth() {
         if (isLogin) {
           const res = await authApi.patientLogin(data.mobile, data.password);
           if (res.success && res.data) {
-             login(res.data.token, res.data.role, res.data.userId);
+             login(res.data);
              navigate('/patient/dashboard');
           }
         } else {
-          const res = await authApi.patientRegister(data.mobile, data.password);
+          const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!);
           if (res.success) {
              setApiSuccess("Registration successful. Please login.");
-             setIsLogin(true);
-             reset();
+             toggleMode();
           }
         }
       } else {
@@ -61,6 +81,15 @@ export default function Auth() {
     } finally {
        setIsLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    const newIsLogin = !isLogin;
+    setIsLogin(newIsLogin);
+    setValue('isRegistering', !newIsLogin);
+    setApiError(null);
+    setApiSuccess(null);
+    reset({ isRegistering: !newIsLogin });
   };
 
   return (
@@ -106,9 +135,24 @@ export default function Auth() {
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            
+            {!isLogin && role === 'Patient' && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Full Name *
+                </label>
+                <input
+                  {...register("fullName")}
+                  className={`block w-full px-3 py-2 border ${errors.fullName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                  placeholder="e.g. Vajjha Sai Krishna"
+                />
+                {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Mobile Number
+                Mobile Number *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,7 +169,7 @@ export default function Auth() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Password
+                Password *
               </label>
               <input
                 type="password"
@@ -136,19 +180,34 @@ export default function Auth() {
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
             </div>
 
+            {!isLogin && role === 'Patient' && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Confirm Password *
+                </label>
+                <input
+                  type="password"
+                  {...register("confirmPassword")}
+                  className={`block w-full px-3 py-2 border ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                  placeholder="••••••••"
+                />
+                {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
               className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Create Account')}
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Register')}
             </button>
           </form>
 
           {role === 'Patient' && (
             <div className="mt-6 text-center">
               <button
-                onClick={() => { setIsLogin(!isLogin); setApiError(null); setApiSuccess(null); reset(); }}
+                onClick={toggleMode}
                 className="text-sm font-medium text-blue-600 hover:text-blue-500"
               >
                 {isLogin ? "Don't have an account? Register" : "Already have an account? Sign in"}
