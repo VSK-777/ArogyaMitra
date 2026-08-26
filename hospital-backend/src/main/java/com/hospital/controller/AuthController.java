@@ -18,22 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private final com.hospital.integration.notification.OtpService otpService;
 
-    @PostMapping("/send-otp")
-    public ResponseEntity<ApiResponse<String>> sendOtp(@RequestParam String mobile) {
-        otpService.sendOtp(mobile);
-        return ResponseEntity.ok(ApiResponse.success("OTP sent successfully", null));
-    }
-
-    @PostMapping("/verify-otp")
-    public ResponseEntity<ApiResponse<String>> verifyOtp(@RequestParam String mobile, @RequestParam String otp) {
-        boolean isValid = otpService.verifyOtp(mobile, otp);
-        if (isValid) {
-            return ResponseEntity.ok(ApiResponse.success("OTP verified successfully", null));
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.error("Invalid OTP", "INVALID_OTP"));
-    }
 
 
     @PostMapping("/patient/register")
