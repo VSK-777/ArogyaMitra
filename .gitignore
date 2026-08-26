@@ -27,3 +27,4 @@ frontend/*.local
 #other files
 *.pdf
 *.py
+doctor_info.md
