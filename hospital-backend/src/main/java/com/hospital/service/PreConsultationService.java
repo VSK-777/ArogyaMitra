@@ -37,16 +37,24 @@ public class PreConsultationService {
         if (!appointment.getPatient().getMobile().equals(mobile)) {
             throw new RuntimeException("Unauthorized");
         }
-
-        PreConsultation preConsultation = PreConsultation.builder()
-                .preConsultationId("PRE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
-                .appointment(appointment)
-                .patient(appointment.getPatient())
-                .chiefComplaint(complaint)
-                .status("IN_PROGRESS")
-                .build();
-
-        return preConsultationRepository.save(preConsultation);
+        
+        return preConsultationRepository.findByAppointment_Id(appointment.getId())
+                .map(existing -> {
+                    // Update complaint if they are restarting
+                    existing.setChiefComplaint(complaint);
+                    existing.setStatus("IN_PROGRESS");
+                    return preConsultationRepository.save(existing);
+                })
+                .orElseGet(() -> {
+                    PreConsultation pc = PreConsultation.builder()
+                            .preConsultationId("PRE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                            .appointment(appointment)
+                            .patient(appointment.getPatient())
+                            .chiefComplaint(complaint)
+                            .status("IN_PROGRESS")
+                            .build();
+                    return preConsultationRepository.save(pc);
+                });
     }
 
     @Transactional
