@@ -64,7 +64,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ appointmentI
             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">Max size: 10MB</p>
+          <p className="text-xs text-gray-500 mt-1">Max size: 50MB</p>
         </div>
 
         <button

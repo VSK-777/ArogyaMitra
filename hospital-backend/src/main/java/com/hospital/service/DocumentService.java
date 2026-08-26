@@ -36,13 +36,13 @@ public class DocumentService {
     private static final List<String> ALLOWED_TYPES = List.of(
             "application/pdf", "image/jpeg", "image/png", "image/webp"
     );
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
     @Transactional
     public DocumentDTO uploadDocument(MultipartFile file, Long appointmentId, String documentType, String uploaderMobile) {
         // Validate file
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");
-        if (file.getSize() > MAX_FILE_SIZE) throw new IllegalArgumentException("File exceeds 10MB limit");
+        if (file.getSize() > MAX_FILE_SIZE) throw new IllegalArgumentException("File exceeds 50MB limit");
         if (!ALLOWED_TYPES.contains(file.getContentType())) {
             throw new IllegalArgumentException("Invalid file type. Allowed: PDF, JPEG, PNG, WEBP");
         }
@@ -81,7 +81,7 @@ public class DocumentService {
             throw new RuntimeException("Failed to upload file to storage", e);
         }
 
-        // Save metadata to MySQL
+        // Save metadata to MySQL with compensation logic
         Document doc = new Document();
         doc.setAppointment(appointment);
         doc.setPatient(appointment.getPatient());
@@ -92,11 +92,19 @@ public class DocumentService {
         doc.setDocumentType(documentType);
         doc.setUploadedBy(uploader.getRole().name());
         
-        doc = documentRepository.save(doc);
-
-        auditService.log("UPLOAD_DOCUMENT", "Document", String.valueOf(doc.getId()), uploaderMobile, uploader.getRole(), "Uploaded " + documentType);
-
-        return mapToDTO(doc);
+        try {
+            doc = documentRepository.save(doc);
+            auditService.log("UPLOAD_DOCUMENT", "Document", String.valueOf(doc.getId()), uploaderMobile, uploader.getRole(), "Uploaded " + documentType);
+            return mapToDTO(doc);
+        } catch (Exception e) {
+            log.error("Failed to save document metadata to MySQL. Attempting to compensate by deleting from Supabase Storage", e);
+            try {
+                storageService.delete(objectKey);
+            } catch (Exception deleteEx) {
+                log.error("Compensation failed! Orphaned file in Supabase: {}", objectKey, deleteEx);
+            }
+            throw new RuntimeException("Database error during document upload. Storage was rolled back.", e);
+        }
     }
 
     public List<DocumentDTO> getDocumentsForAppointment(Long appointmentId, String userMobile) {

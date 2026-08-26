@@ -158,7 +158,8 @@ Object keys are structured to prevent collisions and securely partition data:
 ### 9.4 Supabase Environment Variables
 The application does not hardcode credentials. It expects the following environment variables:
 ```properties
-supabase.url=${SUPABASE_URL}
+supabase.storage.endpoint=${SUPABASE_STORAGE_ENDPOINT}
+supabase.storage.region=${SUPABASE_STORAGE_REGION}
 supabase.storage.access-key=${SUPABASE_STORAGE_ACCESS_KEY}
 supabase.storage.secret-key=${SUPABASE_STORAGE_SECRET_KEY}
 supabase.storage.bucket=${SUPABASE_STORAGE_BUCKET:hospital-medical-documents}
@@ -168,7 +169,7 @@ supabase.storage.bucket=${SUPABASE_STORAGE_BUCKET:hospital-medical-documents}
 **POST /api/documents/upload**
 - **Content-Type:** `multipart/form-data`
 - **Params:** `file`, `appointmentId`, `documentType`
-- **Validation:** 10MB limit, PDF/JPG/PNG/WEBP only.
+- **Validation:** 50MB limit, PDF/JPG/PNG/WEBP only.
 - **Authorization:** Only the associated Patient or Doctor can upload.
 
 **GET /api/documents/appointment/{appointmentId}**

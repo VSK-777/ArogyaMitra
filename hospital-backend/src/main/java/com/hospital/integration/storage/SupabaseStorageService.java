@@ -17,24 +17,24 @@ public class SupabaseStorageService implements StorageService {
     private final String bucketName;
 
     public SupabaseStorageService(
-            @Value("${supabase.url:}") String supabaseUrl,
+            @Value("${supabase.storage.endpoint:}") String endpoint,
+            @Value("${supabase.storage.region:}") String region,
             @Value("${supabase.storage.access-key:}") String accessKey,
             @Value("${supabase.storage.secret-key:}") String secretKey,
             @Value("${supabase.storage.bucket:hospital-medical-documents}") String bucketName) {
 
         this.bucketName = bucketName;
-        
-        String endpoint = null;
-        if (supabaseUrl != null && !supabaseUrl.isEmpty()) {
-            // Supabase provides an S3-compatible API under /storage/v1/s3
-            endpoint = supabaseUrl.endsWith("/") ? supabaseUrl + "storage/v1/s3" : supabaseUrl + "/storage/v1/s3";
-        }
 
         if (endpoint != null && !endpoint.isEmpty() && accessKey != null && !accessKey.isEmpty()) {
-            this.s3Client = MinioClient.builder()
+            MinioClient.Builder builder = MinioClient.builder()
                     .endpoint(endpoint)
-                    .credentials(accessKey, secretKey)
-                    .build();
+                    .credentials(accessKey, secretKey);
+            
+            if (region != null && !region.isEmpty()) {
+                builder.region(region);
+            }
+            
+            this.s3Client = builder.build();
             log.info("Supabase Storage initialized for bucket: {}", bucketName);
         } else {
             this.s3Client = null;

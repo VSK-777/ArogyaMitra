@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
 public class AppointmentControllerTest {
@@ -65,12 +67,12 @@ public class AppointmentControllerTest {
         User docUser = userRepository.save(User.builder().userId("U-DOC").mobile("111").role(Role.ROLE_DOCTOR).build());
         doctor = doctorRepository.save(Doctor.builder().doctorId("DOC-TEST").name("Dr. Test").hospital(hospital).department(dept).user(docUser).build());
         
-        User patUser = userRepository.save(User.builder().userId("U-PAT").mobile("8888888888").role(Role.ROLE_PATIENT).build());
-        patient = patientRepository.save(Patient.builder().patientId("P-TEST").mobile("8888888888").user(patUser).build());
+        User patUser = userRepository.save(User.builder().userId("U-PAT").mobile("1787739252").role(Role.ROLE_PATIENT).build());
+        patient = patientRepository.save(Patient.builder().patientId("P-TEST").mobile("1787739252").user(patUser).build());
     }
 
     @Test
-    @WithMockUser(username = "8888888888", roles = "PATIENT")
+    @WithMockUser(username = "1787739252", roles = "PATIENT")
     public void testBookAppointment_Success() throws Exception {
         BookAppointmentRequest req = new BookAppointmentRequest();
         req.setHospitalId(hospital.getHospitalId());
