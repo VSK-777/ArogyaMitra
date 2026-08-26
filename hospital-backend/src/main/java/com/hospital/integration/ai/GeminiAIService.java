@@ -1,5 +1,6 @@
 package com.hospital.integration.ai;
 
+import com.hospital.entity.PreConsultationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class GeminiAIService implements AiProvider {
     @Value("${gemini.api-key}")
     private String geminiApiKey;
     
-    @Value("${gemini.model:gemini-1.5-flash}")
+    @Value("${gemini.model:gemini-3.6-flash}")
     private String geminiModel;
 
     private final RestTemplate restTemplate;
@@ -32,45 +34,70 @@ public class GeminiAIService implements AiProvider {
     }
 
     @Override
-    public String generateFollowUpQuestion(String patientInput, String contextHistory) {
-        String prompt = "You are an AI medical assistant conducting a pre-consultation. " +
+    public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
+        String systemInstruction = "You are an AI medical assistant conducting a pre-consultation. " +
                 "Your purpose is to collect structured information that can later help the doctor. " +
                 "You MUST NOT diagnose diseases, prescribe medication, or replace a doctor. " +
-                "If symptoms are urgent, advise seeking emergency medical attention.\n" +
-                "Patient initial context: " + contextHistory + ".\n" +
-                "Patient just said: " + patientInput + ".\n" +
+                "If symptoms are urgent, advise seeking emergency medical attention. " +
                 "Ask exactly ONE brief, relevant follow-up medical question.";
-        return callGeminiApi(prompt);
+
+        List<Map<String, Object>> contents = new ArrayList<>();
+        
+        // Always include the first message mapping the initial complaint
+        contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", chiefComplaint))));
+
+        // Append historical interactions
+        for (PreConsultationResponse r : previousResponses) {
+            // Only add model's follow-up if it exists
+            if (r.getQuestion() != null && !r.getQuestion().isEmpty()) {
+                contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", r.getQuestion()))));
+            }
+            // If the patient provided a subsequent answer, append it
+            // Avoid duplicating the initial complaint if it was stored as the first answer text
+            if (r.getAnswerText() != null && !r.getAnswerText().isEmpty() && !r.getAnswerText().equals(chiefComplaint)) {
+                contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", r.getAnswerText()))));
+            }
+        }
+        
+        // Append the current patient input (if it's not the first chief complaint again)
+        if (!patientInput.equals(chiefComplaint)) {
+            contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", patientInput))));
+        }
+
+        return callGeminiChatApi(systemInstruction, contents);
     }
 
     @Override
     public String generateStructuredSummary(String fullConversation) {
-        String prompt = "You are a clinical AI. Summarize the following patient complaint into a structured format. " +
+        String systemInstruction = "You are a clinical AI. Summarize the following patient complaint into a structured format. " +
                 "This MUST be marked as 'AI-generated pre-consultation summary'. " +
                 "Do not present this as a medical diagnosis. " +
-                "Include 'chiefComplaint', 'duration', 'symptoms' (array), 'severity', and a brief 'summary' string. " +
-                "Conversation: \n" + fullConversation;
-        return callGeminiApi(prompt);
+                "Include 'chiefComplaint', 'duration', 'symptoms' (array), 'severity', and a brief 'summary' string.";
+                
+        List<Map<String, Object>> contents = List.of(
+                Map.of("role", "user", "parts", List.of(Map.of("text", "Conversation:\n" + fullConversation)))
+        );
+        return callGeminiChatApi(systemInstruction, contents);
     }
 
     @Override
     public String draftClinicalDocumentation(String doctorNotes) {
-        String prompt = "Expand these brief doctor notes into a professional clinical assessment draft: " + doctorNotes;
-        return callGeminiApi(prompt);
+        String systemInstruction = "You are a clinical AI assistant.";
+        List<Map<String, Object>> contents = List.of(
+                Map.of("role", "user", "parts", List.of(Map.of("text", "Expand these brief doctor notes into a professional clinical assessment draft: " + doctorNotes)))
+        );
+        return callGeminiChatApi(systemInstruction, contents);
     }
 
-    private String callGeminiApi(String prompt) {
+    private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + geminiModel + ":generateContent?key=" + geminiApiKey;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> requestBody = Map.of(
-                "contents", List.of(
-                        Map.of("parts", List.of(
-                                Map.of("text", prompt)
-                        ))
-                )
+                "system_instruction", Map.of("parts", Map.of("text", systemInstruction)),
+                "contents", contents
         );
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import java.util.Collections;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ class GeminiAIServiceTest {
     void setUp() {
         geminiAIService = new GeminiAIService(restTemplate);
         ReflectionTestUtils.setField(geminiAIService, "geminiApiKey", "test-key");
-        ReflectionTestUtils.setField(geminiAIService, "geminiModel", "gemini-1.5-flash");
+        ReflectionTestUtils.setField(geminiAIService, "geminiModel", "gemini-3.6-flash");
     }
 
     @Test
@@ -48,7 +49,7 @@ class GeminiAIServiceTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(Map.class)))
                 .thenReturn(mockResponse);
 
-        String response = geminiAIService.generateFollowUpQuestion("I have sharp pains", "Initial complaint: I have sharp pains");
+        String response = geminiAIService.generateFollowUpQuestion("I have sharp pains", Collections.emptyList(), "I have sharp pains");
         assertEquals("How long have you had this pain?", response);
     }
 
@@ -58,7 +59,7 @@ class GeminiAIServiceTest {
                 .thenThrow(new RuntimeException("API Down"));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            geminiAIService.generateFollowUpQuestion("I have sharp pains", "Initial complaint: I have sharp pains");
+            geminiAIService.generateFollowUpQuestion("I have sharp pains", Collections.emptyList(), "I have sharp pains");
         });
         
         assertEquals("AI provider is temporarily unavailable.", exception.getMessage());

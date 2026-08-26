@@ -63,7 +63,7 @@ public class PreConsultationService {
 
         // Generate the first real AI question instead of relying on frontend hardcoding
         String history = "Initial complaint: " + complaint;
-        String question = aiProvider.generateFollowUpQuestion(complaint, history);
+        String question = aiProvider.generateFollowUpQuestion(complaint, java.util.Collections.emptyList(), complaint);
 
         PreConsultationResponse response = PreConsultationResponse.builder()
                 .responseId("RES-" + UUID.randomUUID().toString().substring(0, 8))
@@ -83,14 +83,9 @@ public class PreConsultationService {
     public String handleTextInput(String appointmentId, String textInput) {
         PreConsultation preConsultation = getByAppointmentId(appointmentId);
         
-        // Fetch previous Q&A for context
         java.util.List<PreConsultationResponse> previous = responseRepository.findByPreConsultation_IdOrderByTimestampAsc(preConsultation.getId());
-        StringBuilder history = new StringBuilder("Initial complaint: ").append(preConsultation.getChiefComplaint()).append(". ");
-        for (PreConsultationResponse r : previous) {
-            if (r.getQuestion() != null) history.append("Q: ").append(r.getQuestion()).append(" A: ").append(r.getAnswerText()).append(". ");
-        }
-
-        String question = aiProvider.generateFollowUpQuestion(textInput, history.toString());
+        
+        String question = aiProvider.generateFollowUpQuestion(preConsultation.getChiefComplaint(), previous, textInput);
 
         PreConsultationResponse response = PreConsultationResponse.builder()
                 .responseId("RES-" + UUID.randomUUID().toString().substring(0, 8))
