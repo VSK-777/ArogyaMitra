@@ -59,11 +59,13 @@ export default function PreConsultation() {
     }
   };
 
-  const handleSendMessage = async (retryMsg?: string) => {
-    const userMsg = retryMsg || inputText.trim();
+  const handleSendMessage = async (retryMsg?: string | React.MouseEvent) => {
+    const isRetry = typeof retryMsg === 'string';
+    const userMsg = isRetry ? (retryMsg as string) : inputText.trim();
+    
     if (!userMsg) return;
     
-    if (!retryMsg) {
+    if (!isRetry) {
        setMessages(prev => [...prev, { role: 'patient', content: userMsg }]);
        setInputText('');
     }
@@ -149,7 +151,8 @@ export default function PreConsultation() {
             </div>
           )}
 
-          {step === 2 && <div className="flex flex-col gap-4">
+          {step === 2 && (
+            <div className="flex flex-col gap-4">
                  {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
                       <div className={`max-w-[80%] p-4 rounded-xl ${
