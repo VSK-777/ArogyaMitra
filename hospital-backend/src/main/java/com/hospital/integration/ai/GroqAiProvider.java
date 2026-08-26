@@ -63,13 +63,10 @@ public class GroqAiProvider implements AiProvider {
                     return (String) message.get("content");
                 }
             }
-            return "Unable to generate response from AI. Please try again.";
+            return "I apologize, but I am unable to process that right now.";
         } catch (Exception e) {
             System.err.println("Groq API Error: " + e.getMessage());
-            if (e.getMessage() != null && e.getMessage().contains("401")) {
-                return "The AI Assistant is currently unavailable because the API key is missing or invalid. Please check the backend configuration.";
-            }
-            return "Sorry, I am having trouble connecting to the medical intelligence server right now. (" + e.getMessage() + ")";
+            throw new RuntimeException("AI provider is temporarily unavailable.");
         }
     }
 }

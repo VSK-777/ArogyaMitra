@@ -6,6 +6,7 @@ import { preConsultationApi } from '../../api/preConsultationApi';
 interface Message {
   role: 'ai' | 'patient';
   content: string;
+  isError?: boolean;
 }
 
 export default function PreConsultation() {
@@ -26,6 +27,7 @@ export default function PreConsultation() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [aiSummary, setAiSummary] = useState('');
+  const [retryAction, setRetryAction] = useState<(() => void) | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -35,10 +37,10 @@ export default function PreConsultation() {
 
   const handleStart = async () => {
     if (!complaint.trim()) {
-        alert("Please provide a chief complaint.");
         return;
     }
     setLoading(true);
+    setRetryAction(null);
     try {
         const res = await preConsultationApi.start(aptId!, complaint);
         if (res.success) {
@@ -49,30 +51,34 @@ export default function PreConsultation() {
             setStep(2);
         }
     } catch (e: any) {
-        alert(e.response?.data?.message || "Error starting pre-consultation");
+        setMessages([{ role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setStep(2);
+        setRetryAction(() => handleStart);
     } finally {
         setLoading(false);
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+  const handleSendMessage = async (retryMsg?: string) => {
+    const userMsg = retryMsg || inputText.trim();
+    if (!userMsg) return;
     
-    const userMsg = inputText.trim();
-    if (userMsg) {
+    if (!retryMsg) {
        setMessages(prev => [...prev, { role: 'patient', content: userMsg }]);
        setInputText('');
     }
     setLoading(true);
+    setRetryAction(null);
     
     try {
-        // Here we hit our new POST /chat endpoint
         const res = await preConsultationApi.chat(aptId!, userMsg);
         if (res.success) {
-            setMessages(prev => [...prev, { role: 'ai', content: res.data || '' }]);
+            // Remove previous error messages
+            setMessages(prev => prev.filter(m => !m.isError).concat([{ role: 'ai', content: res.data || '' }]));
         }
     } catch (e: any) {
-        alert(e.response?.data?.message || "Error sending message");
+        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setRetryAction(() => () => handleSendMessage(userMsg));
     } finally {
         setLoading(false);
     }
@@ -80,6 +86,7 @@ export default function PreConsultation() {
 
   const handleComplete = async () => {
     setLoading(true);
+    setRetryAction(null);
     try {
         const res = await preConsultationApi.complete(aptId!);
         if (res.success) {
@@ -87,7 +94,8 @@ export default function PreConsultation() {
             setStep(3);
         }
     } catch (e: any) {
-        alert(e.response?.data?.message || "Error completing pre-consultation");
+        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setRetryAction(() => handleComplete);
     } finally {
         setLoading(false);
     }
@@ -141,15 +149,26 @@ export default function PreConsultation() {
             </div>
           )}
 
-          {step === 2 && (
-            <div className="flex flex-col gap-4">
-               {messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-xl ${msg.role === 'ai' ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-none' : 'bg-blue-600 text-white rounded-tr-none'}`}>
-                        {msg.content}
+          {step === 2 && <div className="flex flex-col gap-4">
+                 {messages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
+                      <div className={`max-w-[80%] p-4 rounded-xl ${
+                        msg.isError ? 'bg-orange-50 border border-orange-200 text-orange-800 rounded-tl-none' :
+                        msg.role === 'ai' ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-none' : 
+                        'bg-blue-600 text-white rounded-tr-none'
+                      }`}>
+                          <p>{msg.content}</p>
+                          {msg.isError && retryAction && (
+                              <button 
+                                onClick={retryAction}
+                                className="mt-3 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                              >
+                                Try Again
+                              </button>
+                          )}
+                      </div>
                     </div>
-                  </div>
-               ))}
+                 ))}
                {loading && (
                  <div className="flex justify-start">
                     <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none flex items-center gap-2">
