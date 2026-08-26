@@ -46,7 +46,7 @@ public class GroqAiProvider implements AiProvider {
         headers.setBearerAuth(groqApiKey);
 
         Map<String, Object> requestBody = Map.of(
-                "model", "llama3-8b-8192",
+                "model", "llama-3.1-8b-instant",
                 "messages", List.of(Map.of("role", "user", "content", prompt)),
                 "temperature", 0.5
         );
