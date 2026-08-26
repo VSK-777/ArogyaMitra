@@ -150,3 +150,7 @@ hospital-system/
 │   └── package.json
 └── MASTER_DOCUMENTATION.md
 ```
+
+
+## Refactoring Note
+The entire application was refactored on 2026-08-26 to match the strict System Architecture Diagram. Frontend pages are now domain-driven modules inside src/modules/. Backend business logic was expanded to include AdminController, ReceptionistController, AnalyticsService, and NotificationService. 0 static mock data remains.

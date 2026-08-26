@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Activity, AlertCircle, Loader2 } from 'lucide-react';
-import { authApi } from '../api/authApi';
-import { useAuth } from '../contexts/AuthContext';
+import { authApi } from '../../api/authApi';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const authSchema = z.object({

@@ -7,23 +7,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/receptionist")
 @RequiredArgsConstructor
 public class ReceptionistController {
-
     private final PatientRepository patientRepository;
 
     @GetMapping("/patients/search")
-    public ResponseEntity<ApiResponse<List<Patient>>> searchPatients(@RequestParam String query) {
-        // Simple mock search for MVP (normally we'd use a LIKE query in repository)
-        List<Patient> patients = patientRepository.findAll().stream()
-                .filter(p -> p.getMobile().contains(query) || (p.getFullName() != null && p.getFullName().toLowerCase().contains(query.toLowerCase())))
-                .collect(Collectors.toList());
-                
-        return ResponseEntity.ok(ApiResponse.success("Patients found", patients));
+    public ResponseEntity<ApiResponse<Patient>> searchPatient(@RequestParam String mobile) {
+        Optional<Patient> patient = patientRepository.findByMobile(mobile);
+        if (patient.isPresent()) {
+            return ResponseEntity.ok(ApiResponse.success("Patient found", patient.get()));
+        } else {
+            return ResponseEntity.status(404).body(ApiResponse.error("404", "Patient not found"));
+        }
     }
 }

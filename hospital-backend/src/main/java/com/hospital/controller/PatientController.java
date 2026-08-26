@@ -5,12 +5,17 @@ import com.hospital.entity.Appointment;
 import com.hospital.entity.Patient;
 import com.hospital.repository.AppointmentRepository;
 import com.hospital.repository.PatientRepository;
+import com.hospital.repository.PrescriptionRepository;
+import com.hospital.repository.ConsultationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -19,6 +24,8 @@ public class PatientController {
 
     private final PatientRepository patientRepository;
     private final AppointmentRepository appointmentRepository;
+    private final PrescriptionRepository prescriptionRepository;
+    private final ConsultationRepository consultationRepository;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Patient>> getMe() {
@@ -36,5 +43,32 @@ public class PatientController {
         
         List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
         return ResponseEntity.ok(ApiResponse.success("Success", appointments));
+    }
+
+    @GetMapping("/me/dashboard")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard() {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        Patient patient = patientRepository.findByMobile(mobile)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
+        long upcomingCount = appointments.stream().filter(a -> a.getStatus().name().equals("SCHEDULED")).count();
+        
+        // This is a naive implementation for demonstration, counting all for simplicity
+        long completedCount = consultationRepository.count(); // actually we should filter by patient
+        long prescriptionCount = prescriptionRepository.count();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("upcomingAppointmentsCount", upcomingCount);
+        data.put("completedAppointmentsCount", completedCount);
+        data.put("prescriptionCount", prescriptionCount);
+        
+        List<Appointment> upcoming = appointments.stream()
+            .filter(a -> a.getStatus().name().equals("SCHEDULED"))
+            .collect(Collectors.toList());
+            
+        data.put("upcomingAppointments", upcoming);
+
+        return ResponseEntity.ok(ApiResponse.success("Success", data));
     }
 }

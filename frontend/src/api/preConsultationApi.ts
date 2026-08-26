@@ -2,13 +2,13 @@ import { apiClient } from './client';
 import type { ApiResponse } from '../types/auth';
 
 export const preConsultationApi = {
-    start: async (appointmentId: string, initialComplaint: string): Promise<ApiResponse<any>> => {
-        const response = await apiClient.post('/api/pre-consultations', { appointmentId, initialComplaint });
+    start: async (appointmentId: string, complaint: string): Promise<ApiResponse<any>> => {
+        const response = await apiClient.post('/api/pre-consultations', { appointmentId, initialComplaint: complaint });
         return response.data;
     },
-    handleAudio: async (appointmentId: string, audioBlob: Blob): Promise<ApiResponse<any>> => {
+    sendAudio: async (appointmentId: string, audioBlob: Blob): Promise<ApiResponse<any>> => {
         const formData = new FormData();
-        formData.append('audio', audioBlob, 'audio.webm');
+        formData.append('audio', audioBlob, 'recording.webm');
         const response = await apiClient.post(`/api/pre-consultations/${appointmentId}/audio`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
