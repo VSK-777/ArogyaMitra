@@ -24,8 +24,8 @@ export default function Layout() {
       case 'Doctor':
         return [
           { name: 'My Queue', path: '/doctor/dashboard', icon: Users },
-          { name: 'Past Consultations', path: '#', icon: ClipboardList },
-          { name: 'Settings', path: '#', icon: Settings },
+          { name: 'Past Consultations', path: '/doctor/consultations', icon: ClipboardList },
+          { name: 'Settings', path: '/doctor/settings', icon: Settings },
         ];
       case 'Admin':
         return [

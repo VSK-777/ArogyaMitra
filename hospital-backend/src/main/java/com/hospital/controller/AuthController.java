@@ -50,7 +50,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/patient/login")
+    @PostMapping({"/patient/login", "/login"})
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody PatientLoginRequest request) {
         try {
             AuthResponse response = authService.loginPatient(request.getMobile(), request.getPassword());

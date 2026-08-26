@@ -9,6 +9,8 @@ import DoctorDashboard from './modules/doctor/DoctorDashboard';
 import ConsultationMode from './modules/consultation/ConsultationMode';
 import ReceptionistDashboard from './modules/receptionist/ReceptionistDashboard';
 import AdminDashboard from './modules/admin/AdminDashboard';
+import PastConsultations from './modules/doctor/PastConsultations';
+import DoctorSettings from './modules/doctor/DoctorSettings';
 import { ProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRoutes';
 import Layout from './components/Layout';
 
@@ -35,6 +37,8 @@ export default function App() {
               <Route path="/patient/pre-consultation" element={<PreConsultation />} />
               <Route path="/patient/documents" element={<DocumentsPage />} />
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+              <Route path="/doctor/consultations" element={<PastConsultations />} />
+              <Route path="/doctor/settings" element={<DoctorSettings />} />
               <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />

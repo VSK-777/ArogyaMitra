@@ -54,22 +54,31 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      if (role === 'Patient') {
-        if (isLogin) {
-          const res = await authApi.patientLogin(data.mobile, data.password);
-          if (res.success && res.data) {
-             login(res.data);
-             navigate('/patient/dashboard');
-          }
-        } else {
+      if (isLogin) {
+        const res = await authApi.login(data.mobile, data.password);
+        if (res.success && res.data) {
+           login(res.data);
+           // Role-based redirection from the actual backend response
+           if (res.data.role === 'ROLE_DOCTOR') {
+               navigate('/doctor/dashboard');
+           } else if (res.data.role === 'ROLE_ADMIN') {
+               navigate('/admin/dashboard');
+           } else if (res.data.role === 'ROLE_RECEPTIONIST') {
+               navigate('/receptionist/dashboard');
+           } else {
+               navigate('/patient/dashboard');
+           }
+        }
+      } else {
+        if (role === 'Patient') {
           const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!);
           if (res.success) {
              setApiSuccess("Registration successful. Please login.");
              toggleMode();
           }
+        } else {
+          setApiError("Only patients can register here. Staff accounts are created by the Admin.");
         }
-      } else {
-         setApiError(`${role} authentication is not yet fully implemented on backend.`);
       }
     } catch (err: any) {
        console.error(err);
