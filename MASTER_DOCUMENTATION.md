@@ -138,31 +138,30 @@ The `DataSeeder` automatically populates the database if it is empty.
 - **Database:** Uses PostgreSQL via `application.properties` in production environments (like Neon).
 
 
-## 9. Cloudflare R2 Document Storage Architecture
+## 9. Supabase Storage Document Storage Architecture
 
-Medical documents (Reports, Prescriptions, Scans) are **not stored as BLOBs in MySQL**. Instead, we use Cloudflare R2 as our S3-compatible object storage layer.
+Medical documents (Reports, Prescriptions, Scans) are **not stored as BLOBs in MySQL**. Instead, we use Supabase Storage as our S3-compatible object storage layer.
 
 ### 9.1 Storage Flow
 ```text
-Patient/Doctor -> React -> Spring Boot REST API -> Authorization -> DocumentService -> R2StorageService -> Cloudflare R2
+Patient/Doctor -> React -> Spring Boot REST API -> Authorization -> DocumentService -> SupabaseStorageService -> Supabase Storage
 ```
 
 ### 9.2 Data Storage Separation
 - **MySQL Database:** Stores the lightweight `Document` entity (metadata).
-- **Cloudflare R2 Bucket:** Stores the actual PDF/JPG/PNG files.
+- **Supabase Storage Bucket:** Stores the actual PDF/JPG/PNG files.
 
-### 9.3 Secure R2 Object Keys
+### 9.3 Secure Supabase Storage Object Keys
 Object keys are structured to prevent collisions and securely partition data:
 `patients/{patientId}/appointments/{appointmentId}/documents/{uuid}.pdf`
 
-### 9.4 R2 Environment Variables
+### 9.4 Supabase Environment Variables
 The application does not hardcode credentials. It expects the following environment variables:
 ```properties
-r2.account-id=${R2_ACCOUNT_ID}
-r2.access-key-id=${R2_ACCESS_KEY_ID}
-r2.secret-access-key=${R2_SECRET_ACCESS_KEY}
-r2.bucket-name=${R2_BUCKET_NAME:hospital-medical-documents}
-r2.endpoint=${R2_ENDPOINT}
+supabase.url=${SUPABASE_URL}
+supabase.storage.access-key=${SUPABASE_STORAGE_ACCESS_KEY}
+supabase.storage.secret-key=${SUPABASE_STORAGE_SECRET_KEY}
+supabase.storage.bucket=${SUPABASE_STORAGE_BUCKET:hospital-medical-documents}
 ```
 
 ### 9.5 Document API Endpoints
@@ -176,7 +175,7 @@ r2.endpoint=${R2_ENDPOINT}
 - Retrieves document metadata for an appointment.
 
 **GET /api/documents/{documentId}/download-url**
-- Generates a short-lived **Pre-signed URL** to access the file securely directly from R2 without making the bucket public.
+- Generates a short-lived **Pre-signed URL** to access the file securely directly from Supabase Storage without making the bucket public.
 
 **DELETE /api/documents/{documentId}**
-- Logically deletes metadata in MySQL and physically removes the object from R2.
+- Logically deletes metadata in MySQL and physically removes the object from Supabase Storage.

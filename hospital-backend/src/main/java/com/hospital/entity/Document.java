@@ -25,7 +25,7 @@ public class Document {
     private Long fileSize;
     
     @Column(length = 1024)
-    private String r2ObjectKey;
+    private String storagePath;
     
     private String documentType; // e.g. LAB_REPORT, PRESCRIPTION, SCAN, CONSULTATION
     private String uploadedBy; // Role of uploader

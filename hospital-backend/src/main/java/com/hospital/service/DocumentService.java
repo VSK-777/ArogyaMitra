@@ -65,7 +65,7 @@ public class DocumentService {
             }
         }
 
-        // Generate R2 Key
+        // Generate Storage Key
         String ext = getExtension(file.getOriginalFilename());
         String objectKey = String.format("patients/%d/appointments/%s/documents/%s%s",
                 appointment.getPatient().getId(),
@@ -73,11 +73,11 @@ public class DocumentService {
                 UUID.randomUUID().toString(),
                 ext);
 
-        // Upload to R2
+        // Upload to Supabase Storage
         try {
             storageService.upload(file.getInputStream(), objectKey, file.getContentType(), file.getSize());
         } catch (Exception e) {
-            log.error("R2 Upload failed", e);
+            log.error("Supabase Storage Upload failed", e);
             throw new RuntimeException("Failed to upload file to storage", e);
         }
 
@@ -88,7 +88,7 @@ public class DocumentService {
         doc.setFileName(file.getOriginalFilename());
         doc.setContentType(file.getContentType());
         doc.setFileSize(file.getSize());
-        doc.setR2ObjectKey(objectKey);
+        doc.setStoragePath(objectKey);
         doc.setDocumentType(documentType);
         doc.setUploadedBy(uploader.getRole().name());
         
@@ -119,7 +119,7 @@ public class DocumentService {
         }
 
         auditService.log("VIEW_DOCUMENT", "Document", String.valueOf(doc.getId()), userMobile, user.getRole(), "Generated presigned URL");
-        return storageService.generatePresignedUrl(doc.getR2ObjectKey());
+        return storageService.generatePresignedUrl(doc.getStoragePath());
     }
 
     @Transactional
@@ -139,8 +139,8 @@ public class DocumentService {
         doc.setStatus("DELETED");
         documentRepository.save(doc);
 
-        // Delete from R2
-        storageService.delete(doc.getR2ObjectKey());
+        // Delete from Supabase Storage
+        storageService.delete(doc.getStoragePath());
 
         auditService.log("DELETE_DOCUMENT", "Document", String.valueOf(doc.getId()), userMobile, user.getRole(), "Deleted document");
     }
