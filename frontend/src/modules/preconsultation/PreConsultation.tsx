@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Bot, Loader2, Send, CheckCircle } from 'lucide-react';
+import { Bot, Loader2, Send, CheckCircle, Mic, Square, AlertCircle } from 'lucide-react';
 import { preConsultationApi } from '../../api/preConsultationApi';
 
 interface Message {
@@ -57,6 +57,75 @@ export default function PreConsultation() {
     } finally {
         setLoading(false);
     }
+  };
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
+  
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
+
+  const startRecording = async () => {
+      try {
+          setRecordingError(null);
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mediaRecorder = new MediaRecorder(stream);
+          mediaRecorderRef.current = mediaRecorder;
+          audioChunksRef.current = [];
+
+          mediaRecorder.ondataavailable = (e) => {
+              if (e.data.size > 0) {
+                  audioChunksRef.current.push(e.data);
+              }
+          };
+
+          mediaRecorder.onstop = async () => {
+              const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+              stream.getTracks().forEach(track => track.stop());
+              
+              if (audioBlob.size > 10_000_000) {
+                  setRecordingError('Voice recording has reached the maximum size.');
+                  return;
+              }
+
+              setIsTranscribing(true);
+              try {
+                  const res = await preConsultationApi.sendAudio(aptId!, audioBlob);
+                  if (res.success && res.data) {
+                      setInputText(res.data);
+                  }
+              } catch (e: any) {
+                  setRecordingError('Voice transcription is temporarily unavailable.');
+              } finally {
+                  setIsTranscribing(false);
+              }
+          };
+
+          mediaRecorder.start();
+          setIsRecording(true);
+
+          setTimeout(() => {
+              if (mediaRecorderRef.current?.state === 'recording') {
+                  stopRecording();
+                  setRecordingError('Voice recording has reached the maximum duration.');
+              }
+          }, 60000);
+
+      } catch (err: any) {
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+              setRecordingError('Microphone access is required for voice input. You can continue using text input.');
+          } else {
+              setRecordingError('Voice input is unavailable on this device. You can continue using text input.');
+          }
+      }
+  };
+
+  const stopRecording = () => {
+      if (mediaRecorderRef.current?.state === 'recording') {
+          mediaRecorderRef.current.stop();
+          setIsRecording(false);
+      }
   };
 
   const handleSendMessage = async (retryMsg?: string | React.MouseEvent) => {
@@ -209,18 +278,48 @@ export default function PreConsultation() {
         {/* Footer Chat Input */}
         {step === 2 && (
             <div className="p-4 bg-white border-t border-slate-200 shrink-0">
+                {recordingError && (
+                    <div className="mb-3 p-3 bg-red-50 text-red-700 text-sm rounded-lg flex items-start gap-2">
+                        <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                        <div className="flex-1">{recordingError}</div>
+                        <button onClick={() => setRecordingError(null)} className="text-red-500 hover:text-red-700 text-xs font-bold uppercase">Dismiss</button>
+                    </div>
+                )}
                 <div className="flex items-center gap-3">
+                    {isRecording ? (
+                        <button
+                           onClick={stopRecording}
+                           title="Stop recording"
+                           aria-label="Stop voice recording"
+                           className="bg-red-100 hover:bg-red-200 text-red-600 h-12 px-4 rounded-full flex items-center justify-center shrink-0 transition-colors"
+                        >
+                           <Square className="h-4 w-4 fill-current mr-2" />
+                           <span className="font-semibold text-sm">Recording...</span>
+                        </button>
+                    ) : (
+                        <button 
+                           onClick={startRecording}
+                           disabled={isTranscribing || loading}
+                           title="Start voice input"
+                           aria-label="Start voice input"
+                           className="bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-600 h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors"
+                        >
+                           {isTranscribing ? <Loader2 className="h-5 w-5 animate-spin text-blue-600" /> : <Mic className="h-5 w-5" />}
+                        </button>
+                    )}
+
                     <input 
                        type="text"
-                       value={inputText}
+                       value={isTranscribing ? "Transcribing..." : inputText}
                        onChange={(e) => setInputText(e.target.value)}
                        onKeyDown={(e) => { if(e.key === 'Enter') handleSendMessage() }}
-                       placeholder="Type your answer here..."
-                       className="flex-1 bg-slate-50 border border-slate-300 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder={isRecording ? "Listening..." : "Type your answer here..."}
+                       disabled={isRecording || isTranscribing}
+                       className="flex-1 bg-slate-50 border border-slate-300 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     />
                     <button 
                        onClick={handleSendMessage}
-                       disabled={loading || !inputText.trim()}
+                       disabled={loading || !inputText.trim() || isRecording || isTranscribing}
                        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors"
                     >
                        <Send className="h-5 w-5 ml-1" />

@@ -105,10 +105,11 @@ public class PreConsultationService {
         return question;
     }
 
-    @Transactional
     public String handleAudioInput(String appointmentId, MultipartFile audio) {
-        String transcript = speechProvider.transcribeAudio(audio);
-        return handleTextInput(appointmentId, transcript);
+        if (audio.getSize() > 10_000_000) {
+            throw new IllegalArgumentException("Audio file too large");
+        }
+        return speechProvider.transcribeAudio(audio);
     }
 
     private PreConsultation getByAppointmentId(String appointmentId) {
