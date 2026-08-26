@@ -32,7 +32,7 @@ class GeminiAIServiceTest {
     void setUp() {
         geminiAIService = new GeminiAIService(restTemplate);
         ReflectionTestUtils.setField(geminiAIService, "geminiApiKey", "test-key");
-        ReflectionTestUtils.setField(geminiAIService, "geminiModel", "gemini-1.5-flash");
+        ReflectionTestUtils.setField(geminiAIService, "geminiModel", "gemini-2.5-flash");
     }
 
     @Test
