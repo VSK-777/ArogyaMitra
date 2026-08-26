@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Stethoscope, User, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users } from 'lucide-react';
+import { Stethoscope, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -37,8 +37,7 @@ export default function Layout() {
         return [
           { name: 'My Dashboard', path: '/patient/dashboard', icon: Activity },
           { name: 'Book Appointment', path: '/patient/book', icon: PlusCircle },
-          { name: 'My History', path: '#', icon: ClipboardList },
-          { name: 'Profile', path: '#', icon: User },
+          { name: 'Medical Documents', path: '/patient/documents', icon: ClipboardList }
         ];
     }
   };
