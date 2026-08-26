@@ -41,6 +41,7 @@ public class AuthControllerTest {
         PatientRegistrationRequest request = new PatientRegistrationRequest();
         request.setMobile("9999999999");
         request.setPassword("Patient@123");
+        request.setFullName("Test User");
 
         mockMvc.perform(post("/api/auth/patient/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -52,11 +53,12 @@ public class AuthControllerTest {
     @Test
     public void testRegister_Duplicate() throws Exception {
         doThrow(new RuntimeException("Mobile number is already registered."))
-            .when(authService).registerPatient(anyString(), anyString());
+            .when(authService).registerPatient(anyString(), anyString(), anyString());
 
         PatientRegistrationRequest request = new PatientRegistrationRequest();
         request.setMobile("9999999999");
         request.setPassword("Patient@123");
+        request.setFullName("Test User");
 
         mockMvc.perform(post("/api/auth/patient/register")
                 .contentType(MediaType.APPLICATION_JSON)
