@@ -35,6 +35,14 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Queue fetched", queue));
     }
 
+    @GetMapping("/consultations")
+    public ResponseEntity<ApiResponse<List<Consultation>>> getPastConsultations() {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByMobile(mobile).orElseThrow();
+        List<Consultation> consultations = doctorService.getPastConsultations(user.getId().toString());
+        return ResponseEntity.ok(ApiResponse.success("Consultations fetched", consultations));
+    }
+
     @GetMapping("/appointments/{appointmentId}/preconsultation")
     public ResponseEntity<ApiResponse<PreConsultation>> getPreConsultationSummary(@PathVariable String appointmentId) {
         Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)

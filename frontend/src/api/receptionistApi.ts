@@ -7,11 +7,11 @@ export const receptionistApi = {
         return response.data;
     },
     registerPatient: async (data: any): Promise<ApiResponse<any>> => {
-        const response = await apiClient.post('/api/receptionist/patients', data);
+        const response = await apiClient.post('/api/receptionist/patients/register', data);
         return response.data;
     },
-    generateToken: async (patientId: string, doctorId: string): Promise<ApiResponse<any>> => {
-        const response = await apiClient.post('/api/receptionist/tokens', { patientId, doctorId });
+    bookWalkIn: async (data: any): Promise<ApiResponse<any>> => {
+        const response = await apiClient.post('/api/receptionist/appointments/walkin', data);
         return response.data;
     }
 };

@@ -2,7 +2,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { User, Shield, Briefcase, Building } from 'lucide-react';
 
 export default function DoctorSettings() {
-    const { name, role } = useAuth();
+    const { name, role, department, hospitalId } = useAuth();
     // Ideally we would fetch the doctor's full profile from the backend.
     // For now, we display the token details.
 
@@ -41,15 +41,15 @@ export default function DoctorSettings() {
                             <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Briefcase className="h-5 w-5" /></div>
                             <div>
                                 <p className="text-sm font-medium text-slate-500">Department</p>
-                                <p className="text-slate-900 font-medium">General Medicine</p>
+                                <p className="text-slate-900 font-medium">{department || 'Not Assigned'}</p>
                             </div>
                         </div>
                         
                         <div className="flex items-start gap-3">
                             <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><Building className="h-5 w-5" /></div>
                             <div>
-                                <p className="text-sm font-medium text-slate-500">Hospital</p>
-                                <p className="text-slate-900 font-medium">Main Hospital</p>
+                                <p className="text-sm font-medium text-slate-500">Hospital ID</p>
+                                <p className="text-slate-900 font-medium">{hospitalId ? `HOSP-${hospitalId}` : 'Not Assigned'}</p>
                             </div>
                         </div>
                     </div>

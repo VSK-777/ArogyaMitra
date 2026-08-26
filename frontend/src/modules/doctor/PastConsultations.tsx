@@ -11,19 +11,11 @@ export default function PastConsultations() {
     const [selectedAptId, setSelectedAptId] = useState<string | null>(null);
 
     useEffect(() => {
-        // Since we don't have a direct "past consultations" endpoint listed, 
-        // normally we would hit an endpoint like /api/doctor/consultations
-        // For now, let's fetch today's queue and filter completed ones, or try to see if doctorApi has it.
         const fetchHistory = async () => {
             try {
-                // If there's an actual endpoint for past consultations, we would use it here.
-                // Assuming it's doctorApi.getQueueToday() for demonstration if a dedicated endpoint isn't present.
-                // Or maybe doctorApi.getConsultations() exists? Let's check doctorApi.ts.
-                // I will use a placeholder or queue for now, but ideally a real endpoint.
-                const res = await doctorApi.getQueueToday(); 
+                const res = await doctorApi.getPastConsultations(); 
                 if (res.success) {
-                    const completed = (res.data || []).filter((q: any) => q.status === 'COMPLETED');
-                    setConsultations(completed);
+                    setConsultations(res.data || []);
                 } else {
                     setError(res.message);
                 }
@@ -60,11 +52,11 @@ export default function PastConsultations() {
                                 className={`p-4 rounded-xl border cursor-pointer transition-colors ${selectedAptId === q.appointment?.appointmentId ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
                             >
                                 <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-bold text-lg text-slate-900">{q.appointment?.patient?.fullName || 'Patient'}</h3>
-                                    <span className="text-sm font-medium bg-green-100 text-green-700 px-2 py-1 rounded">Token: {q.tokenNumber}</span>
+                                    <h3 className="font-bold text-lg text-slate-900">{q.patient?.fullName || 'Patient'}</h3>
+                                    <span className="text-sm font-medium bg-green-100 text-green-700 px-2 py-1 rounded">Token: {q.appointment?.tokenId || 'N/A'}</span>
                                 </div>
                                 <p className="text-sm text-slate-600">Appointment ID: {q.appointment?.appointmentId}</p>
-                                <p className="text-sm text-slate-600">Date: {q.queueDate}</p>
+                                <p className="text-sm text-slate-600">Date: {q.createdAt ? new Date(q.createdAt).toLocaleDateString() : 'N/A'}</p>
                             </div>
                         ))}
                     </div>

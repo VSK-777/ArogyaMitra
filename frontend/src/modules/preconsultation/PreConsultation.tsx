@@ -12,12 +12,13 @@ export default function PreConsultation() {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  let aptId = searchParams.get('appointmentId'); 
+  const aptId = searchParams.get('appointmentId'); 
   
-  // For demo, if no aptId provided, use a dummy one
-  if (!aptId) {
-    aptId = "APT-DEMO-123";
-  }
+  useEffect(() => {
+    if (!aptId) {
+      navigate('/patient/dashboard');
+    }
+  }, [aptId, navigate]);
 
   const [step, setStep] = useState(1);
   const [complaint, setComplaint] = useState('');

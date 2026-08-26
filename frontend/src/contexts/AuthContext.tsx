@@ -9,6 +9,8 @@ interface AuthState {
     mobile: string | null;
     patientId: string | null;
     doctorId: string | null;
+    hospitalId: string | null;
+    department: string | null;
     isAuthenticated: boolean;
     login: (authData: AuthResponse) => void;
     logout: () => void;
@@ -24,6 +26,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [mobile, setMobile] = useState<string | null>(localStorage.getItem('user_mobile'));
     const [patientId, setPatientId] = useState<string | null>(localStorage.getItem('patient_id'));
     const [doctorId, setDoctorId] = useState<string | null>(localStorage.getItem('doctor_id'));
+    const [hospitalId, setHospitalId] = useState<string | null>(localStorage.getItem('hospital_id'));
+    const [department, setDepartment] = useState<string | null>(localStorage.getItem('department'));
 
     useEffect(() => {
         const handleStorageChange = () => {
@@ -34,6 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setMobile(localStorage.getItem('user_mobile'));
             setPatientId(localStorage.getItem('patient_id'));
             setDoctorId(localStorage.getItem('doctor_id'));
+            setHospitalId(localStorage.getItem('hospital_id'));
+            setDepartment(localStorage.getItem('department'));
         };
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
@@ -47,6 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if(authData.mobile) localStorage.setItem('user_mobile', authData.mobile);
         if(authData.patientId) localStorage.setItem('patient_id', authData.patientId);
         if(authData.doctorId) localStorage.setItem('doctor_id', authData.doctorId);
+        if(authData.hospitalId) localStorage.setItem('hospital_id', authData.hospitalId.toString());
+        if(authData.department) localStorage.setItem('department', authData.department);
         
         setToken(authData.token);
         setRole(authData.role);
@@ -55,6 +63,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMobile(authData.mobile || null);
         setPatientId(authData.patientId || null);
         setDoctorId(authData.doctorId || null);
+        setHospitalId(authData.hospitalId?.toString() || null);
+        setDepartment(authData.department || null);
     };
 
     const logout = () => {
@@ -66,11 +76,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMobile(null);
         setPatientId(null);
         setDoctorId(null);
+        setHospitalId(null);
+        setDepartment(null);
         window.location.href = '/auth';
     };
 
     return (
-        <AuthContext.Provider value={{ token, role, userId, name, mobile, patientId, doctorId, isAuthenticated: !!token, login, logout }}>
+        <AuthContext.Provider value={{ token, role, userId, name, mobile, patientId, doctorId, hospitalId, department, isAuthenticated: !!token, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

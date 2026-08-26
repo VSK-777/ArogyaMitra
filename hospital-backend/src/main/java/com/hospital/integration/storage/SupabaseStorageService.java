@@ -131,7 +131,9 @@ public class SupabaseStorageService implements StorageService {
 
     @Override
     public String generatePresignedUrl(String objectKey) {
-        if (s3Presigner == null) return "http://localhost:8080/mock-url/" + objectKey;
+        if (s3Presigner == null) {
+            throw new IllegalStateException("Storage service is not configured. Missing Supabase credentials.");
+        }
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)

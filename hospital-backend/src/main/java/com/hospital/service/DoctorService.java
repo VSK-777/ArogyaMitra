@@ -21,11 +21,17 @@ public class DoctorService {
 
     public List<QueueToken> getTodayQueue(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
-            // Need a quick lookup, we assume userId is passed or we resolve it in controller.
             Long.parseLong(doctorUserId) 
         ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
         return queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now());
+    }
+
+    public List<Consultation> getPastConsultations(String doctorUserId) {
+        Doctor doctor = doctorRepository.findByUser_Id(
+            Long.parseLong(doctorUserId) 
+        ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+        return consultationRepository.findByDoctor_IdOrderByCreatedAtDesc(doctor.getId());
     }
 
     @Transactional
