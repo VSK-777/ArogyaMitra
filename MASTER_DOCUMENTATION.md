@@ -136,3 +136,47 @@ The `DataSeeder` automatically populates the database if it is empty.
 ## 8. Deployment Notes
 - **Frontend Build:** Strict TypeScript mode is enabled. Unused imports will cause Vite/Vercel build failures. Always ensure `tsc -b && vite build` passes locally.
 - **Database:** Uses PostgreSQL via `application.properties` in production environments (like Neon).
+
+
+## 9. Cloudflare R2 Document Storage Architecture
+
+Medical documents (Reports, Prescriptions, Scans) are **not stored as BLOBs in MySQL**. Instead, we use Cloudflare R2 as our S3-compatible object storage layer.
+
+### 9.1 Storage Flow
+```text
+Patient/Doctor -> React -> Spring Boot REST API -> Authorization -> DocumentService -> R2StorageService -> Cloudflare R2
+```
+
+### 9.2 Data Storage Separation
+- **MySQL Database:** Stores the lightweight `Document` entity (metadata).
+- **Cloudflare R2 Bucket:** Stores the actual PDF/JPG/PNG files.
+
+### 9.3 Secure R2 Object Keys
+Object keys are structured to prevent collisions and securely partition data:
+`patients/{patientId}/appointments/{appointmentId}/documents/{uuid}.pdf`
+
+### 9.4 R2 Environment Variables
+The application does not hardcode credentials. It expects the following environment variables:
+```properties
+r2.account-id=${R2_ACCOUNT_ID}
+r2.access-key-id=${R2_ACCESS_KEY_ID}
+r2.secret-access-key=${R2_SECRET_ACCESS_KEY}
+r2.bucket-name=${R2_BUCKET_NAME:hospital-medical-documents}
+r2.endpoint=${R2_ENDPOINT}
+```
+
+### 9.5 Document API Endpoints
+**POST /api/documents/upload**
+- **Content-Type:** `multipart/form-data`
+- **Params:** `file`, `appointmentId`, `documentType`
+- **Validation:** 10MB limit, PDF/JPG/PNG/WEBP only.
+- **Authorization:** Only the associated Patient or Doctor can upload.
+
+**GET /api/documents/appointment/{appointmentId}**
+- Retrieves document metadata for an appointment.
+
+**GET /api/documents/{documentId}/download-url**
+- Generates a short-lived **Pre-signed URL** to access the file securely directly from R2 without making the bucket public.
+
+**DELETE /api/documents/{documentId}**
+- Logically deletes metadata in MySQL and physically removes the object from R2.
