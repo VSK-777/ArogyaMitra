@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.hospital.util.MobileUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -53,13 +54,7 @@ public class ReceptionistController {
     @PostMapping("/patients/register")
     public ResponseEntity<ApiResponse<Patient>> registerWalkInPatient(@RequestBody WalkInRegistrationRequest request) {
         // Check if patient already exists
-        String mobile = request.getMobile();
-        if (mobile != null) {
-            mobile = mobile.replaceAll("[^0-9]", "");
-            if (mobile.length() == 12 && mobile.startsWith("91")) {
-                mobile = mobile.substring(2);
-            }
-        }
+        String mobile = MobileUtils.normalizeMobile(request.getMobile());
         Optional<Patient> existing = patientRepository.findByMobile(mobile);
         if (existing.isPresent()) {
             return ResponseEntity.ok(ApiResponse.success("Patient already exists", existing.get()));

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 import java.util.Optional;
+import com.hospital.util.MobileUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +25,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    private String normalizeMobile(String mobile) {
-        if (mobile == null) return "";
-        String normalized = mobile.replaceAll("[^0-9]", "");
-        if (normalized.length() == 12 && normalized.startsWith("91")) {
-            normalized = normalized.substring(2);
-        }
-        return normalized;
-    }
+
 
     @Transactional
     public void registerPatient(String mobile, String password) {
-        String normalizedMobile = normalizeMobile(mobile);
+        String normalizedMobile = MobileUtils.normalizeMobile(mobile);
         
         if (userRepository.findByMobile(normalizedMobile).isPresent()) {
             throw new RuntimeException("Mobile number is already registered.");
@@ -67,7 +61,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public AuthResponse loginPatient(String mobile, String password) {
-        String normalizedMobile = normalizeMobile(mobile);
+        String normalizedMobile = MobileUtils.normalizeMobile(mobile);
 
         User user = userRepository.findByMobile(normalizedMobile)
                 .orElseThrow(() -> new RuntimeException("Invalid mobile number or password."));
