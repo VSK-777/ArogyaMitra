@@ -1,10 +1,9 @@
 package com.hospital.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hospital.dto.SendOtpRequest;
-import com.hospital.dto.VerifyOtpRequest;
-import com.hospital.service.OtpService;
-import com.hospital.exception.InvalidOtpException;
+import com.hospital.dto.PatientLoginRequest;
+import com.hospital.dto.PatientRegistrationRequest;
+import com.hospital.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,11 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,14 +32,15 @@ public class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private OtpService otpService;
+    private AuthService authService;
 
     @Test
-    public void testSendOtp_Success() throws Exception {
-        SendOtpRequest request = new SendOtpRequest();
+    public void testRegister_Success() throws Exception {
+        PatientRegistrationRequest request = new PatientRegistrationRequest();
         request.setMobile("9999999999");
+        request.setPassword("Patient@123");
 
-        mockMvc.perform(post("/api/auth/patient/send-otp")
+        mockMvc.perform(post("/api/auth/patient/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -48,14 +48,36 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testVerifyOtp_Success() throws Exception {
-        when(otpService.verifyOtp(anyString(), anyString())).thenReturn(true);
+    public void testRegister_Duplicate() throws Exception {
+        doThrow(new RuntimeException("Mobile number is already registered."))
+            .when(authService).registerPatient(anyString(), anyString());
 
-        VerifyOtpRequest request = new VerifyOtpRequest();
+        PatientRegistrationRequest request = new PatientRegistrationRequest();
         request.setMobile("9999999999");
-        request.setOtp("123456");
+        request.setPassword("Patient@123");
 
-        mockMvc.perform(post("/api/auth/patient/verify-otp")
+        mockMvc.perform(post("/api/auth/patient/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    public void testLogin_Success() throws Exception {
+        com.hospital.dto.AuthResponse mockResponse = com.hospital.dto.AuthResponse.builder()
+                .token("mock-jwt-token")
+                .userId("USR-123")
+                .role("ROLE_PATIENT")
+                .build();
+                
+        when(authService.loginPatient(anyString(), anyString())).thenReturn(mockResponse);
+
+        PatientLoginRequest request = new PatientLoginRequest();
+        request.setMobile("9999999999");
+        request.setPassword("Patient@123");
+
+        mockMvc.perform(post("/api/auth/patient/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -64,14 +86,14 @@ public class AuthControllerTest {
     }
     
     @Test
-    public void testVerifyOtp_Invalid() throws Exception {
-        when(otpService.verifyOtp(anyString(), anyString())).thenThrow(new InvalidOtpException("Invalid OTP."));
+    public void testLogin_Invalid() throws Exception {
+        when(authService.loginPatient(anyString(), anyString())).thenThrow(new RuntimeException("Invalid mobile number or password."));
 
-        VerifyOtpRequest request = new VerifyOtpRequest();
+        PatientLoginRequest request = new PatientLoginRequest();
         request.setMobile("9999999999");
-        request.setOtp("000000");
+        request.setPassword("WrongPassword");
 
-        mockMvc.perform(post("/api/auth/patient/verify-otp")
+        mockMvc.perform(post("/api/auth/patient/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())

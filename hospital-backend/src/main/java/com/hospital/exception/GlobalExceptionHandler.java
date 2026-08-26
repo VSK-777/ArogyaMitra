@@ -20,24 +20,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(errors, "VALIDATION_ERROR"));
     }
 
-    @ExceptionHandler(OtpProviderException.class)
-    public ResponseEntity<ApiResponse<Object>> handleOtpProviderException(OtpProviderException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                .body(ApiResponse.error(ex.getMessage(), "OTP_PROVIDER_ERROR"));
-    }
-
-    @ExceptionHandler(InvalidOtpException.class)
-    public ResponseEntity<ApiResponse<Object>> handleInvalidOtpException(InvalidOtpException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(ex.getMessage(), "INVALID_OTP"));
-    }
-
-    @ExceptionHandler(OtpRateLimitException.class)
-    public ResponseEntity<ApiResponse<Object>> handleOtpRateLimitException(OtpRateLimitException ex) {
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body(ApiResponse.error(ex.getMessage(), "RATE_LIMIT_EXCEEDED"));
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage(), "BAD_REQUEST"));

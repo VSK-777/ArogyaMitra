@@ -19,8 +19,8 @@ interface ApiEndpoint {
 }
 
 const ENDPOINTS: ApiEndpoint[] = [
-  { id: 'auth-send-otp', module: 'Authentication', name: 'Send Patient OTP', method: 'POST', path: '/api/auth/patient/send-otp', description: 'Sends an OTP to the specified mobile number.', requiresAuth: false, defaultBody: { mobile: "9951117631" } },
-  { id: 'auth-verify-otp', module: 'Authentication', name: 'Verify Patient OTP', method: 'POST', path: '/api/auth/patient/verify-otp', description: 'Verifies the OTP and returns a JWT token.', requiresAuth: false, defaultBody: { mobile: "9951117631", otp: "123456" } },
+  { id: 'auth-register', module: 'Authentication', name: 'Register Patient', method: 'POST', path: '/api/auth/patient/register', description: 'Registers a new patient with mobile and password.', requiresAuth: false, defaultBody: { mobile: "9951117631", password: "Patient@123" } },
+  { id: 'auth-login', module: 'Authentication', name: 'Login Patient', method: 'POST', path: '/api/auth/patient/login', description: 'Logs in a patient and returns a JWT token.', requiresAuth: false, defaultBody: { mobile: "9951117631", password: "Patient@123" } },
   { id: 'hospitals-list', module: 'Hospitals', name: 'Get All Hospitals', method: 'GET', path: '/api/public/hospitals', description: 'Retrieves a list of all hospitals.', requiresAuth: false },
   { id: 'departments-list', module: 'Hospitals', name: 'Get Departments by Hospital', method: 'GET', path: '/api/public/hospitals/1/departments', description: 'Retrieves departments for a specific hospital (ID: 1).', requiresAuth: false },
   { id: 'doctors-list', module: 'Hospitals', name: 'Get Doctors by Department', method: 'GET', path: '/api/public/departments/1/doctors', description: 'Retrieves doctors for a specific department (ID: 1).', requiresAuth: false },
@@ -62,7 +62,7 @@ export default function ApiTesting() {
       const response = await axios({ method: endpoint.method, url: endpoint.path, headers, data: requestData });
       const endTime = performance.now();
       setResults(prev => ({ ...prev, [endpoint.id]: { status: response.status, statusText: response.statusText, data: response.data, time: Math.round(endTime - startTime), isError: false } }));
-      if (endpoint.id === 'auth-verify-otp' && response.data?.data?.token) handleTokenSave(response.data.data.token);
+      if (endpoint.id === 'auth-login' && response.data?.data?.token) handleTokenSave(response.data.data.token);
     } catch (error) {
       const endTime = performance.now();
       const err = error as AxiosError;
