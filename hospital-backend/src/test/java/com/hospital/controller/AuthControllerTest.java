@@ -3,7 +3,8 @@ package com.hospital.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hospital.dto.SendOtpRequest;
 import com.hospital.dto.VerifyOtpRequest;
-import com.hospital.integration.otp.OtpProvider;
+import com.hospital.service.OtpService;
+import com.hospital.exception.InvalidOtpException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,7 +33,7 @@ public class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private OtpProvider otpProvider;
+    private OtpService otpService;
 
     @Test
     public void testSendOtp_Success() throws Exception {
@@ -47,7 +49,7 @@ public class AuthControllerTest {
 
     @Test
     public void testVerifyOtp_Success() throws Exception {
-        when(otpProvider.verifyOtp(anyString(), anyString())).thenReturn(true);
+        when(otpService.verifyOtp(anyString(), anyString())).thenReturn(true);
 
         VerifyOtpRequest request = new VerifyOtpRequest();
         request.setMobile("9999999999");
@@ -63,7 +65,7 @@ public class AuthControllerTest {
     
     @Test
     public void testVerifyOtp_Invalid() throws Exception {
-        when(otpProvider.verifyOtp(anyString(), anyString())).thenReturn(false);
+        when(otpService.verifyOtp(anyString(), anyString())).thenThrow(new InvalidOtpException("Invalid OTP."));
 
         VerifyOtpRequest request = new VerifyOtpRequest();
         request.setMobile("9999999999");

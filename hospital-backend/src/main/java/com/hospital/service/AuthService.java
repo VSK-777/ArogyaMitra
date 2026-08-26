@@ -19,18 +19,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final OtpProvider otpProvider;
+    private final OtpService otpService;
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     public void sendPatientOtp(String mobile) {
-        otpProvider.sendOtp(mobile);
+        otpService.generateAndSendOtp(mobile);
     }
 
     @Transactional
     public AuthResponse verifyPatientOtp(String mobile, String otp) {
-        boolean isValid = otpProvider.verifyOtp(mobile, otp);
+        boolean isValid = otpService.verifyOtp(mobile, otp);
         if (!isValid) {
             throw new InvalidOtpException("Invalid OTP");
         }

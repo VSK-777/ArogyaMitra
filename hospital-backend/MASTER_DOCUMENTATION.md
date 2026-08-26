@@ -87,33 +87,34 @@ MSG91_TEMPLATE_ID=6a8...
 *For complete endpoint details, including schemas, request bodies, and examples, please refer to the Swagger UI available at `/swagger-ui/index.html` while running the application.*
 
 
-## OTP Authentication Architecture
-The patient OTP authentication flow has been redesigned to support both SIH Demo conditions (where no DLT/MSG91 templates exist) and real production messaging.
+## WhatsApp OTP Authentication Architecture
+The patient OTP authentication flow uses the MSG91 WhatsApp Outbound API. It supports both SIH Demo conditions and real production WhatsApp messaging.
 
 ### Configured Modes:
-- pp.demo-mode=true (Default for SIH Demo): Employs MockOtpProvider. No real SMS sent. Generates OTP 123456 by default. Enforces rate limiting, cooldown, and expiry logic.
-- pp.demo-mode=false (Production/Real SMS): Employs Msg91OtpProvider. Sends a real SMS via MSG91 API. Requires correct environment variables.
+- `app.demo-mode=true` (Default for SIH Demo): Employs MockOtpProvider. No real WhatsApp message sent. Simply logs the secure OTP to the console. The database still securely hashes and enforces rate limiting, cooldown, and expiry logic.
+- `app.demo-mode=false` (Production/Real WhatsApp): Employs WhatsAppOtpProvider. Sends a real WhatsApp message via MSG91 API containing the OTP. Requires correct environment variables and an approved Meta template.
 
 ### How to configure MSG91:
 Create a .env file in the root with:
-`
+```env
 MSG91_AUTHKEY=your-key
-MSG91_TEMPLATE_ID=your-template
-MSG91_SENDER_ID=your-sender
-`
-Set pp.demo-mode=false in pplication.properties.
+MSG91_WHATSAPP_NUMBER=919999999999
+MSG91_WHATSAPP_TEMPLATE_NAME=your_approved_template
+MSG91_WHATSAPP_NAMESPACE=your_namespace
+```
+Set `app.demo-mode=false` in application.properties to activate.
 
 ### Endpoints
 **1. POST /api/auth/patient/send-otp**
 - **Request**: {"mobile": "9999999999"}
 - **Success (200 OK)**: {"success": true, "message": "OTP request submitted successfully"}
-- **Failure**: Handled gracefully based on the provider outcome. If MSG91 rejects with HTTP 200 (type: error) or HTTP 400, the backend accurately intercepts this and throws an exception, returning a 502 Bad Gateway (OTP_PROVIDER_ERROR).
+- **Failure**: Handled gracefully based on the provider outcome. If MSG91 rejects with HTTP 200 (type: error) or HTTP 400, the backend accurately intercepts this and throws an exception, returning a 502 Bad Gateway. Note that OTP generation, database storage, limits, and hashing are handled internally by the Spring Boot backend securely.
 
 **2. POST /api/auth/patient/verify-otp**
 - **Request**: {"mobile": "9999999999", "otp": "123456"}
 - **Success (200 OK)**: {"success": true, "data": {"token": "eyJhb..."}}
 - **Failure (401 Unauthorized)**: Invalid or Expired OTP. Returns {"success": false, "message": "Invalid OTP"}.
-- **Failure (429 Too Many Requests)**: Rate limit exceeded for OTP attempts (in Demo Mode).
+- **Failure (429 Too Many Requests)**: Rate limit exceeded for OTP attempts or resend requests.
 
 
 ## Sample Frontend
@@ -182,7 +183,8 @@ docker run -d \
   -e DEMO_MODE="true" \
   -e GROQ_API_KEY="<your-groq-key>" \
   -e MSG91_AUTHKEY="<your-msg91-key>" \
-  -e MSG91_TEMPLATE_ID="<your-template-id>" \
+  -e MSG91_WHATSAPP_NUMBER="<your-whatsapp-number>" \
+  -e MSG91_WHATSAPP_TEMPLATE_NAME="<your-template-id>" \
   sih-hospital-backend
 ```
 
@@ -200,7 +202,9 @@ docker run -d \
 | `DEMO_MODE` | `true` = mock OTP, `false` = real MSG91 | Yes |
 | `GROQ_API_KEY` | Groq API key for AI features | Yes |
 | `MSG91_AUTHKEY` | MSG91 auth key for OTP | Only if `DEMO_MODE=false` |
-| `MSG91_TEMPLATE_ID` | MSG91 template ID | Only if `DEMO_MODE=false` |
+| `MSG91_WHATSAPP_NUMBER` | Active MSG91 WhatsApp number | Only if `DEMO_MODE=false` |
+| `MSG91_WHATSAPP_TEMPLATE_NAME` | Meta approved WhatsApp template | Only if `DEMO_MODE=false` |
+| `MSG91_WHATSAPP_NAMESPACE` | MSG91 template namespace | Optional |
 
 ### Port Configuration
 The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`. Deployment platforms like Render inject `PORT` automatically.
