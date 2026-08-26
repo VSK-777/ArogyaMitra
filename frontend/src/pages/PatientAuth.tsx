@@ -30,11 +30,11 @@ export default function PatientAuth() {
         setMessage(response.data.message || (isLogin ? 'Login successful' : 'Registration successful'));
         if (isLogin && response.data.data?.token) {
           setToken(response.data.data.token);
-          // Normally we'd save this to localStorage here
           localStorage.setItem('jwt_token', response.data.data.token);
+          // Redirect to patient dashboard
+          window.location.href = '/patient/dashboard';
         }
         if (!isLogin) {
-          // Switch to login after register
           setIsLogin(true);
           setPassword(''); // clear password for them to login
         }
