@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,8 @@ public class AuthService {
             throw new RuntimeException("Mobile number is already registered.");
         }
 
+        Optional<Patient> existingPatientOpt = patientRepository.findByMobile(normalizedMobile);
+
         User user = User.builder()
                 .userId("USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                 .mobile(normalizedMobile)
@@ -48,12 +51,18 @@ public class AuthService {
                 .build();
         user = userRepository.save(user);
 
-        Patient patient = Patient.builder()
-                .patientId("PAT-" + String.format("%06d", userRepository.count()))
-                .user(user)
-                .mobile(normalizedMobile)
-                .build();
-        patientRepository.save(patient);
+        if (existingPatientOpt.isPresent()) {
+            Patient existingPatient = existingPatientOpt.get();
+            existingPatient.setUser(user);
+            patientRepository.save(existingPatient);
+        } else {
+            Patient patient = Patient.builder()
+                    .patientId("PAT-" + String.format("%06d", userRepository.count()))
+                    .user(user)
+                    .mobile(normalizedMobile)
+                    .build();
+            patientRepository.save(patient);
+        }
     }
 
     @Transactional(readOnly = true)

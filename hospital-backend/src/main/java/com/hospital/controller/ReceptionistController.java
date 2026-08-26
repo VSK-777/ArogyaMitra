@@ -53,7 +53,14 @@ public class ReceptionistController {
     @PostMapping("/patients/register")
     public ResponseEntity<ApiResponse<Patient>> registerWalkInPatient(@RequestBody WalkInRegistrationRequest request) {
         // Check if patient already exists
-        Optional<Patient> existing = patientRepository.findByMobile(request.getMobile());
+        String mobile = request.getMobile();
+        if (mobile != null) {
+            mobile = mobile.replaceAll("[^0-9]", "");
+            if (mobile.length() == 12 && mobile.startsWith("91")) {
+                mobile = mobile.substring(2);
+            }
+        }
+        Optional<Patient> existing = patientRepository.findByMobile(mobile);
         if (existing.isPresent()) {
             return ResponseEntity.ok(ApiResponse.success("Patient already exists", existing.get()));
         }
@@ -61,7 +68,7 @@ public class ReceptionistController {
         String usrId = "USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         User user = User.builder()
                 .userId(usrId)
-                .mobile(request.getMobile())
+                .mobile(mobile)
                 .name(request.getFullName())
                 .role(Role.ROLE_PATIENT)
                 .passwordHash(passwordEncoder.encode("walkin123")) // default password for walk-in
@@ -73,7 +80,7 @@ public class ReceptionistController {
                 .patientId(patId)
                 .user(user)
                 .fullName(request.getFullName())
-                .mobile(request.getMobile())
+                .mobile(mobile)
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
                 .build();

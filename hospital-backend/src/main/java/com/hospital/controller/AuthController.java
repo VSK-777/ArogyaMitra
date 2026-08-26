@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,14 +27,18 @@ public class AuthController {
         try {
             authService.registerPatient(request.getMobile(), request.getPassword());
             return ResponseEntity.ok(ApiResponse.success("Registration successful. Please login.", null));
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error("An account with this mobile number already exists. Please log in instead.", "MOBILE_ALREADY_EXISTS"));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage() != null && e.getMessage().contains("already registered")) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(ApiResponse.error("Mobile number is already registered.", "DUPLICATE_MOBILE"));
+                        .body(ApiResponse.error("An account with this mobile number already exists. Please log in instead.", "MOBILE_ALREADY_EXISTS"));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.error(e.getMessage(), "REGISTRATION_FAILED"));
+                    .body(ApiResponse.error("Unable to complete the request. Please try again.", "REGISTRATION_FAILED"));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
