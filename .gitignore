@@ -25,4 +25,5 @@ frontend/*.local
 
 
 #other files
-.pdf
+*.pdf
+*.py
