@@ -13,6 +13,9 @@ public class GroqAiProvider implements AiProvider {
 
     @Value("${groq.api.key}")
     private String groqApiKey;
+    
+    @Value("${ai.model:llama-3.3-70b-versatile}")
+    private String aiModel;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -46,7 +49,7 @@ public class GroqAiProvider implements AiProvider {
         headers.setBearerAuth(groqApiKey);
 
         Map<String, Object> requestBody = Map.of(
-                "model", "llama-3.3-70b-versatile",
+                "model", aiModel,
                 "messages", List.of(Map.of("role", "user", "content", prompt)),
                 "temperature", 0.5
         );

@@ -46,7 +46,7 @@ export default function PreConsultation() {
         if (res.success) {
             setMessages([
               { role: 'patient', content: complaint },
-              { role: 'ai', content: "I've noted your complaint. Could you tell me how long you have been experiencing these symptoms?" }
+              { role: 'ai', content: res.data.firstQuestion || "I've noted your complaint. Could you tell me more about it?" }
             ]);
             setStep(2);
         }

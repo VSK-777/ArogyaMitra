@@ -66,6 +66,9 @@ public class PreConsultation {
     @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
+    @Transient
+    private String firstQuestion;
+
     private Boolean aiGenerated;
 
     private LocalDateTime completedAt;

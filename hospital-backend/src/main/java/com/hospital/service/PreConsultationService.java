@@ -38,23 +38,45 @@ public class PreConsultationService {
             throw new RuntimeException("Unauthorized");
         }
         
-        return preConsultationRepository.findByAppointment_Id(appointment.getId())
+        PreConsultation pc = preConsultationRepository.findByAppointment_Id(appointment.getId())
                 .map(existing -> {
-                    // Update complaint if they are restarting
                     existing.setChiefComplaint(complaint);
                     existing.setStatus("IN_PROGRESS");
                     return preConsultationRepository.save(existing);
                 })
                 .orElseGet(() -> {
-                    PreConsultation pc = PreConsultation.builder()
+                    PreConsultation newPc = PreConsultation.builder()
                             .preConsultationId("PRE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                             .appointment(appointment)
                             .patient(appointment.getPatient())
                             .chiefComplaint(complaint)
                             .status("IN_PROGRESS")
                             .build();
-                    return preConsultationRepository.save(pc);
+                    return preConsultationRepository.save(newPc);
                 });
+
+        java.util.List<PreConsultationResponse> previous = responseRepository.findByPreConsultation_IdOrderByTimestampAsc(pc.getId());
+        if (!previous.isEmpty()) {
+            pc.setFirstQuestion(previous.get(0).getQuestion());
+            return pc;
+        }
+
+        // Generate the first real AI question instead of relying on frontend hardcoding
+        String history = "Initial complaint: " + complaint;
+        String question = aiProvider.generateFollowUpQuestion(complaint, history);
+
+        PreConsultationResponse response = PreConsultationResponse.builder()
+                .responseId("RES-" + UUID.randomUUID().toString().substring(0, 8))
+                .preConsultation(pc)
+                .question(question)
+                .answerText(complaint)
+                .inputType("TEXT")
+                .timestamp(LocalDateTime.now())
+                .build();
+        responseRepository.save(response);
+
+        pc.setFirstQuestion(question);
+        return pc;
     }
 
     @Transactional
