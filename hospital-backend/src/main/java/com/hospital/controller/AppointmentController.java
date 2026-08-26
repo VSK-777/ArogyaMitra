@@ -48,6 +48,25 @@ public class AppointmentController {
         return ResponseEntity.ok(ApiResponse.success("Appointment cancelled", appointmentId));
     }
 
+    @GetMapping("/slots")
+    public ResponseEntity<ApiResponse<java.util.List<String>>> getBookedSlots(
+            @RequestParam Long doctorId,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date) {
+        
+        java.util.List<Appointment> booked = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctorId, date);
+        java.util.List<String> bookedSlots = booked.stream()
+                .filter(a -> a.getStatus() != AppointmentStatus.CANCELLED)
+                .map(a -> {
+                    String time = a.getSlotStart().toString();
+                    if(time.length() == 5) time += ":00"; // Normalize HH:mm to HH:mm:ss if needed, but the frontend sends HH:mm usually. Actually frontend sends HH:mm, backend saves it as time.
+                    // Return HH:mm
+                    return String.format("%02d:%02d", a.getSlotStart().getHour(), a.getSlotStart().getMinute());
+                })
+                .toList();
+
+        return ResponseEntity.ok(ApiResponse.success("Booked slots", bookedSlots));
+    }
+
     @GetMapping("/{appointmentId}")
     public ResponseEntity<ApiResponse<Appointment>> getAppointment(@PathVariable String appointmentId) {
         Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)

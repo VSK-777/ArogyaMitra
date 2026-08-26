@@ -52,11 +52,10 @@ public class PatientController {
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
         List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
-        long upcomingCount = appointments.stream().filter(a -> a.getStatus().name().equals("SCHEDULED")).count();
+        long upcomingCount = appointments.stream().filter(a -> a.getStatus().name().equals("BOOKED") || a.getStatus().name().equals("SCHEDULED")).count();
         
-        // This is a naive implementation for demonstration, counting all for simplicity
-        long completedCount = consultationRepository.count(); // actually we should filter by patient
-        long prescriptionCount = prescriptionRepository.count();
+        long completedCount = consultationRepository.findByPatient_Id(patient.getId()).size();
+        long prescriptionCount = prescriptionRepository.findByPatient_Id(patient.getId()).size();
 
         Map<String, Object> data = new HashMap<>();
         data.put("upcomingAppointmentsCount", upcomingCount);
@@ -64,7 +63,7 @@ public class PatientController {
         data.put("prescriptionCount", prescriptionCount);
         
         List<Appointment> upcoming = appointments.stream()
-            .filter(a -> a.getStatus().name().equals("SCHEDULED"))
+            .filter(a -> a.getStatus().name().equals("BOOKED") || a.getStatus().name().equals("SCHEDULED"))
             .collect(Collectors.toList());
             
         data.put("upcomingAppointments", upcoming);

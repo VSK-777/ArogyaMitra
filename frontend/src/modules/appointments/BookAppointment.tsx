@@ -23,9 +23,24 @@ export default function BookAppointment() {
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedSlot, setSelectedSlot] = useState<string>('');
-  
-  // Confirmation
   const [confirmedData, setConfirmedData] = useState<any>(null);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [timeSlots, setTimeSlots] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (selectedDoctor && selectedDate) {
+      setLoading(true);
+      patientApi.getBookedSlots(selectedDoctor.id, selectedDate)
+        .then(res => {
+          if(res.success) setBookedSlots(res.data || []);
+          generateTimeSlots();
+        })
+        .catch(() => generateTimeSlots())
+        .finally(() => setLoading(false));
+    } else {
+        generateTimeSlots();
+    }
+  }, [selectedDate, selectedDoctor]);
 
   useEffect(() => {
     patientApi.getHospitals()
@@ -34,6 +49,15 @@ export default function BookAppointment() {
   }, []);
 
   const handleNext = () => setStep(step + 1);
+
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let i = 9; i <= 17; i++) {
+      slots.push(`${i.toString().padStart(2, '0')}:00`);
+      slots.push(`${i.toString().padStart(2, '0')}:30`);
+    }
+    setTimeSlots(slots);
+  };
 
   const fetchDepartments = (hospital: any) => {
     setSelectedHospital(hospital);
@@ -173,12 +197,19 @@ export default function BookAppointment() {
             <input type="date" min={getMinDate()} value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 focus:ring-blue-500 focus:border-blue-500" />
             
             {selectedDate && (
-                <div className="grid grid-cols-3 gap-3">
-                    {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(slot => (
-                        <button key={slot} onClick={() => setSelectedSlot(slot)} className={`border rounded p-2 text-sm ${selectedSlot === slot ? 'border-blue-600 bg-blue-50 font-bold' : 'border-slate-200 hover:bg-blue-50 hover:border-blue-300'}`}>
-                            {slot}
-                        </button>
-                    ))}
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {timeSlots.map(slot => {
+                        const isBooked = bookedSlots.includes(slot);
+                        return (
+                          <button 
+                            key={slot} 
+                            disabled={isBooked}
+                            onClick={() => setSelectedSlot(slot)} 
+                            className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-600 bg-blue-600 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
+                              {slot} {isBooked && '(Booked)'}
+                          </button>
+                        );
+                    })}
                 </div>
             )}
             
