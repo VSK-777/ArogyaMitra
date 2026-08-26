@@ -9,6 +9,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -51,6 +52,7 @@ public class SupabaseStorageService implements StorageService {
                     .endpointOverride(URI.create(endpoint))
                     .region(Region.of(region != null && !region.isEmpty() ? region : "us-east-1"))
                     .credentialsProvider(credentialsProvider)
+                    .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
                     .build();
 
             log.info("Supabase Storage initialized for bucket: {}", bucketName);
