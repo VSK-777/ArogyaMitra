@@ -2,155 +2,137 @@
 **SIH-Style AI-Powered Hospital Appointment, Pre-Consultation & Documentation System**
 
 ## 1. Project Overview
-This project is a complete full-stack application designed to streamline the hospital workflow. It manages everything from patient authentication and appointment booking to AI-driven pre-consultations and doctor queue management.
+This project is a complete full-stack application designed to streamline hospital workflows. It manages everything from patient authentication and appointment booking to AI-driven pre-consultations, doctor queue management, and final clinical documentation.
 
-## 2. Problem Statement & Objectives
-Current hospital systems involve long waiting times, manual symptom collection, and heavy documentation burdens for doctors.
-**Objectives:**
-- Enable seamless patient self-booking via a mobile-first web app.
-- Automate symptom collection using Speech-to-Text and AI (Groq + Whisper).
-- Generate AI-drafted clinical documentation for doctor review.
-- Organize physical queues intelligently via Token IDs linked to unique Appointment IDs.
+**Crucial Constraint:** There is ZERO mock data in the frontend. Every button, every count, and every queue position is strictly driven by the real Spring Boot backend and the underlying SQL database via REST APIs.
+
+## 2. System Architecture
+The application strictly follows the Authoritative System Architecture diagram.
+
+```text
+                    USERS (Patients, Doctors, Receptionists, Admins)
+                      │
+                      ▼
+              APPLICATION LAYER (React + TypeScript)
+                 - Auth Module
+                 - Patient Module
+                 - Doctor Module
+                 - Receptionist Module
+                 - Admin Module
+                      │
+                      ▼
+              API GATEWAY / REST APIs (Spring MVC)
+                 - JWT Security Filter Chain
+                 - Role-Based Access Control (RBAC)
+                      │
+                      ▼
+          BUSINESS LOGIC / WORKFLOW ENGINE (Spring Boot Services)
+                 - Appointment Engine
+                 - Queue / Token Management
+                 - AI Pre-Consultation (Groq + Whisper)
+                 - Audit Logging
+                 - Integrations (Notification, Lab, EMR, Insurance, Payment)
+                      │
+                      ▼
+                  DATA LAYER (Spring Data JPA)
+                      │
+                      ▼
+        DATABASES / DOCUMENT STORAGE (MySQL / PostgreSQL, MinIO)
+```
+
+### 2.1 Identity vs Queue Order
+- **Appointment ID:** (e.g., `APT-20260826-000482`) Globally unique identity for a visit. Ties together the pre-consultation, consultation, and prescriptions.
+- **Token ID:** (e.g., `TOKEN-1-2026-08-26-17`) Represents the daily queue order for a specific doctor. Resets every day.
 
 ## 3. Technology Stack
 **Frontend:**
-- React 18 (TypeScript, Vite)
+- React 18, TypeScript, Vite
 - React Router v7
 - Tailwind CSS & Lucide React
-- React Hook Form & Zod for strict validation
-- Axios (centralized API client with interceptors)
+- Axios (centralized API client)
 
 **Backend:**
-- Java 21 LTS
-- Spring Boot 3.3.4 (Spring MVC, Spring Data JPA, Spring Security)
-- JWT Authentication
-- MySQL (via HikariCP & Hibernate)
-- Groq API for LLM inference (AI Follow-ups, Summaries)
-- Groq Whisper for Speech-to-Text
+- Java 21 LTS, Spring Boot 3.3
+- Spring Security + JWT Authentication
+- Spring Data JPA + Hibernate
+- Database: MySQL (or Neon PostgreSQL in cloud deployment)
+- AI Text: Groq API
+- AI Speech: Groq Whisper (Speech-to-Text)
 
-## 4. System Architecture
-**Frontend Architecture:**
-Follows a strict domain-driven architecture separated by roles: Patient, Doctor, Receptionist, Admin.
-All API calls are abstracted in `src/api/*Api.ts`. `AuthContext` governs global state, and route protection is heavily enforced.
+## 4. Role-Based Workflows
+### Patient Workflow (Mobile-First Web App)
+- **Login:** Mobile number + Password (OTP ready via NotificationService).
+- **Dashboard:** Real-time stats fetched from backend.
+- **Book Appointment:** Multi-step wizard fetching real hospitals, departments, and doctors.
+- **Pre-Consultation:** Voice input via MediaRecorder. Audio is sent as `multipart/form-data` to Spring Boot, which calls Groq Whisper, then Groq LLM generates follow-up questions and a final structured summary.
 
-**Backend Architecture:**
-Standard layered architecture: `Controller -> Service -> Repository -> Entity`.
-External integrations (AI, Speech, Storage, Notifications) are behind Java interfaces in `com.hospital.integration.*`.
+### Receptionist Workflow
+- **Patient Search:** Search by mobile, ID, or name via `/api/receptionist/patients/search`.
+- **Walk-in Registration:** Register patients who arrive physically.
+- **Walk-in Booking:** Book appointments on behalf of the walk-in patient. System generates the Appointment ID and Token ID.
 
-**Database Architecture:**
-A relational schema designed around the `Appointment` entity.
-- `Patient` (1) -> `Appointment` (N)
-- `Appointment` (1) -> `PreConsultation` (1), `Consultation` (1), `QueueToken` (1)
-- Tokens represent daily queue position, while `AppointmentId` is a globally unique identifier.
+### Doctor Workflow
+- **Real-Time Queue:** Auto-refreshing dashboard showing today's waiting tokens (`/api/doctor/queue/today`).
+- **Consultation:** Doctor selects a token, views the AI-generated pre-consultation summary.
+- **Documentation:** Doctor inputs clinical notes. System generates prescription. Doctor approves final document.
 
-## 5. Workflows
-- **Patient Workflow:** Login (Mobile+Password) -> Select Doctor & Slot -> Book -> Start Pre-consultation (Audio/Text) -> Wait for Queue.
-- **Receptionist Workflow:** Search Patient -> Create Walk-in -> Book -> Hand over to queue.
-- **Doctor Workflow:** View Queue -> Select Token -> System retrieves associated Pre-consultation -> Conduct Consultation -> Generate AI Draft -> Approve -> Finalize Prescription.
+### Admin Workflow
+- **Real-Time Analytics:** Views true `COUNT(*)` metrics from the database (Total Patients, Today's Waiting, etc.) via `/api/admin/analytics`.
+- **Audit Logs:** Views the immutable system trail (`AuditLog`) of who booked what, who cancelled what, and who viewed what.
 
-## 6. Security Considerations & AI Safety
-- Passwords are encrypted via BCrypt.
-- All requests require Bearer JWT.
-- Routes are protected via `@PreAuthorize` backend annotations and frontend `RoleProtectedRoute`s.
-- **AI Safety Limitation:** The AI is strictly prompt-engineered to *never* output a final diagnosis. It must only output "Draft summaries" and "Potential Flags" which require explicit doctor approval before saving as a Medical Record.
+## 5. Security & AI Policy
+### Security
+- **Authentication:** Stateless JWT tokens passed in the `Authorization: Bearer` header.
+- **RBAC:** Endpoints are strictly protected by roles (`ROLE_PATIENT`, `ROLE_DOCTOR`, `ROLE_RECEPTIONIST`, `ROLE_ADMIN`).
+- **Audit Trail:** The `AuditService` logs all critical mutations to the `audit_logs` table.
 
-## 7. Frontend API Requirements
-Below is the documentation for frontend-required APIs.
+### AI Policy
+- **AI is Assistive Only:** The AI *never* makes a final diagnosis. It *never* prescribes medication automatically.
+- **Doctor Approval:** The AI generates structured summaries (pre-consultation) and drafts (clinical notes). The human doctor must review, edit, and click "Finalize" to commit the record.
 
-### Authentication
-**POST /api/auth/patient/login**
-- **Purpose:** Login a patient and return JWT.
-- **Request:** `{"mobile": "9999999999", "password": "..."}`
-- **Response:** `{"success": true, "data": {"token": "...", "role": "PATIENT"}}`
-
-**POST /api/auth/patient/register**
-- **Purpose:** Register a new patient.
-
-### Patient
-**GET /api/patients/me**
-- **Auth:** Bearer JWT (PATIENT)
-- **Response:** `{"success": true, "data": {"id": 1, "mobile": "9999999999", "patientId": "PAT-000001"}}`
-
-**GET /api/patients/me/appointments**
-- **Auth:** Bearer JWT (PATIENT)
-- **Response:** `{"success": true, "data": [{...}]}`
-
-### Appointments
-**POST /api/appointments**
-- **Auth:** Bearer JWT (PATIENT)
-- **Purpose:** Book an appointment.
-- **Request:** `{"doctorId": 1, "departmentId": 1, "appointmentDate": "2026-08-26", "slotStart": "10:30"}`
-- **Response:** `{"success": true, "data": {"appointmentId": "APT-...", "token": 1}}`
-
-### Pre-Consultation
-**POST /api/pre-consultations**
-- **Auth:** Bearer JWT
-- **Request:** `{"appointmentId": "APT-...", "initialComplaint": "Fever"}`
-
-**POST /api/pre-consultations/{appointmentId}/audio**
-- **Auth:** Bearer JWT
-- **Request:** `multipart/form-data` with `audio` File.
-- **Response:** `{"success": true, "data": "Have you checked your temperature?"}`
-
-**POST /api/pre-consultations/{appointmentId}/complete**
-- **Auth:** Bearer JWT
-- **Response:** `{"success": true, "data": {"aiSummary": "..."}}`
-
-### Doctor
-**GET /api/doctor/queue/today**
-- **Auth:** Bearer JWT (DOCTOR)
-- **Response:** List of QueueToken objects representing the doctor's active daily queue.
-
-**POST /api/doctor/consultations**
-- **Auth:** Bearer JWT (DOCTOR)
-- **Request:** Consultation observations and diagnosis.
-
-**POST /api/doctor/prescriptions**
-- **Auth:** Bearer JWT (DOCTOR)
-- **Request:** Medicine array.
-
-## 8. Setup Instructions
-### Local Setup (Backend)
-1. Start MySQL on port 3306. Create database `hospital_db`.
-2. Configure `application.properties` with DB credentials and Groq API Key.
-3. Run `mvn clean install`
-4. Run `mvn spring-boot:run`
-
-### Local Setup (Frontend)
-1. cd `frontend`
-2. Run `npm install`
-3. Create `.env` containing `VITE_API_BASE_URL=http://localhost:8080`
-4. Run `npm run dev`
-
-### Demo Mode
-By default, standard testing uses Mock components where external APIs fail.
-Demo user: `9999999999` / `Patient@123`
-
-## 9. Folder Structure
-```
-hospital-system/
-├── backend/
-│   ├── src/main/java/com/hospital/
-│   │   ├── config/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   ├── entity/
-│   │   ├── integration/ (ai, speech)
-│   │   ├── repository/
-│   │   ├── security/
-│   │   └── service/
-│   └── pom.xml
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── contexts/
-│   │   ├── pages/
-│   │   └── types/
-│   └── package.json
-└── MASTER_DOCUMENTATION.md
+## 6. Folder Structure
+### Frontend (`frontend/src/`)
+```text
+├── api/                  # Axios clients mapped to backend controllers (patientApi.ts, etc.)
+├── components/           # Shared UI and Layout components
+├── contexts/             # AuthContext (JWT management)
+├── modules/              # Domain-driven feature modules (Replaced old pages/ structure)
+│   ├── admin/            # AdminDashboard.tsx
+│   ├── appointments/     # BookAppointment.tsx
+│   ├── auth/             # Auth.tsx
+│   ├── consultation/     # ConsultationMode.tsx
+│   ├── doctor/           # DoctorDashboard.tsx
+│   ├── patient/          # PatientDashboard.tsx
+│   ├── preconsultation/  # PreConsultation.tsx
+│   ├── public/           # LandingPage.tsx
+│   └── receptionist/     # ReceptionistDashboard.tsx
 ```
 
+### Backend (`hospital-backend/src/main/java/com/hospital/`)
+```text
+├── config/               # DataSeeder, CorsConfig
+├── controller/           # Spring MVC REST Controllers (Admin, Auth, Doctor, Patient, etc.)
+├── dto/                  # Request/Response objects, ApiResponse wrapper
+├── entity/               # JPA Entities (Appointment, QueueToken, AuditLog, etc.)
+├── integration/          # External Provider Interfaces
+│   ├── ai/               # GroqAiProvider
+│   ├── emr/              # EmrHisSystem (Future HIS sync)
+│   ├── insurance/        # InsuranceSystem (Future claims)
+│   ├── lab/              # LabRadiologySystem (Future scans)
+│   ├── payment/          # PaymentGateway (Future billing)
+│   └── speech/           # GroqWhisperProvider
+├── repository/           # Spring Data JPA Repositories
+├── security/             # JwtFilter, SecurityConfig (RBAC rules)
+└── service/              # Core Business Logic (AppointmentService, AuditService, etc.)
+```
 
-## Refactoring Note
-The entire application was refactored on 2026-08-26 to match the strict System Architecture Diagram. Frontend pages are now domain-driven modules inside src/modules/. Backend business logic was expanded to include AdminController, ReceptionistController, AnalyticsService, and NotificationService. 0 static mock data remains.
+## 7. Demo Mode Credentials
+The `DataSeeder` automatically populates the database if it is empty.
+- **Patient:** Mobile: `9999999999` | Password: `patient123`
+- **Doctor:** Mobile: `9876543210` | Password: `doctor1`
+- **Receptionist:** Mobile: `8888888888` | Password: `receptionist123`
+- **Admin:** Mobile: `7777777777` | Password: `admin123`
+
+## 8. Deployment Notes
+- **Frontend Build:** Strict TypeScript mode is enabled. Unused imports will cause Vite/Vercel build failures. Always ensure `tsc -b && vite build` passes locally.
+- **Database:** Uses PostgreSQL via `application.properties` in production environments (like Neon).
