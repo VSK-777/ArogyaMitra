@@ -107,6 +107,22 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Your session has expired. Please log in again.", "UNAUTHORIZED"));
     }
 
+    // ── File Upload Size ──────────────────
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMaxSizeException(org.springframework.web.multipart.MaxUploadSizeExceededException exc) {
+        logger.warn("File upload too large");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(ApiResponse.error("The file is too large. Maximum size is 50MB.", "PAYLOAD_TOO_LARGE"));
+    }
+
+    // ── Storage Errors ──────────────────
+    @ExceptionHandler(com.hospital.integration.storage.StorageException.class)
+    public ResponseEntity<ApiResponse<Object>> handleStorageException(com.hospital.integration.storage.StorageException ex) {
+        logger.error("Storage error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.error("Storage service is currently unavailable. Please check configuration or try again later.", "STORAGE_ERROR"));
+    }
+
     // ── Catch-all for any unexpected exception ──────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {

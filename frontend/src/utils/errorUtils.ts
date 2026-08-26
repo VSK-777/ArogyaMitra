@@ -12,6 +12,8 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
     FORBIDDEN: 'You do not have permission to perform this action.',
     UNAUTHORIZED: 'Your session has expired. Please log in again.',
     INTERNAL_ERROR: 'Something went wrong. Please try again later.',
+    PAYLOAD_TOO_LARGE: 'The file is too large. Maximum size is 50MB.',
+    STORAGE_ERROR: 'Storage service is currently unavailable. Please check configuration or try again later.',
 };
 
 // Patterns that indicate a raw technical error that should NEVER be shown
