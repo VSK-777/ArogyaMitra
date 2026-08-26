@@ -4,6 +4,7 @@ import com.hospital.entity.AppointmentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -24,4 +25,7 @@ public class BookAppointmentRequest {
     @NotNull
     private AppointmentType appointmentType;
     private String reason;
+    
+    // For walk-in appointments booked by receptionist
+    private String patientMobile;
 }

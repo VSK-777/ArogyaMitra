@@ -2,17 +2,16 @@ package com.hospital.controller;
 
 import com.hospital.dto.*;
 import com.hospital.entity.*;
-import com.hospital.repository.AppointmentRepository;
-import com.hospital.repository.ConsultationRepository;
-import com.hospital.repository.UserRepository;
+import com.hospital.repository.*;
+import com.hospital.service.AuditService;
 import com.hospital.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,8 @@ public class DoctorController {
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
     private final ConsultationRepository consultationRepository;
+    private final PreConsultationRepository preConsultationRepository;
+    private final AuditService auditService;
 
     @GetMapping("/queue/today")
     public ResponseEntity<ApiResponse<List<QueueToken>>> getTodayQueue() {
@@ -34,8 +35,20 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Queue fetched", queue));
     }
 
+    @GetMapping("/appointments/{appointmentId}/preconsultation")
+    public ResponseEntity<ApiResponse<PreConsultation>> getPreConsultationSummary(@PathVariable String appointmentId) {
+        Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        Optional<PreConsultation> pc = preConsultationRepository.findByAppointment_Id(apt.getId());
+        if (pc.isPresent()) {
+            return ResponseEntity.ok(ApiResponse.success("Pre-consultation found", pc.get()));
+        }
+        return ResponseEntity.status(404).body(ApiResponse.error("No pre-consultation found", "NOT_FOUND"));
+    }
+
     @PostMapping("/consultations")
     public ResponseEntity<ApiResponse<Consultation>> saveConsultation(@RequestBody ConsultationRequest request) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
         Appointment appt = appointmentRepository.findByAppointmentId(request.getAppointmentId()).orElseThrow();
         
         Consultation consultation = Consultation.builder()
@@ -52,11 +65,19 @@ public class DoctorController {
                 .build();
                 
         consultation = doctorService.createConsultation(consultation);
+        
+        // Update appointment status
+        appt.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.save(appt);
+        
+        auditService.log("CONSULTATION_COMPLETED", "Consultation", consultation.getConsultationId(), mobile, Role.ROLE_DOCTOR, "For appointment " + request.getAppointmentId());
+        
         return ResponseEntity.ok(ApiResponse.success("Consultation saved", consultation));
     }
 
     @PostMapping("/prescriptions")
     public ResponseEntity<ApiResponse<Prescription>> savePrescription(@RequestBody PrescriptionRequest request) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
         Consultation con = consultationRepository.findByConsultationId(request.getConsultationId()).orElseThrow();
         
         Prescription prescription = Prescription.builder()
@@ -83,6 +104,7 @@ public class DoctorController {
         prescription.setMedicines(meds);
         
         prescription = doctorService.createPrescription(prescription);
+        auditService.log("PRESCRIPTION_CREATED", "Prescription", prescription.getPrescriptionId(), mobile, Role.ROLE_DOCTOR, "For consultation " + request.getConsultationId());
         return ResponseEntity.ok(ApiResponse.success("Prescription saved", prescription));
     }
 }

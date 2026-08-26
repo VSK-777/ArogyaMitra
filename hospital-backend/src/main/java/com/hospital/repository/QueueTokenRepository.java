@@ -12,4 +12,5 @@ public interface QueueTokenRepository extends JpaRepository<QueueToken, Long> {
     List<QueueToken> findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(Long doctorId, LocalDate date);
     Optional<QueueToken> findTopByDoctor_IdAndQueueDateOrderByTokenNumberDesc(Long doctorId, LocalDate date);
     Optional<QueueToken> findByAppointment_Id(Long appointmentId);
+    long countByQueueDateAndStatus(LocalDate date, TokenStatus status);
 }

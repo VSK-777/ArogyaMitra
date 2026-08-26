@@ -50,8 +50,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/hospitals/**").permitAll()
+                .requestMatchers("/api/departments/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Role-based endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/receptionist/**").hasRole("RECEPTIONIST")
+                .requestMatchers("/api/doctor/**").hasRole("DOCTOR")
+                // Everything else requires authentication
                 .anyRequest().authenticated()
             );
 

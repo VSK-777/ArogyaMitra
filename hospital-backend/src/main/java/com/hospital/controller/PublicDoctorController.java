@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/public/doctors")
@@ -18,9 +17,7 @@ public class PublicDoctorController {
 
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<ApiResponse<List<Doctor>>> getDoctorsByDepartment(@PathVariable Long departmentId) {
-        List<Doctor> doctors = doctorRepository.findAll().stream()
-            .filter(d -> d.getDepartment().getId().equals(departmentId))
-            .collect(Collectors.toList());
+        List<Doctor> doctors = doctorRepository.findByDepartment_Id(departmentId);
         return ResponseEntity.ok(ApiResponse.success("Success", doctors));
     }
 }
