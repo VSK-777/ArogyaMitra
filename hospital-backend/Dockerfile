@@ -35,4 +35,4 @@ USER appuser
 EXPOSE 8080
 
 # Run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:TieredStopAtLevel=1", "-Xmx300m", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
