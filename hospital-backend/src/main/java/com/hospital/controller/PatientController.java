@@ -71,3 +71,4 @@ public class PatientController {
         return ResponseEntity.ok(ApiResponse.success("Success", data));
     }
 }
+

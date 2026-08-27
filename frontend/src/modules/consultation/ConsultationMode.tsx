@@ -2,7 +2,7 @@ import { useState,  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorApi } from '../../api/doctorApi';
 import { Loader2, FileText } from 'lucide-react';
-import { getUserFriendlyMessage } from '../../utils/errorUtils';
+
 import { DocumentList } from '../../components/documents/DocumentList';
 
 export default function ConsultationMode() {
@@ -30,38 +30,28 @@ export default function ConsultationMode() {
   const handleComplete = async () => {
     setLoading(true);
     try {
-        // 1. Save Consultation
-        const conRes = await doctorApi.saveConsultation({
+        // Save Complete Consultation (Atomically includes prescription)
+        const conRes = await doctorApi.completeConsultation({
             appointmentId: id,
             observations,
             diagnosis,
             treatmentPlan: plan,
             assessment: '',
-            doctorNotes: ''
+            doctorNotes: '',
+            generalInstructions: "Follow up in 1 week.",
+            medicines: medicinesList
         });
 
         if (!conRes.success) {
-            alert("Error saving consultation: " + conRes.message);
+            alert(conRes.message || "We couldn't complete the consultation right now. Please try again.");
             setLoading(false);
             return;
-        }
-
-        // 2. Save Prescription
-        if (medicinesList.length > 0) {
-            const presRes = await doctorApi.savePrescription({
-                consultationId: conRes.data.consultationId,
-                generalInstructions: "Follow up in 1 week.",
-                medicines: medicinesList
-            });
-            if (!presRes.success) {
-                alert("Error saving prescription: " + presRes.message);
-            }
         }
         
         alert("Consultation Completed!");
         navigate('/doctor/dashboard');
     } catch (e: any) {
-        alert(getUserFriendlyMessage(e));
+        alert("We couldn't complete the consultation right now. Please try again.");
     } finally {
         setLoading(false);
     }
@@ -147,5 +137,9 @@ export default function ConsultationMode() {
     </div>
   );
 }
+
+
+
+
 
 
