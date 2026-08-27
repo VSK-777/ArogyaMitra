@@ -63,7 +63,7 @@ The application strictly follows the Authoritative System Architecture diagram.
 
 ## 4. Role-Based Workflows
 ### Patient Workflow (Mobile-First Web App)
-- **Login:** Mobile number + Password (OTP ready via NotificationService).
+- **Login:** Mobile number + Password.
 - **Dashboard:** Real-time stats fetched from backend.
 - **Book Appointment:** Multi-step wizard fetching real hospitals, departments, and doctors.
 - **Pre-Consultation:** Voice input via MediaRecorder. Audio is sent as `multipart/form-data` to Spring Boot, which calls Gemini Speech-to-Text, then Gemini AI generates follow-up questions and a final structured summary.

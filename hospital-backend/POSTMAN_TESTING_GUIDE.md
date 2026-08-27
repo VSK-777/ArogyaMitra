@@ -13,37 +13,39 @@ Before testing, set up a collection variable in Postman to store the JWT token a
 2. Add a variable named `jwt_token`.
 3. Set your Base URL (e.g., `http://localhost:8080`).
 
-> **Note on Demo Mode:** When `DEMO_MODE=true` in `application.properties`, the OTP for any mobile number is always `123456`, and you don't need real Gemini API keys.
+> **Note on Demo Mode:** When `DEMO_MODE=true` in `application.properties`, you don't need real Gemini API keys.
 
 ---
 
-## 2. Authentication Flow (Patient)
+## 2. Authentication Flow
 
-### Step 2.1: Send OTP
+### Step 2.1: Register Patient (If new)
 - **Method:** `POST`
-- **URL:** `http://localhost:8080/api/auth/patient/send-otp`
-- **Headers:** `Content-Type: application/json`
-- **Body (raw JSON):**
-  ```json
-  {
-    "mobile": "9999999999"
-  }
-  ```
-- **Expected Outcome:** `200 OK` with message "OTP sent successfully".
-
-### Step 2.2: Verify OTP & Get Token
-- **Method:** `POST`
-- **URL:** `http://localhost:8080/api/auth/patient/verify-otp`
+- **URL:** `http://localhost:8080/api/auth/patient/register`
 - **Headers:** `Content-Type: application/json`
 - **Body (raw JSON):**
   ```json
   {
     "mobile": "9999999999",
-    "otp": "123456"
+    "password": "patient123",
+    "fullName": "John Doe"
+  }
+  ```
+- **Expected Outcome:** `200 OK` with message "Registration successful".
+
+### Step 2.2: Login & Get Token
+- **Method:** `POST`
+- **URL:** `http://localhost:8080/api/auth/login`
+- **Headers:** `Content-Type: application/json`
+- **Body (raw JSON):**
+  ```json
+  {
+    "mobile": "9999999999",
+    "password": "patient123"
   }
   ```
 - **Expected Outcome:** `200 OK`. The response contains your JWT `token` and `patientId`.
-- **Postman Action:** Copy the `token` from the response and set it as your Bearer Token for all subsequent Patient API requests.
+- **Postman Action:** Copy the `token` from the response and set it as your Bearer Token for all subsequent API requests.
 
 ---
 
@@ -107,12 +109,12 @@ Before testing, set up a collection variable in Postman to store the JWT token a
 
 ### Step 4.1: Doctor Login
 - **Method:** `POST`
-- **URL:** `http://localhost:8080/api/auth/patient/verify-otp` (Using unified auth for demo)
+- **URL:** `http://localhost:8080/api/auth/login` (Using unified auth)
 - **Body:**
   ```json
   {
-    "mobile": "9876543210", 
-    "otp": "123456"
+    "mobile": "9876543210",
+    "password": "doctor1"
   }
   ```
 - **Action:** Copy the Doctor's JWT token.

@@ -96,23 +96,77 @@ export default function BookAppointment() {
     setLoading(true);
     setError('');
     try {
-        const payload = {
-            hospitalId: selectedHospital.id,
-            departmentId: selectedDepartment.id,
-            doctorId: selectedDoctor.id,
-            appointmentDate: selectedDate,
-            slotStart: selectedSlot
-        };
-        const res = await patientApi.bookAppointment(payload);
-        if(res.success) {
-            setConfirmedData(res.data);
-            setStep(5);
-        } else {
-            setError(res.message || 'Unable to book the appointment. Please try again.');
+        // 1. Create order
+        const { paymentApi } = await import('../../api/paymentApi');
+        const orderRes = await paymentApi.createOrder(50000); // 500 INR
+        if (!orderRes.success) {
+            setError('Failed to initialize payment.');
+            setLoading(false);
+            return;
         }
+
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: orderRes.data.amount,
+            currency: orderRes.data.currency,
+            name: 'Hospital System',
+            description: 'Appointment Registration Fee',
+            order_id: orderRes.data.order_id,
+            handler: async function (response: any) {
+                try {
+                    // 2. Verify Payment
+                    const verifyRes = await paymentApi.verifyPayment({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    });
+
+                    if (verifyRes.success) {
+                        // 3. Book Appointment
+                        const payload = {
+                            hospitalId: selectedHospital.id,
+                            departmentId: selectedDepartment.id,
+                            doctorId: selectedDoctor.id,
+                            appointmentDate: selectedDate,
+                            slotStart: selectedSlot
+                        };
+                        const res = await patientApi.bookAppointment(payload);
+                        if(res.success) {
+                            setConfirmedData(res.data);
+                            setStep(5);
+                        } else {
+                            setError(res.message || 'Unable to book the appointment after payment.');
+                        }
+                    } else {
+                        setError('Payment verification failed.');
+                    }
+                } catch (e: any) {
+                    setError(getUserFriendlyMessage(e));
+                } finally {
+                    setLoading(false);
+                }
+            },
+            prefill: {
+                name: name || 'Patient',
+            },
+            theme: {
+                color: '#2563eb'
+            },
+            modal: {
+                ondismiss: function() {
+                    setLoading(false);
+                }
+            }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+            setError(`Payment failed: ${response.error.description}`);
+            setLoading(false);
+        });
+        rzp.open();
     } catch (e: any) {
         setError(getUserFriendlyMessage(e));
-    } finally {
         setLoading(false);
     }
   };
@@ -222,13 +276,20 @@ export default function BookAppointment() {
 
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 text-center">
-            <h2 className="text-xl font-bold text-green-600 mb-2">Confirm Your Booking</h2>
+            <h2 className="text-xl font-bold text-green-600 mb-2">Confirm Your Booking & Pay Fee</h2>
             <p className="text-slate-600">You are about to book an appointment with <strong>{selectedDoctor?.name}</strong> at <strong>{selectedHospital?.name}</strong> on <strong>{selectedDate} at {selectedSlot}</strong>.</p>
+            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-4 max-w-sm mx-auto text-left">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-600">Registration Fee:</span>
+                <span className="font-bold text-slate-900">₹500.00</span>
+              </div>
+              <p className="text-xs text-slate-500">This fee is required to confirm your appointment.</p>
+            </div>
             <div className="flex justify-center gap-4 mt-8">
               <button disabled={loading} onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">Go Back</button>
               <button disabled={loading} onClick={handleFinish} className="bg-green-600 text-white px-8 py-2 rounded-md hover:bg-green-700 font-bold shadow-sm flex items-center gap-2">
                 {loading && <Loader2 className="animate-spin h-4 w-4" />}
-                Confirm Booking
+                Pay ₹500 & Confirm Booking
               </button>
             </div>
           </div>

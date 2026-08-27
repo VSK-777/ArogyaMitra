@@ -14,7 +14,7 @@ The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation Sy
 
 ## 3. System Architecture
 Layered architecture: `Controller -> Service -> Repository -> Database`.
-Providers (`OtpProvider`, `AiProvider`, `SpeechToTextProvider`) abstract third-party API calls, enabling easy swapping and `DEMO_MODE` capabilities.
+Providers (`AiProvider`, `SpeechToTextProvider`) abstract third-party API calls, enabling easy swapping and `DEMO_MODE` capabilities.
 
 ## 4. User Roles
 - `ROLE_PATIENT`: Books appointments, does pre-consultation, views own records.
@@ -38,12 +38,10 @@ DB_PASSWORD=your_actual_db_password_here (or use system env var)
 JWT_SECRET=8f4c7e6b9a1d...
 DEMO_MODE=false
 GEMINI_API_KEY=gsk_...
-MSG91_AUTHKEY=56432...
-MSG91_TEMPLATE_ID=6a8...
 ```
 
 ## 7. Complete Workflow
-1. Patient logs in via OTP.
+1. Patient logs in via Mobile and Password.
 2. Patient books an appointment for a specific slot.
 3. System atomically generates a globally unique Appointment ID and a date/doctor-scoped Token ID.
 4. Patient performs Pre-consultation (uploads audio).
@@ -64,8 +62,8 @@ MSG91_TEMPLATE_ID=6a8...
 
 | Method | Endpoint | Role | Purpose |
 | ------ | -------- | ---- | ------- |
-| POST | `/api/auth/patient/send-otp` | Public | Send OTP to patient's mobile |
-| POST | `/api/auth/patient/verify-otp` | Public | Verify OTP and get JWT |
+| POST | `/api/auth/patient/register` | Public | Register a new patient account |
+| POST | `/api/auth/patient/login` | Public | Patient login and get JWT |
 | POST | `/api/appointments` | Patient | Book a new appointment |
 | POST | `/api/pre-consultations` | Patient | Start pre-consultation |
 | POST | `/api/pre-consultations/{appointmentId}/audio` | Patient | Upload voice complaint |
@@ -137,8 +135,8 @@ The frontend API testing console allows testing these real endpoints:
 
 | API | Method | Endpoint | Auth | Status | Notes |
 |-----|--------|----------|------|--------|-------|
-| Send OTP | POST | /api/auth/patient/send-otp | No | PASS | Hits MSG91 (or Mock if demo mode) |
-| Verify OTP | POST | /api/auth/patient/verify-otp | No | PASS | Returns JWT token |
+| Register | POST | /api/auth/patient/register | No | PASS | Registers patient |
+| Login | POST | /api/auth/patient/login | No | PASS | Returns JWT token |
 | Get Hospitals | GET | /api/public/hospitals | No | PASS | Retrieves hospital list |
 | Get Departments | GET | /api/public/hospitals/1/departments | No | PASS | Retrieves department list |
 | Get Doctors | GET | /api/public/departments/1/doctors | No | PASS | Retrieves doctor list |
