@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { documentApi, type DocumentDTO } from '../../api/documentApi';
 
 interface DocumentListProps {
@@ -30,7 +31,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ appointmentId }) => 
       // Open presigned URL in new tab to view/download securely
       window.open(url, '_blank');
     } catch (error) {
-      alert("Failed to securely fetch document. It may have expired or you lack permission.");
+      toast.error("Failed to securely fetch document. It may have expired or you lack permission.");
     }
   };
 
@@ -58,3 +59,5 @@ export const DocumentList: React.FC<DocumentListProps> = ({ appointmentId }) => 
     </div>
   );
 };
+
+

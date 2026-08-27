@@ -1,5 +1,6 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import LandingPage from './modules/public/LandingPage';
 import Auth from './modules/auth/Auth';
 import PatientDashboard from './modules/patient/PatientDashboard';
@@ -22,6 +23,7 @@ export default function App() {
   
   return (
     <Router>
+      <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         
@@ -50,3 +52,4 @@ export default function App() {
     </Router>
   );
 }
+

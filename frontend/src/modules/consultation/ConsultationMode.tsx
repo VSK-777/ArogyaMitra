@@ -1,6 +1,7 @@
 import { useState,  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorApi } from '../../api/doctorApi';
+import toast from 'react-hot-toast';
 import { Loader2, FileText } from 'lucide-react';
 
 import { DocumentList } from '../../components/documents/DocumentList';
@@ -43,15 +44,15 @@ export default function ConsultationMode() {
         });
 
         if (!conRes.success) {
-            alert(conRes.message || "We couldn't complete the consultation right now. Please try again.");
+            toast.error(conRes.message || "We couldn't complete the consultation right now. Please try again.");
             setLoading(false);
             return;
         }
         
-        alert("Consultation Completed!");
+        toast.success("Consultation Completed!");
         navigate('/doctor/dashboard');
     } catch (e: any) {
-        alert("We couldn't complete the consultation right now. Please try again.");
+        toast.error("We couldn't complete the consultation right now. Please try again.");
     } finally {
         setLoading(false);
     }
@@ -137,6 +138,7 @@ export default function ConsultationMode() {
     </div>
   );
 }
+
 
 
 
