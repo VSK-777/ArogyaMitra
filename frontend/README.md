@@ -6,21 +6,24 @@ This directory contains the professional frontend UI prototype for the SIH Hospi
 - **Framework**: React 18
 - **Build Tool**: Vite
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS v4 (Professional Health-Tech Layout)
+- **Notifications**: React Hot Toast
 - **Icons**: Lucide React
 - **Routing**: React Router DOM
 - **HTTP Client**: Axios
 
 ## 📂 Architecture Overview
 
-The frontend is structured as a Role-Based Dashboard application:
+The frontend is structured as a Role-Based Dashboard application using a domain-driven module structure:
 
 - `src/App.tsx`: Central router that maps URLs to specific role dashboards.
-- `src/components/Layout.tsx`: A dynamic global layout containing a responsive Sidebar and Top Navigation bar. The navigation links automatically adjust depending on whether the authenticated user is a Patient, Doctor, or Admin.
-- `src/pages/Auth.tsx`: Unified authentication portal handling Patient registration and login for all user types.
-- `src/pages/patient/*`: Views dedicated to patients (Dashboard, Book Appointment flow, AI Pre-Consultation).
-- `src/pages/doctor/*`: Views dedicated to doctors (Live Queue Monitor, Interactive Consultation Mode).
-- `src/pages/admin/*`: Views dedicated to system administrators.
+- `src/components/Layout.tsx`: A dynamic global layout containing a responsive Sidebar and Top Navigation bar. The navigation links automatically adjust depending on whether the authenticated user is a Patient, Doctor, Receptionist, or Admin.
+- `src/modules/auth/*`: Unified authentication portal handling registration and login for all user types.
+- `src/modules/patient/*`: Views dedicated to patients (Dashboard, Book Appointment flow).
+- `src/modules/preconsultation/*`: Voice-enabled AI Pre-Consultation flow with Gemini.
+- `src/modules/doctor/*`: Views dedicated to doctors (Live Queue Monitor, Interactive Consultation Mode).
+- `src/modules/receptionist/*`: Views dedicated to receptionists (Walk-ins, Patient Search).
+- `src/modules/admin/*`: Views dedicated to system administrators (Analytics, Staff Management, Logs).
 
 ## 🚀 Local Development
 

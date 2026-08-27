@@ -1,7 +1,7 @@
 # AI-Powered Hospital Backend
 
 ## 1. Overview
-The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation System is a comprehensive backend built using Java 21 and Spring Boot 3. It facilitates atomic token generation for queueing, integrates AI (Gemini/Whisper) for automated pre-consultation medical history gathering, and provides strict role-based access control for Patients, Receptionists, Doctors, and Admins.
+The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation System is a comprehensive backend built using Java 21 and Spring Boot 3. It facilitates atomic token generation for queueing, integrates AI (Gemini AI & Gemini Speech-to-Text) for automated pre-consultation medical history gathering, and provides strict role-based access control for Patients, Receptionists, Doctors, and Admins.
 
 ## 2. Technology Stack
 - **Language**: Java 21 LTS
@@ -37,7 +37,7 @@ DB_USERNAME=root
 DB_PASSWORD=your_actual_db_password_here (or use system env var)
 JWT_SECRET=8f4c7e6b9a1d...
 DEMO_MODE=false
-Gemini_API_KEY=gsk_...
+GEMINI_API_KEY=gsk_...
 MSG91_AUTHKEY=56432...
 MSG91_TEMPLATE_ID=6a8...
 ```
@@ -47,7 +47,7 @@ MSG91_TEMPLATE_ID=6a8...
 2. Patient books an appointment for a specific slot.
 3. System atomically generates a globally unique Appointment ID and a date/doctor-scoped Token ID.
 4. Patient performs Pre-consultation (uploads audio).
-5. Audio is transcribed via Whisper.
+5. Audio is transcribed via Gemini Speech-to-Text.
 6. Gemini AI asks follow-up questions and generates a structured summary.
 7. Doctor opens daily queue, clicks the Token.
 8. System maps Token -> Appointment -> Patient + Pre-consultation AI Summary.

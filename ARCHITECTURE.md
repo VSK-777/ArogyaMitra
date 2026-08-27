@@ -71,7 +71,8 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 ### 2.4 Administrator Dashboard
 *   **Live Analytics Engine:** Displays true SQL `COUNT(*)` data for total patients, total doctors, today's total appointments, and today's completed vs waiting queue.
-*   **Audit Logging:** Displays an immutable trail of every critical system action. E.g., `WALKIN_APPOINTMENT_BOOKED by Receptionist`, `CONSULTATION_COMPLETED by Doctor`.
+*   **Staff Management:** Comprehensive management interface for doctors, receptionists, and staff accounts.
+*   **Audit Logging & System Logs:** Displays an immutable trail of every critical system action. E.g., `WALKIN_APPOINTMENT_BOOKED by Receptionist`, `CONSULTATION_COMPLETED by Doctor`.
 
 ---
 
@@ -81,7 +82,7 @@ The backend (Java Spring Boot 3.3) is engineered for production-readiness, not j
 
 1.  **Gemini AI Integration:** 
     *   `GeminiAiProvider` handles LLM calls for structuring patient complaints into medical summaries.
-    *   `GeminiWhisperSpeechToTextProvider` handles the heavy lifting of audio transcription.
+    *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
 2.  **MinIO (S3) Document Storage:** 
     *   `DocumentStorageService` is implemented to handle medical files, lab reports, and prescriptions. It generates secure Pre-signed URLs for frontend viewing without exposing the raw storage buckets.

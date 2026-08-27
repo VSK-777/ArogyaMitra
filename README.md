@@ -30,7 +30,7 @@ The application strictly follows the Authoritative System Architecture diagram.
           BUSINESS LOGIC / WORKFLOW ENGINE (Spring Boot Services)
                  - Appointment Engine
                  - Queue / Token Management
-                 - AI Pre-Consultation (Gemini + Whisper)
+                 - AI Pre-Consultation (Gemini 2.5 Flash + Gemini Speech-to-Text)
                  - Audit Logging
                  - Integrations (Notification, Lab, EMR, Insurance, Payment)
                       │
@@ -49,7 +49,8 @@ The application strictly follows the Authoritative System Architecture diagram.
 **Frontend:**
 - React 18, TypeScript, Vite
 - React Router v7
-- Tailwind CSS & Lucide React
+- Tailwind CSS & Lucide React (with a redesigned professional health-tech layout)
+- React Hot Toast for UI notifications (replaced native alerts)
 - Axios (centralized API client)
 
 **Backend:**
@@ -73,12 +74,13 @@ The application strictly follows the Authoritative System Architecture diagram.
 - **Walk-in Booking:** Book appointments on behalf of the walk-in patient. System generates the Appointment ID and Token ID.
 
 ### Doctor Workflow
-- **Real-Time Queue:** Auto-refreshing dashboard showing today's waiting tokens (`/api/doctor/queue/today`).
+- **Real-Time Queue:** Auto-refreshing dashboard showing today's waiting tokens (`/api/doctor/queue/today`). Includes self-healing capabilities for out-of-sync tokens and filtering completed from live queue.
 - **Consultation:** Doctor selects a token, views the AI-generated pre-consultation summary.
 - **Documentation:** Doctor inputs clinical notes. System generates prescription. Doctor approves final document.
 
 ### Admin Workflow
 - **Real-Time Analytics:** Views true `COUNT(*)` metrics from the database (Total Patients, Today's Waiting, etc.) via `/api/admin/analytics`.
+- **Staff Management:** Complete admin dashboard for managing staff (doctors, receptionists) and system access.
 - **Audit Logs:** Views the immutable system trail (`AuditLog`) of who booked what, who cancelled what, and who viewed what.
 
 ## 5. Security & AI Policy
@@ -121,7 +123,7 @@ The application strictly follows the Authoritative System Architecture diagram.
 │   ├── insurance/        # InsuranceSystem (Future claims)
 │   ├── lab/              # LabRadiologySystem (Future scans)
 │   ├── payment/          # PaymentGateway (Future billing)
-│   └── speech/           # GeminiWhisperProvider
+│   └── speech/           # GeminiSpeechToTextProvider
 ├── repository/           # Spring Data JPA Repositories
 ├── security/             # JwtFilter, SecurityConfig (RBAC rules)
 └── service/              # Core Business Logic (AppointmentService, AuditService, etc.)
