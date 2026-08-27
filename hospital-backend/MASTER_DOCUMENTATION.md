@@ -1,7 +1,7 @@
 # AI-Powered Hospital Backend
 
 ## 1. Overview
-The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation System is a comprehensive backend built using Java 21 and Spring Boot 3. It facilitates atomic token generation for queueing, integrates AI (Groq/Whisper) for automated pre-consultation medical history gathering, and provides strict role-based access control for Patients, Receptionists, Doctors, and Admins.
+The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation System is a comprehensive backend built using Java 21 and Spring Boot 3. It facilitates atomic token generation for queueing, integrates AI (Gemini/Whisper) for automated pre-consultation medical history gathering, and provides strict role-based access control for Patients, Receptionists, Doctors, and Admins.
 
 ## 2. Technology Stack
 - **Language**: Java 21 LTS
@@ -9,7 +9,7 @@ The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation Sy
 - **Database**: PostgreSQL 8.0+
 - **ORM**: Spring Data JPA / Hibernate
 - **Security**: Spring Security + JWT
-- **AI Integration**: Groq API (LLM) & Groq Whisper (Speech-to-Text)
+- **AI Integration**: Gemini API (LLM) & Gemini Speech-to-Text (Speech-to-Text)
 - **API Documentation**: Springdoc OpenAPI (Swagger)
 
 ## 3. System Architecture
@@ -37,7 +37,7 @@ DB_USERNAME=root
 DB_PASSWORD=your_actual_db_password_here (or use system env var)
 JWT_SECRET=8f4c7e6b9a1d...
 DEMO_MODE=false
-GROQ_API_KEY=gsk_...
+Gemini_API_KEY=gsk_...
 MSG91_AUTHKEY=56432...
 MSG91_TEMPLATE_ID=6a8...
 ```
@@ -48,7 +48,7 @@ MSG91_TEMPLATE_ID=6a8...
 3. System atomically generates a globally unique Appointment ID and a date/doctor-scoped Token ID.
 4. Patient performs Pre-consultation (uploads audio).
 5. Audio is transcribed via Whisper.
-6. Groq LLM asks follow-up questions and generates a structured summary.
+6. Gemini AI asks follow-up questions and generates a structured summary.
 7. Doctor opens daily queue, clicks the Token.
 8. System maps Token -> Appointment -> Patient + Pre-consultation AI Summary.
 9. Doctor completes Consultation.
@@ -172,7 +172,7 @@ docker run -d \
   -e DB_USERNAME="root" \
   -e DB_PASSWORD="<your-db-password>" \
   -e JWT_SECRET="<your-jwt-secret>" \
-  -e GROQ_API_KEY="<your-groq-key>" \
+  -e Gemini_API_KEY="<your-Gemini-key>" \
   sih-hospital-backend
 ```
 
@@ -187,7 +187,7 @@ docker run -d \
 | `DB_USERNAME` | PostgreSQL username | Yes |
 | `DB_PASSWORD` | PostgreSQL password | Yes |
 | `JWT_SECRET` | Secret key for JWT signing | Yes |
-| `GROQ_API_KEY` | Groq API key for AI features | Yes |
+| `Gemini_API_KEY` | Gemini API key for AI features | Yes |
 
 ### Port Configuration
 The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`. Deployment platforms like Render inject `PORT` automatically.
@@ -211,4 +211,6 @@ The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`.
 - **Container exits immediately**: Check logs with `docker logs hospital-api`. Usually a missing env var or unreachable database.
 - **Cannot connect to PostgreSQL**: Use `host.docker.internal` instead of `localhost` for host-machine databases. On Linux, add `--network host`.
 - **Port conflict**: Change the host port mapping: `-p 9090:8080`.
+
+
 

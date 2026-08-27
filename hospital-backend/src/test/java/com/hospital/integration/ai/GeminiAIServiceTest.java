@@ -3,6 +3,7 @@ package com.hospital.integration.ai;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.hospital.exception.AiIntegrationException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
@@ -33,7 +34,6 @@ class GeminiAIServiceTest {
     void setUp() {
         geminiAIService = new GeminiAIService(restTemplate);
         ReflectionTestUtils.setField(geminiAIService, "geminiApiKey", "test-key");
-        ReflectionTestUtils.setField(geminiAIService, "geminiModel", "gemini-3.6-flash");
     }
 
     @Test
@@ -58,10 +58,10 @@ class GeminiAIServiceTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(Map.class)))
                 .thenThrow(new RuntimeException("API Down"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        AiIntegrationException exception = assertThrows(AiIntegrationException.class, () -> {
             geminiAIService.generateFollowUpQuestion("I have sharp pains", Collections.emptyList(), "I have sharp pains");
         });
         
-        assertEquals("AI provider is temporarily unavailable.", exception.getMessage());
+        assertEquals("AI assistant is temporarily unavailable. Please try again in a moment.", exception.getMessage());
     }
 }

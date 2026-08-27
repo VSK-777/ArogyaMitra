@@ -27,8 +27,8 @@ graph TD
     H --> I[(MySQL / PostgreSQL)]
     
     H -.->|Real-time Queue| J[WebSockets / STOMP]
-    H -.->|Speech-to-Text| K[Groq Whisper AI]
-    H -.->|Clinical Summaries| L[Groq LLM]
+    H -.->|Speech-to-Text| K[Gemini Speech-to-Text AI]
+    H -.->|Clinical Summaries| L[Gemini AI]
     H -.->|File Storage| M[MinIO / S3 Storage]
 ```
 
@@ -54,7 +54,7 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 *   **AI Pre-Consultation:** 
     *   Patients can use their **microphone** to speak their symptoms.
     *   The frontend uses `MediaRecorder` to capture audio and sends a `multipart/form-data` payload to the backend.
-    *   The backend pipes this to **Groq Whisper** for transcription, asks follow-up questions via **Groq LLM**, and generates a structured clinical summary.
+    *   The backend pipes this to **Gemini Speech-to-Text** for transcription, asks follow-up questions via **Gemini AI**, and generates a structured clinical summary.
 
 ### 2.2 Receptionist Portal
 *   **Patient Search:** Can search the database via mobile number, patient ID, or name.
@@ -79,9 +79,9 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 The backend (Java Spring Boot 3.3) is engineered for production-readiness, not just as a hackathon prototype.
 
-1.  **Groq AI Integration:** 
-    *   `GroqAiProvider` handles LLM calls for structuring patient complaints into medical summaries.
-    *   `GroqWhisperSpeechToTextProvider` handles the heavy lifting of audio transcription.
+1.  **Gemini AI Integration:** 
+    *   `GeminiAiProvider` handles LLM calls for structuring patient complaints into medical summaries.
+    *   `GeminiWhisperSpeechToTextProvider` handles the heavy lifting of audio transcription.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
 2.  **MinIO (S3) Document Storage:** 
     *   `DocumentStorageService` is implemented to handle medical files, lab reports, and prescriptions. It generates secure Pre-signed URLs for frontend viewing without exposing the raw storage buckets.
@@ -109,3 +109,4 @@ The frontend is built with React + Vite, designed for speed and modularity.
 *   **No Mock Data:** There is zero hardcoded mock data in the UI. If you see an appointment, it exists in the MySQL database.
 *   **Passwords:** Encrypted via `BCryptPasswordEncoder`.
 *   **APIs:** Secured via `SecurityFilterChain`. Only `/api/auth`, `/api/hospitals`, and `/api/departments` are open to the public. All other endpoints require a valid JWT.
+

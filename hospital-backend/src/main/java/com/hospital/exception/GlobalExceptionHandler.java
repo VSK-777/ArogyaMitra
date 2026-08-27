@@ -123,6 +123,14 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Storage service is currently unavailable. Please check configuration or try again later.", "STORAGE_ERROR"));
     }
 
+    // ── AI Service Errors ──────────────────
+    @ExceptionHandler(AiIntegrationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAiException(AiIntegrationException ex) {
+        logger.error("AI Integration error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.error("AI assistant is temporarily unavailable. Please try again in a moment.", "AI_ERROR"));
+    }
+
     // ── Catch-all for any unexpected exception ──────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {

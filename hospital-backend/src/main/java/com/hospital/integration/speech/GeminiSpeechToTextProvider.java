@@ -20,14 +20,13 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
     @Value("${gemini.api-key}")
     private String geminiApiKey;
 
-    @Value("${gemini.model:gemini-3.6-flash}")
-    private String geminiModel;
+    private static final String GEMINI_MODEL = "gemini-2.5-flash";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public String transcribeAudio(MultipartFile audioFile) {
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + geminiModel + ":generateContent?key=" + geminiApiKey;
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + geminiApiKey;
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

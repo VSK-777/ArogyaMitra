@@ -1,6 +1,7 @@
 package com.hospital.integration.ai;
 
 import com.hospital.entity.PreConsultationResponse;
+import com.hospital.exception.AiIntegrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +17,10 @@ import java.util.Map;
 public class GeminiAIService implements AiProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiAIService.class);
+    private static final String GEMINI_MODEL = "gemini-2.5-flash";
 
     @Value("${gemini.api-key}")
     private String geminiApiKey;
-    
-    @Value("${gemini.model:gemini-3.6-flash}")
-    private String geminiModel;
 
     private final RestTemplate restTemplate;
 
@@ -35,31 +34,28 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
-        String systemInstruction = "You are an AI medical assistant conducting a pre-consultation. " +
-                "Your purpose is to collect structured information that can later help the doctor. " +
-                "You MUST NOT diagnose diseases, prescribe medication, or replace a doctor. " +
-                "If symptoms are urgent, advise seeking emergency medical attention. " +
-                "Ask exactly ONE brief, relevant follow-up medical question.";
+        String systemInstruction = "You are a medical AI pre-consultation assistant, NOT a doctor and NOT a diagnostic system. " +
+                "Your purpose is to produce information that can be passed to the doctor as a pre-consultation summary. " +
+                "Ask exactly ONE relevant follow-up question per message. " +
+                "Collect symptoms, ask about duration, ask about severity when relevant, ask about associated symptoms, " +
+                "ask about existing conditions when relevant, and ask about medications/allergies when relevant. " +
+                "Identify information useful for the doctor. " +
+                "Avoid claiming a definitive diagnosis. Avoid prescribing medication. " +
+                "Escalate appropriately when a potentially serious symptom is mentioned.";
 
         List<Map<String, Object>> contents = new ArrayList<>();
         
-        // Always include the first message mapping the initial complaint
         contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", chiefComplaint))));
 
-        // Append historical interactions
         for (PreConsultationResponse r : previousResponses) {
-            // Only add model's follow-up if it exists
             if (r.getQuestion() != null && !r.getQuestion().isEmpty()) {
                 contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", r.getQuestion()))));
             }
-            // If the patient provided a subsequent answer, append it
-            // Avoid duplicating the initial complaint if it was stored as the first answer text
             if (r.getAnswerText() != null && !r.getAnswerText().isEmpty() && !r.getAnswerText().equals(chiefComplaint)) {
                 contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", r.getAnswerText()))));
             }
         }
         
-        // Append the current patient input (if it's not the first chief complaint again)
         if (!patientInput.equals(chiefComplaint)) {
             contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", patientInput))));
         }
@@ -90,7 +86,7 @@ public class GeminiAIService implements AiProvider {
     }
 
     private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + geminiModel + ":generateContent?key=" + geminiApiKey;
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + geminiApiKey;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -118,10 +114,10 @@ public class GeminiAIService implements AiProvider {
                 }
             }
             logger.error("Invalid or empty response from Gemini API.");
-            throw new RuntimeException("AI provider is temporarily unavailable.");
+            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.");
         } catch (Exception e) {
             logger.error("Gemini API Error: {}", e.getMessage());
-            throw new RuntimeException("AI provider is temporarily unavailable.", e);
+            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.", e);
         }
     }
 }

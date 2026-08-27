@@ -2,6 +2,7 @@ import { useState,  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorApi } from '../../api/doctorApi';
 import { Loader2, FileText } from 'lucide-react';
+import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { DocumentList } from '../../components/documents/DocumentList';
 
 export default function ConsultationMode() {
@@ -60,7 +61,7 @@ export default function ConsultationMode() {
         alert("Consultation Completed!");
         navigate('/doctor/dashboard');
     } catch (e: any) {
-        alert("Server Error: " + (e.response?.data?.message || e.message));
+        alert(getUserFriendlyMessage(e));
     } finally {
         setLoading(false);
     }
@@ -146,3 +147,5 @@ export default function ConsultationMode() {
     </div>
   );
 }
+
+

@@ -30,7 +30,7 @@ The application strictly follows the Authoritative System Architecture diagram.
           BUSINESS LOGIC / WORKFLOW ENGINE (Spring Boot Services)
                  - Appointment Engine
                  - Queue / Token Management
-                 - AI Pre-Consultation (Groq + Whisper)
+                 - AI Pre-Consultation (Gemini + Whisper)
                  - Audit Logging
                  - Integrations (Notification, Lab, EMR, Insurance, Payment)
                       │
@@ -57,15 +57,15 @@ The application strictly follows the Authoritative System Architecture diagram.
 - Spring Security + JWT Authentication
 - Spring Data JPA + Hibernate
 - Database: MySQL (or Neon PostgreSQL in cloud deployment)
-- AI Text: Groq API
-- AI Speech: Groq Whisper (Speech-to-Text)
+- AI Text: Gemini API
+- AI Speech: Gemini Speech-to-Text (Speech-to-Text)
 
 ## 4. Role-Based Workflows
 ### Patient Workflow (Mobile-First Web App)
 - **Login:** Mobile number + Password (OTP ready via NotificationService).
 - **Dashboard:** Real-time stats fetched from backend.
 - **Book Appointment:** Multi-step wizard fetching real hospitals, departments, and doctors.
-- **Pre-Consultation:** Voice input via MediaRecorder. Audio is sent as `multipart/form-data` to Spring Boot, which calls Groq Whisper, then Groq LLM generates follow-up questions and a final structured summary.
+- **Pre-Consultation:** Voice input via MediaRecorder. Audio is sent as `multipart/form-data` to Spring Boot, which calls Gemini Speech-to-Text, then Gemini AI generates follow-up questions and a final structured summary.
 
 ### Receptionist Workflow
 - **Patient Search:** Search by mobile, ID, or name via `/api/receptionist/patients/search`.
@@ -116,12 +116,12 @@ The application strictly follows the Authoritative System Architecture diagram.
 ├── dto/                  # Request/Response objects, ApiResponse wrapper
 ├── entity/               # JPA Entities (Appointment, QueueToken, AuditLog, etc.)
 ├── integration/          # External Provider Interfaces
-│   ├── ai/               # GroqAiProvider
+│   ├── ai/               # GeminiAiProvider
 │   ├── emr/              # EmrHisSystem (Future HIS sync)
 │   ├── insurance/        # InsuranceSystem (Future claims)
 │   ├── lab/              # LabRadiologySystem (Future scans)
 │   ├── payment/          # PaymentGateway (Future billing)
-│   └── speech/           # GroqWhisperProvider
+│   └── speech/           # GeminiWhisperProvider
 ├── repository/           # Spring Data JPA Repositories
 ├── security/             # JwtFilter, SecurityConfig (RBAC rules)
 └── service/              # Core Business Logic (AppointmentService, AuditService, etc.)
@@ -301,3 +301,4 @@ The API uses a global `GlobalExceptionHandler` to prevent any technical details 
   "errorCode": "INTERNAL_ERROR"
 }
 ```
+
