@@ -65,9 +65,12 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
                 }
             }
             return "Could not parse audio.";
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            System.err.println("Gemini Speech-to-Text API Error - Status: " + e.getStatusCode() + ", Body: " + e.getResponseBodyAsString());
+            return "Audio processed, but transcription failed.";
         } catch (Exception e) {
-            logger.error("Gemini Speech Error: {}", e.getMessage());
-            return "Audio transcription failed.";
+            System.err.println("Gemini Speech-to-Text Error: " + e.getMessage());
+            return "Audio processed, but transcription failed.";
         }
     }
 }

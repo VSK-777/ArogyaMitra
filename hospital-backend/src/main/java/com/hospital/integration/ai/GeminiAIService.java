@@ -32,6 +32,12 @@ public class GeminiAIService implements AiProvider {
         this.restTemplate = restTemplate;
     }
 
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        boolean hasKey = (geminiApiKey != null && !geminiApiKey.trim().isEmpty());
+        logger.info("Gemini API key present: {}", hasKey);
+    }
+
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
         String systemInstruction = "You are a medical AI pre-consultation assistant, NOT a doctor and NOT a diagnostic system. " +
@@ -115,8 +121,11 @@ public class GeminiAIService implements AiProvider {
             }
             logger.error("Invalid or empty response from Gemini API.");
             throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.");
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.", e);
         } catch (Exception e) {
-            logger.error("Gemini API Error: {}", e.getMessage());
+            logger.error("Gemini API Error: {}", e.getMessage(), e);
             throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.", e);
         }
     }
