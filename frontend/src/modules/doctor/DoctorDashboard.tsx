@@ -58,10 +58,10 @@ export default function DoctorDashboard() {
           <span className="text-sm text-slate-500 font-medium">Auto-refreshing</span>
         </div>
         <div className="divide-y divide-slate-200">
-            {queue.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">No patients in the queue today.</div>
-            ) : (
-                queue.map((q: any) => (
+            {queue.filter((q: any) => q.status !== 'COMPLETED').length === 0 ? (
+                  <div className="p-8 text-center text-slate-500">No patients waiting in the queue today.</div>
+              ) : (
+                  queue.filter((q: any) => q.status !== 'COMPLETED').map((q: any) => (
                     <div key={q.id} className="p-4 hover:bg-blue-50/50 flex items-center justify-between transition-colors">
                         <div className="flex items-center gap-4">
                             <div className="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center font-bold text-slate-500 text-lg">{q.tokenNumber}</div>
@@ -85,4 +85,5 @@ export default function DoctorDashboard() {
     </div>
   );
 }
+
 

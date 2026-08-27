@@ -29,7 +29,24 @@ public class DoctorService {
             Long.parseLong(doctorUserId) 
         ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
-        return queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now());
+        List<QueueToken> tokens = queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now());
+        
+        // Self-healing: fix any tokens that are out of sync with completed appointments
+        boolean updated = false;
+        for (QueueToken token : tokens) {
+            if (token.getAppointment() != null && token.getAppointment().getStatus() == AppointmentStatus.COMPLETED) {
+                if (token.getStatus() != TokenStatus.COMPLETED) {
+                    token.setStatus(TokenStatus.COMPLETED);
+                    if (token.getCompletedAt() == null) {
+                        token.setCompletedAt(LocalDateTime.now());
+                    }
+                    queueTokenRepository.save(token);
+                    updated = true;
+                }
+            }
+        }
+        
+        return updated ? queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now()) : tokens;
     }
 
     public List<Consultation> getPastConsultations(String doctorUserId) {
