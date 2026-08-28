@@ -69,14 +69,21 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public AuthResponse loginPatient(String mobile, String password) {
+    public AuthResponse login(String mobile, String password, String requestedRole) {
         String normalizedMobile = MobileUtils.normalizeMobile(mobile);
 
         User user = userRepository.findByMobile(normalizedMobile)
-                .orElseThrow(() -> new RuntimeException("Invalid mobile number or password."));
+                .orElseThrow(() -> new RuntimeException("Invalid credentials or login role."));
 
         if (user.getPasswordHash() == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid mobile number or password.");
+            throw new RuntimeException("Invalid credentials or login role.");
+        }
+
+        String actualRole = user.getRole().name();
+        String expectedRole = "ROLE_" + requestedRole.toUpperCase();
+        
+        if (!actualRole.equals(expectedRole)) {
+            throw new RuntimeException("Role mismatch. You are not authorized to login as this role.");
         }
 
         Patient patient = patientRepository.findByUser_Id(user.getId()).orElse(null);

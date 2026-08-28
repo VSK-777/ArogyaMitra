@@ -55,7 +55,7 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const res = await authApi.login(data.mobile, data.password);
+        const res = await authApi.login(data.mobile, data.password, role);
         if (res.success && res.data) {
            login(res.data);
            // Role-based redirection from the actual backend response

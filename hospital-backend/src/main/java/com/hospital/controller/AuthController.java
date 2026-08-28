@@ -2,7 +2,7 @@ package com.hospital.controller;
 
 import com.hospital.dto.ApiResponse;
 import com.hospital.dto.AuthResponse;
-import com.hospital.dto.PatientLoginRequest;
+import com.hospital.dto.LoginRequest;
 import com.hospital.dto.PatientRegistrationRequest;
 import com.hospital.service.AuthService;
 import jakarta.validation.Valid;
@@ -51,14 +51,14 @@ public class AuthController {
     }
 
     @PostMapping({"/patient/login", "/login"})
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody PatientLoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
-            AuthResponse response = authService.loginPatient(request.getMobile(), request.getPassword());
+            AuthResponse response = authService.login(request.getMobile(), request.getPassword(), request.getRole());
             return ResponseEntity.ok(ApiResponse.success("Login successful", response));
         } catch (Exception e) {
             logger.warn("Login failed for mobile: {}", request.getMobile());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid mobile number or password.", "AUTH_FAILED"));
+                    .body(ApiResponse.error("Invalid credentials or login role.", "AUTH_FAILED"));
         }
     }
 }

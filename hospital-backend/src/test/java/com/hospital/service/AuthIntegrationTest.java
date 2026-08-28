@@ -111,7 +111,7 @@ public class AuthIntegrationTest {
         long userCountBefore = userRepository.count();
         long patientCountBefore = patientRepository.count();
 
-        var response = authService.loginPatient(mobile, rawPassword);
+        var response = authService.login(mobile, rawPassword, "PATIENT");
         
         assertNotNull(response.getToken());
         assertEquals("ROLE_PATIENT", response.getRole());

@@ -1,7 +1,7 @@
 package com.hospital.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hospital.dto.PatientLoginRequest;
+import com.hospital.dto.LoginRequest;
 import com.hospital.dto.PatientRegistrationRequest;
 import com.hospital.service.AuthService;
 import org.junit.jupiter.api.Test;
@@ -75,11 +75,12 @@ public class AuthControllerTest {
                 .role("ROLE_PATIENT")
                 .build();
                 
-        when(authService.loginPatient(anyString(), anyString())).thenReturn(mockResponse);
+        when(authService.login(anyString(), anyString(), anyString())).thenReturn(mockResponse);
 
-        PatientLoginRequest request = new PatientLoginRequest();
+        LoginRequest request = new LoginRequest();
         request.setMobile("9999999999");
         request.setPassword("Patient@123");
+        request.setRole("PATIENT");
 
         mockMvc.perform(post("/api/auth/patient/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,11 +92,12 @@ public class AuthControllerTest {
     
     @Test
     public void testLogin_Invalid() throws Exception {
-        when(authService.loginPatient(anyString(), anyString())).thenThrow(new RuntimeException("Invalid mobile number or password."));
+        when(authService.login(anyString(), anyString(), anyString())).thenThrow(new RuntimeException("Invalid mobile number or password."));
 
-        PatientLoginRequest request = new PatientLoginRequest();
+        LoginRequest request = new LoginRequest();
         request.setMobile("9999999999");
         request.setPassword("WrongPassword");
+        request.setRole("PATIENT");
 
         mockMvc.perform(post("/api/auth/patient/login")
                 .contentType(MediaType.APPLICATION_JSON)

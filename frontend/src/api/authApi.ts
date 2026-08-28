@@ -2,8 +2,8 @@ import { apiClient } from './client';
 import type { AuthResponse, ApiResponse } from '../types/auth';
 
 export const authApi = {
-    login: async (mobile: string, password: string): Promise<ApiResponse<AuthResponse>> => {
-        const response = await apiClient.post('/api/auth/login', { mobile, password });
+    login: async (mobile: string, password: string, role: string): Promise<ApiResponse<AuthResponse>> => {
+        const response = await apiClient.post('/api/auth/login', { mobile, password, role: role.toUpperCase() });
         return response.data;
     },
     patientRegister: async (mobile: string, password: string, fullName: string): Promise<ApiResponse<string>> => {

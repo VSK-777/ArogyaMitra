@@ -14,7 +14,7 @@ import StaffManagement from './modules/admin/StaffManagement';
 import SystemLogs from './modules/admin/SystemLogs';
 import PastConsultations from './modules/doctor/PastConsultations';
 import DoctorSettings from './modules/doctor/DoctorSettings';
-import { ProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRoutes';
+import { ProtectedRoute, RoleProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRoutes';
 import Layout from './components/Layout';
 
 
@@ -36,18 +36,26 @@ export default function App() {
         
         <Route element={<ProtectedRoute />}>
            <Route element={<Layout />}>
-              <Route path="/patient/dashboard" element={<PatientDashboard />} />
-              <Route path="/patient/book" element={<BookAppointment />} />
-              <Route path="/patient/pre-consultation" element={<PreConsultation />} />
-              <Route path="/patient/documents" element={<DocumentsPage />} />
-              <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-              <Route path="/doctor/consultations" element={<PastConsultations />} />
-              <Route path="/doctor/settings" element={<DoctorSettings />} />
-              <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/staff" element={<StaffManagement />} />
-              <Route path="/admin/logs" element={<SystemLogs />} />
-              <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+              <Route element={<RoleProtectedRoute allowedRoles={['ROLE_PATIENT']} />}>
+                  <Route path="/patient/dashboard" element={<PatientDashboard />} />
+                  <Route path="/patient/book" element={<BookAppointment />} />
+                  <Route path="/patient/pre-consultation" element={<PreConsultation />} />
+                  <Route path="/patient/documents" element={<DocumentsPage />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={['ROLE_DOCTOR']} />}>
+                  <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                  <Route path="/doctor/consultations" element={<PastConsultations />} />
+                  <Route path="/doctor/settings" element={<DoctorSettings />} />
+                  <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={['ROLE_ADMIN']} />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/staff" element={<StaffManagement />} />
+                  <Route path="/admin/logs" element={<SystemLogs />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={['ROLE_RECEPTIONIST']} />}>
+                  <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+              </Route>
            </Route>
         </Route>
 
