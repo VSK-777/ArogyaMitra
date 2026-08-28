@@ -1,0 +1,629 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.hospital:hospital-backend >--------------------
+[INFO] Building hospital-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ hospital-backend ---
+[INFO] Deleting C:\Users\Lenovo\Desktop\VSK\B.Tech\SIH\hospital-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ hospital-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ hospital-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 93 source files with javac [debug parameters release 21] to target\classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/integration/ai/GeminiAIService.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/integration/ai/GeminiAIService.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/DoctorController.java:[61,5] org.springframework.web.bind.annotation.PostMapping is not a repeatable annotation interface
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/DoctorService.java:[61,5] org.springframework.transaction.annotation.Transactional is not a repeatable annotation interface
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[40,21] cannot find symbol
+  symbol:   method getRole()
+  location: variable user of type com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[43,21] cannot find symbol
+  symbol:   method setPasswordHash(java.lang.String)
+  location: variable user of type com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[53,37] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[63,65] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[67,64] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[71,65] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[75,64] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[79,64] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[91,46] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[99,39] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[110,33] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[116,37] cannot find symbol
+  symbol:   method getId()
+  location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[120,33] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[126,37] cannot find symbol
+  symbol:   method getId()
+  location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[133,66] cannot find symbol
+  symbol:   method getHospitalId()
+  location: variable h of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[138,38] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[147,66] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[150,65] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[158,33] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[164,38] cannot find symbol
+  symbol:   method getId()
+  location: variable hospitalV of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[168,38] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[177,65] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[180,63] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[189,33] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[195,38] cannot find symbol
+  symbol:   method getId()
+  location: variable hospitalM of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[203,45] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[209,32] cannot find symbol
+  symbol:   method getId()
+  location: variable hsp of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[212,37] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[218,37] cannot find symbol
+  symbol:   method getName()
+  location: variable dept of type com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java:[34,124] cannot find symbol
+  symbol:   method getVerificationStatus()
+  location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java:[34,157] cannot find symbol
+  symbol:   method getVerificationStatus()
+  location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AuditService.java:[20,34] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.AuditLog
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AuditService.java:[29,9] cannot find symbol
+  symbol:   variable log
+  location: class com.hospital.service.AuditService
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/dto/ApiResponse.java:[22,27] cannot find symbol
+  symbol:   method <T>builder()
+  location: class com.hospital.dto.ApiResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/dto/ApiResponse.java:[26,27] cannot find symbol
+  symbol:   method <T>builder()
+  location: class com.hospital.dto.ApiResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[31,72] cannot find symbol
+  symbol:   method getAppointmentId()
+  location: variable response of type com.hospital.dto.AppointmentResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[44,31] cannot find symbol
+  symbol:   method getStatus()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[46,36] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[49,56] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[49,84] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[51,24] incompatible types: java.util.List<java.lang.Object> cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[45,18] cannot find symbol
+  symbol:   method getStatus()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[46,35] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,36] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,77] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,105] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[49,22] cannot find symbol
+  symbol:   method setStatus(com.hospital.entity.AppointmentStatus)
+  location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,24] cannot find symbol
+  symbol:   method getRazorpayPaymentId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,66] cannot find symbol
+  symbol:   method getRazorpayOrderId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,106] cannot find symbol
+  symbol:   method getRazorpaySignature()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[70,59] cannot find symbol
+  symbol:   method getRazorpayPaymentId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[71,57] cannot find symbol
+  symbol:   method getRazorpayOrderId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[72,58] cannot find symbol
+  symbol:   method getRazorpaySignature()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[86,64] cannot find symbol
+  symbol:   method getHospitalId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[90,70] cannot find symbol
+  symbol:   method getDepartmentId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[94,58] cannot find symbol
+  symbol:   method getDoctorId()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[98,20] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[103,50] cannot find symbol
+  symbol:   method getAppointmentType()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[104,26] cannot find symbol
+  symbol:   method getAppointmentType()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[108,30] cannot find symbol
+  symbol:   method getSlotEnd()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[109,26] cannot find symbol
+  symbol:   method getSlotEnd()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[110,26] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[115,31] cannot find symbol
+  symbol:   method getId()
+  location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[116,32] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[117,32] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[125,33] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[128,46] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[134,41] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[135,35] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[139,32] cannot find symbol
+  symbol:   method getReason()
+  location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[143,95] cannot find symbol
+  symbol:   method getPatientId()
+  location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[143,118] cannot find symbol
+  symbol:   method getDoctorId()
+  location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[147,61] cannot find symbol
+  symbol:   method getTokenNumber()
+  location: variable token of type com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[150,35] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.dto.AppointmentResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[151,43] cannot find symbol
+  symbol:   method getAppointmentId()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[152,35] cannot find symbol
+  symbol:   method getPatientId()
+  location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[153,35] cannot find symbol
+  symbol:   method getName()
+  location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[154,43] cannot find symbol
+  symbol:   method getName()
+  location: variable department of type com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[155,39] cannot find symbol
+  symbol:   method getName()
+  location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[156,45] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[157,39] cannot find symbol
+  symbol:   method getSlotStart()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[158,36] cannot find symbol
+  symbol:   method getStatus()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[159,37] cannot find symbol
+  symbol:   method getTokenId()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[21,36] cannot find symbol
+  symbol:   method getDoctor()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[22,37] cannot find symbol
+  symbol:   method getAppointmentDate()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[24,125] cannot find symbol
+  symbol:   method getId()
+  location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[25,56] cannot find symbol
+  symbol:   method getTokenNumber()
+  location: variable qt of type com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[25,85] incompatible types: java.lang.Object cannot be converted to int
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[28,43] cannot find symbol
+  symbol:   method getId()
+  location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[27,38] cannot find symbol
+  symbol:   method builder()
+  location: class com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[32,40] cannot find symbol
+  symbol:   method getDepartment()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[33,38] cannot find symbol
+  symbol:   method getHospital()
+  location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,48] cannot find symbol
+  symbol:   method getMobile()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,69] cannot find symbol
+  symbol:   method getPassword()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,92] cannot find symbol
+  symbol:   method getFullName()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[35,88] cannot find symbol
+  symbol:   method getMobile()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[39,84] cannot find symbol
+  symbol:   method getMobile()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[47,88] cannot find symbol
+  symbol:   method getMobile()
+  location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.347 s
+[INFO] Finished at: 2026-08-28T18:55:40+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project hospital-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/DoctorController.java:[61,5] org.springframework.web.bind.annotation.PostMapping is not a repeatable annotation interface
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/DoctorService.java:[61,5] org.springframework.transaction.annotation.Transactional is not a repeatable annotation interface
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[40,21] cannot find symbol
+[ERROR]   symbol:   method getRole()
+[ERROR]   location: variable user of type com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[43,21] cannot find symbol
+[ERROR]   symbol:   method setPasswordHash(java.lang.String)
+[ERROR]   location: variable user of type com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[53,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[63,65] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[67,64] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[71,65] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[75,64] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[79,64] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[91,46] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[99,39] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[110,33] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[116,37] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[120,33] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[126,37] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[133,66] cannot find symbol
+[ERROR]   symbol:   method getHospitalId()
+[ERROR]   location: variable h of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[138,38] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[147,66] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[150,65] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[158,33] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[164,38] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable hospitalV of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[168,38] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[177,65] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[180,63] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[189,33] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[195,38] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable hospitalM of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[203,45] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.User
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[209,32] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable hsp of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[212,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/config/DataSeeder.java:[218,37] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable dept of type com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java:[34,124] cannot find symbol
+[ERROR]   symbol:   method getVerificationStatus()
+[ERROR]   location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java:[34,157] cannot find symbol
+[ERROR]   symbol:   method getVerificationStatus()
+[ERROR]   location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AuditService.java:[20,34] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.AuditLog
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AuditService.java:[29,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class com.hospital.service.AuditService
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/dto/ApiResponse.java:[22,27] cannot find symbol
+[ERROR]   symbol:   method <T>builder()
+[ERROR]   location: class com.hospital.dto.ApiResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/dto/ApiResponse.java:[26,27] cannot find symbol
+[ERROR]   symbol:   method <T>builder()
+[ERROR]   location: class com.hospital.dto.ApiResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[31,72] cannot find symbol
+[ERROR]   symbol:   method getAppointmentId()
+[ERROR]   location: variable response of type com.hospital.dto.AppointmentResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[44,31] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[46,36] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[49,56] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[49,84] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AppointmentController.java:[51,24] incompatible types: java.util.List<java.lang.Object> cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[45,18] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[46,35] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,36] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,77] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[47,105] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[49,22] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.hospital.entity.AppointmentStatus)
+[ERROR]   location: variable a of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,24] cannot find symbol
+[ERROR]   symbol:   method getRazorpayPaymentId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,66] cannot find symbol
+[ERROR]   symbol:   method getRazorpayOrderId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[65,106] cannot find symbol
+[ERROR]   symbol:   method getRazorpaySignature()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[70,59] cannot find symbol
+[ERROR]   symbol:   method getRazorpayPaymentId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[71,57] cannot find symbol
+[ERROR]   symbol:   method getRazorpayOrderId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[72,58] cannot find symbol
+[ERROR]   symbol:   method getRazorpaySignature()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[86,64] cannot find symbol
+[ERROR]   symbol:   method getHospitalId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[90,70] cannot find symbol
+[ERROR]   symbol:   method getDepartmentId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[94,58] cannot find symbol
+[ERROR]   symbol:   method getDoctorId()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[98,20] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[103,50] cannot find symbol
+[ERROR]   symbol:   method getAppointmentType()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[104,26] cannot find symbol
+[ERROR]   symbol:   method getAppointmentType()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[108,30] cannot find symbol
+[ERROR]   symbol:   method getSlotEnd()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[109,26] cannot find symbol
+[ERROR]   symbol:   method getSlotEnd()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[110,26] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[115,31] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[116,32] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[117,32] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[125,33] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[128,46] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[134,41] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[135,35] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[139,32] cannot find symbol
+[ERROR]   symbol:   method getReason()
+[ERROR]   location: variable request of type com.hospital.dto.BookAppointmentRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[143,95] cannot find symbol
+[ERROR]   symbol:   method getPatientId()
+[ERROR]   location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[143,118] cannot find symbol
+[ERROR]   symbol:   method getDoctorId()
+[ERROR]   location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[147,61] cannot find symbol
+[ERROR]   symbol:   method getTokenNumber()
+[ERROR]   location: variable token of type com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[150,35] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.dto.AppointmentResponse
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[151,43] cannot find symbol
+[ERROR]   symbol:   method getAppointmentId()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[152,35] cannot find symbol
+[ERROR]   symbol:   method getPatientId()
+[ERROR]   location: variable patient of type com.hospital.entity.Patient
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[153,35] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[154,43] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable department of type com.hospital.entity.Department
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[155,39] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable hospital of type com.hospital.entity.Hospital
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[156,45] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[157,39] cannot find symbol
+[ERROR]   symbol:   method getSlotStart()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[158,36] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/AppointmentService.java:[159,37] cannot find symbol
+[ERROR]   symbol:   method getTokenId()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[21,36] cannot find symbol
+[ERROR]   symbol:   method getDoctor()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[22,37] cannot find symbol
+[ERROR]   symbol:   method getAppointmentDate()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[24,125] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[25,56] cannot find symbol
+[ERROR]   symbol:   method getTokenNumber()
+[ERROR]   location: variable qt of type com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[25,85] incompatible types: java.lang.Object cannot be converted to int
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[28,43] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable doctor of type com.hospital.entity.Doctor
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[27,38] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.hospital.entity.QueueToken
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[32,40] cannot find symbol
+[ERROR]   symbol:   method getDepartment()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/service/QueueService.java:[33,38] cannot find symbol
+[ERROR]   symbol:   method getHospital()
+[ERROR]   location: variable appointment of type com.hospital.entity.Appointment
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,48] cannot find symbol
+[ERROR]   symbol:   method getMobile()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,69] cannot find symbol
+[ERROR]   symbol:   method getPassword()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[32,92] cannot find symbol
+[ERROR]   symbol:   method getFullName()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[35,88] cannot find symbol
+[ERROR]   symbol:   method getMobile()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[39,84] cannot find symbol
+[ERROR]   symbol:   method getMobile()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] /C:/Users/Lenovo/Desktop/VSK/B.Tech/SIH/hospital-backend/src/main/java/com/hospital/controller/AuthController.java:[47,88] cannot find symbol
+[ERROR]   symbol:   method getMobile()
+[ERROR]   location: variable request of type @jakarta.validation.Valid com.hospital.dto.PatientRegistrationRequest
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

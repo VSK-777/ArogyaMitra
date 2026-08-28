@@ -7,6 +7,8 @@ import com.hospital.repository.AppointmentRepository;
 import com.hospital.repository.PatientRepository;
 import com.hospital.repository.PrescriptionRepository;
 import com.hospital.repository.ConsultationRepository;
+import com.hospital.service.AppointmentService;
+import com.hospital.entity.AppointmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,7 @@ public class PatientController {
     private final AppointmentRepository appointmentRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final ConsultationRepository consultationRepository;
+    private final AppointmentService appointmentService;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Patient>> getMe() {

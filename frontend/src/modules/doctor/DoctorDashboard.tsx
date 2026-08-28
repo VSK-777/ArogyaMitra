@@ -6,6 +6,22 @@ import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
+
+    const handleNoShow = async (appointmentId: string) => {
+        if (!confirm('Mark this appointment as No Show?')) return;
+        setLoading(true);
+        try {
+            const res = await doctorApi.markNoShow(appointmentId);
+            if (res.success) {
+                fetchQueue();
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
   const [queue, setQueue] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -58,10 +74,10 @@ export default function DoctorDashboard() {
           <span className="text-sm text-slate-500 font-medium">Auto-refreshing</span>
         </div>
         <div className="divide-y divide-slate-200">
-            {queue.filter((q: any) => q.status !== 'COMPLETED').length === 0 ? (
+            {queue.filter((q: any) => q.status !== 'COMPLETED' && q.status !== 'NO_SHOW').length === 0 ? (
                   <div className="p-8 text-center text-slate-500">No patients waiting in the queue today.</div>
               ) : (
-                  queue.filter((q: any) => q.status !== 'COMPLETED').map((q: any) => (
+                  queue.filter((q: any) => q.status !== 'COMPLETED' && q.status !== 'NO_SHOW').map((q: any) => (
                     <div key={q.id} className="p-4 hover:bg-blue-50/50 flex items-center justify-between transition-colors">
                         <div className="flex items-center gap-4">
                             <div className="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center font-bold text-slate-500 text-lg">{q.tokenNumber}</div>
@@ -70,10 +86,15 @@ export default function DoctorDashboard() {
                                 <p className="text-sm text-slate-500 font-medium">Status: {q.status} • ID: {q.appointment?.appointmentId}</p>
                             </div>
                         </div>
-                        {q.status !== 'COMPLETED' ? (
-                            <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow-sm">
-                                Start Consultation
-                            </button>
+                        {q.status !== 'COMPLETED' && q.status !== 'NO_SHOW' ? (
+                            <div className="flex gap-2">
+                                <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow-sm">
+                                    Start
+                                </button>
+                                <button onClick={() => handleNoShow(q.appointment?.appointmentId)} className="bg-orange-100 text-orange-700 px-4 py-2.5 rounded-md font-semibold hover:bg-orange-200 transition-colors shadow-sm">
+                                    No Show
+                                </button>
+                            </div>
                         ) : (
                             <span className="text-green-600 font-bold px-6 py-2.5">Completed</span>
                         )}

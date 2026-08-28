@@ -35,6 +35,7 @@ export default function PatientDashboard() {
 
   const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data;
   const { name } = useAuth();
+  const [activeTab, setActiveTab] = useState<"upcoming" | "visited" | "notVisited">("upcoming");
 
   return (
     <div className="space-y-6">
@@ -50,7 +51,7 @@ export default function PatientDashboard() {
       
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-blue-100"><Calendar className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Upcoming</p><p className="text-2xl font-bold text-slate-900">{upcomingAppointmentsCount}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-orange-100"><Clock className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Action Needed</p><p className="text-2xl font-bold text-slate-900">{upcomingAppointmentsCount > 0 ? 1 : 0}</p></div></div>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-orange-100"><Clock className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Not Visited</p><p className="text-2xl font-bold text-slate-900">{data.notVisitedCount}</p></div></div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completedAppointmentsCount}</p></div></div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-purple-100"><FileText className="h-6 w-6 text-purple-600" /></div><div><p className="text-sm font-medium text-slate-500">Prescriptions</p><p className="text-2xl font-bold text-slate-900">{prescriptionCount}</p></div></div>
       </div>
@@ -76,29 +77,74 @@ export default function PatientDashboard() {
       )}
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-200 px-6 py-4">
-          <h2 className="text-lg font-semibold text-slate-900">Upcoming Appointments</h2>
+        <div className="border-b border-slate-200 px-6 py-4 flex gap-4">
+          <button onClick={() => setActiveTab('upcoming')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'upcoming' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+            Upcoming ({data.upcomingAppointmentsCount})
+          </button>
+          <button onClick={() => setActiveTab('visited')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'visited' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+            Visited ({data.completedAppointmentsCount})
+          </button>
+          <button onClick={() => setActiveTab('notVisited')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'notVisited' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+            Not Visited ({data.notVisitedCount})
+          </button>
         </div>
         <div className="divide-y divide-slate-100">
-          {upcomingAppointments?.length === 0 ? (
-              <div className="p-6 text-slate-500 text-center">No upcoming appointments.</div>
-          ) : (
-            upcomingAppointments?.map((apt: any) => (
-              <div key={apt.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                      <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
-                      <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
-                      <p className="text-xs text-slate-400 mt-1">Token: {apt.queueToken?.tokenNumber || 'Pending'} | ID: {apt.appointmentId}</p>
+          {activeTab === 'upcoming' && (
+            data.upcomingAppointments?.length === 0 ? (
+                <div className="p-6 text-slate-500 text-center">No upcoming appointments.</div>
+            ) : (
+              data.upcomingAppointments?.map((apt: any) => (
+                <div key={apt.id} className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
+                        <p className="text-xs text-slate-400 mt-1">Token: {apt.queueToken?.tokenNumber || 'Pending'} | ID: {apt.appointmentId}</p>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">{apt.status}</span>
                   </div>
-                  <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{apt.status}</span>
                 </div>
-              </div>
-            ))
+              ))
+            )
+          )}
+          {activeTab === 'visited' && (
+            data.visitedAppointments?.length === 0 ? (
+                <div className="p-6 text-slate-500 text-center">No visited appointments.</div>
+            ) : (
+              data.visitedAppointments?.map((apt: any) => (
+                <div key={apt.id} className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
+                        <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Visited</span>
+                  </div>
+                </div>
+              ))
+            )
+          )}
+          {activeTab === 'notVisited' && (
+            data.notVisitedAppointments?.length === 0 ? (
+                <div className="p-6 text-slate-500 text-center">No unvisited appointments.</div>
+            ) : (
+              data.notVisitedAppointments?.map((apt: any) => (
+                <div key={apt.id} className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
+                        <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Not Visited</span>
+                  </div>
+                </div>
+              ))
+            )
           )}
         </div>
       </div>
     </div>
   );
 }
-

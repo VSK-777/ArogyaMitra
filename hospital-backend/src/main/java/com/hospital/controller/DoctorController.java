@@ -56,6 +56,19 @@ public class DoctorController {
         return ResponseEntity.status(404).body(ApiResponse.error("No pre-consultation found", "NOT_FOUND"));
     }
 
+    @PostMapping("/appointments/{appointmentId}/no-show")
+    public ResponseEntity<ApiResponse<String>> markNoShow(@PathVariable String appointmentId) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByMobile(mobile).orElseThrow();
+        
+        doctorService.markNoShow(appointmentId, user.getId().toString());
+        
+        auditService.log("APPOINTMENT_NO_SHOW", "Appointment", appointmentId, mobile, Role.ROLE_DOCTOR, "Marked as No Show by Doctor");
+        
+        return ResponseEntity.ok(ApiResponse.success("Appointment marked as No Show", appointmentId));
+    }
+
+
     @PostMapping("/consultations/complete")
     public ResponseEntity<ApiResponse<Consultation>> completeConsultation(@RequestBody CompleteConsultationRequest request) {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();

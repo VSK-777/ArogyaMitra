@@ -14,6 +14,11 @@ export const doctorApi = {
         const response = await apiClient.get('/api/doctor/appointments/' + appointmentId + '/preconsultation');
         return response.data;
     },
+    markNoShow: async (appointmentId: string): Promise<ApiResponse<any>> => {
+        const response = await apiClient.post(`/api/doctor/appointments/${appointmentId}/no-show`);
+        return response.data;
+    },
+
     completeConsultation: async (data: any): Promise<ApiResponse<any>> => {
         const response = await apiClient.post('/api/doctor/consultations/complete', data);
         return response.data;

@@ -32,21 +32,7 @@ public class AppointmentController {
         return ResponseEntity.ok(ApiResponse.success("Appointment booked successfully", response));
     }
 
-    @PostMapping("/{appointmentId}/cancel")
-    public ResponseEntity<ApiResponse<String>> cancelAppointment(@PathVariable String appointmentId) {
-        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
-        Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
-        
-        if (!apt.getPatient().getMobile().equals(mobile)) {
-            return ResponseEntity.status(403).body(ApiResponse.error("Unauthorized", "FORBIDDEN"));
-        }
-        
-        apt.setStatus(AppointmentStatus.CANCELLED);
-        appointmentRepository.save(apt);
-        auditService.log("APPOINTMENT_CANCELLED", "Appointment", appointmentId, mobile, Role.ROLE_PATIENT, "Cancelled by patient");
-        return ResponseEntity.ok(ApiResponse.success("Appointment cancelled", appointmentId));
-    }
+    
 
     @GetMapping("/slots")
     public ResponseEntity<ApiResponse<java.util.List<String>>> getBookedSlots(
@@ -55,7 +41,7 @@ public class AppointmentController {
         
         java.util.List<Appointment> booked = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctorId, date);
         java.util.List<String> bookedSlots = booked.stream()
-                .filter(a -> a.getStatus() != AppointmentStatus.CANCELLED)
+                .filter(a -> a.getStatus() == AppointmentStatus.BOOKED)
                 .map(a -> {
                     String time = a.getSlotStart().toString();
                     if(time.length() == 5) time += ":00"; // Normalize HH:mm to HH:mm:ss if needed, but the frontend sends HH:mm usually. Actually frontend sends HH:mm, backend saves it as time.

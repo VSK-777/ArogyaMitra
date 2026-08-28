@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.razorpay.Utils;
 import org.json.JSONObject;
@@ -34,6 +35,27 @@ public class AppointmentService {
     private String razorpaySecret;
 
     @Transactional
+    public void normalizePatientAppointments(Long patientId) {
+        List<Appointment> appointments = appointmentRepository.findByPatient_Id(patientId);
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalTime now = java.time.LocalTime.now();
+        boolean changed = false;
+
+        for (Appointment a : appointments) {
+            if (a.getStatus() == AppointmentStatus.BOOKED) {
+                boolean isPast = a.getAppointmentDate().isBefore(today) || 
+                                 (a.getAppointmentDate().isEqual(today) && a.getSlotStart() != null && a.getSlotStart().isBefore(now));
+                if (isPast) {
+                    a.setStatus(AppointmentStatus.NOT_VISITED);
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            appointmentRepository.saveAll(appointments);
+        }
+    }
+
     public AppointmentResponse bookAppointment(String mobile, BookAppointmentRequest request) {
         // Verify Payment for online patients
         boolean isPatient = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
@@ -89,11 +111,11 @@ public class AppointmentService {
 
         // 8. Check for duplicate booking (same doctor, same date, same slot, not cancelled)
         boolean slotTaken = appointmentRepository
-                .existsByDoctor_IdAndAppointmentDateAndSlotStartAndStatusNot(
+                .existsByDoctor_IdAndAppointmentDateAndSlotStartAndStatus(
                         doctor.getId(),
                         request.getAppointmentDate(),
                         request.getSlotStart(),
-                        AppointmentStatus.CANCELLED
+                        AppointmentStatus.BOOKED
                 );
         if (slotTaken) {
             throw new IllegalStateException("This appointment slot is no longer available. Please select another slot.");
