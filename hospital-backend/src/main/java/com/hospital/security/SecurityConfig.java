@@ -2,6 +2,7 @@ package com.hospital.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +20,15 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
+    private final RateLimitFilter rateLimitFilter;
+    
+    public SecurityConfig(RateLimitFilter rateLimitFilter) {
+        this.rateLimitFilter = rateLimitFilter;
+    }
 
     @Bean
     public org.springframework.security.core.userdetails.UserDetailsService userDetailsService() {
@@ -38,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
@@ -53,7 +63,12 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.disable()) // Covered by CSP usually, but Spring Boot defaults are fine
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none';"))
+                .frameOptions(frame -> frame.deny())
+            )
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
@@ -70,8 +85,12 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
 
+                http.addFilterBefore(rateLimitFilter, org.springframework.security.web.context.SecurityContextPersistenceFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
+
+
+

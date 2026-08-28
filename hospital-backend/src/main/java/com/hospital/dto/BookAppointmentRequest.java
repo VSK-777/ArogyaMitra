@@ -26,4 +26,9 @@ public class BookAppointmentRequest {
 
     // For walk-in appointments booked by receptionist
     private String patientMobile;
+
+    private String razorpayPaymentId;
+    private String razorpayOrderId;
+    private String razorpaySignature;
 }
+

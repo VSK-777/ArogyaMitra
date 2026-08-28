@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.razorpay.Utils;
+import org.json.JSONObject;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +30,32 @@ public class AppointmentService {
     private final DepartmentRepository departmentRepository;
     private final QueueService queueService;
 
+    @org.springframework.beans.factory.annotation.Value("${razorpay.key.secret:}")
+    private String razorpaySecret;
+
     @Transactional
     public AppointmentResponse bookAppointment(String mobile, BookAppointmentRequest request) {
+        // Verify Payment for online patients
+        boolean isPatient = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"));
+            
+        if (isPatient) {
+            if (request.getRazorpayPaymentId() == null || request.getRazorpayOrderId() == null || request.getRazorpaySignature() == null) {
+                throw new IllegalArgumentException("Payment details are required to book an appointment");
+            }
+            try {
+                JSONObject options = new JSONObject();
+                options.put("razorpay_payment_id", request.getRazorpayPaymentId());
+                options.put("razorpay_order_id", request.getRazorpayOrderId());
+                options.put("razorpay_signature", request.getRazorpaySignature());
+                boolean isValid = Utils.verifyPaymentSignature(options, razorpaySecret);
+                if (!isValid) {
+                    throw new SecurityException("Invalid payment signature");
+                }
+            } catch (Exception e) {
+                throw new SecurityException("Payment verification failed", e);
+            }
+        }
         // 1. Find patient from authenticated mobile
         Patient patient = patientRepository.findByMobile(mobile)
                 .orElseThrow(() -> new IllegalArgumentException("Patient profile not found. Please complete your registration."));
@@ -111,3 +138,4 @@ public class AppointmentService {
                 .build();
     }
 }
+

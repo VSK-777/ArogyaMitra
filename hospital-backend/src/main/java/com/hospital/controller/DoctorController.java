@@ -42,8 +42,13 @@ public class DoctorController {
 
     @GetMapping("/appointments/{appointmentId}/preconsultation")
     public ResponseEntity<ApiResponse<PreConsultation>> getPreConsultationSummary(@PathVariable String appointmentId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        
+        if (apt.getDoctor() != null && apt.getDoctor().getUser() != null && !apt.getDoctor().getUser().getMobile().equals(username)) {
+             throw new org.springframework.security.access.AccessDeniedException("Unauthorized to view this patient's data");
+        }
         Optional<PreConsultation> pc = preConsultationRepository.findByAppointment_Id(apt.getId());
         if (pc.isPresent()) {
             return ResponseEntity.ok(ApiResponse.success("Pre-consultation found", pc.get()));
@@ -63,3 +68,4 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Consultation completed successfully", consultation));
     }
 }
+

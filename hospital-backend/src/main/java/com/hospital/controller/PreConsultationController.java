@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import com.hospital.repository.AppointmentRepository;
+import com.hospital.entity.Appointment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -16,6 +19,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class PreConsultationController {
 
     private final PreConsultationService preConsultationService;
+    private final AppointmentRepository appointmentRepository;
+
+    private void verifyOwnership(String appointmentId) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        Appointment apt = appointmentRepository.findByAppointmentId(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        if (!apt.getPatient().getMobile().equals(mobile)) {
+            throw new AccessDeniedException("Unauthorized to access this appointment");
+        }
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<PreConsultation>> startPreConsultation(@RequestBody PreConsultationRequest request) {
@@ -28,6 +40,7 @@ public class PreConsultationController {
     public ResponseEntity<ApiResponse<String>> handleAudio(
             @PathVariable String appointmentId,
             @RequestParam("audio") MultipartFile audio) {
+        verifyOwnership(appointmentId);
         String nextQuestion = preConsultationService.handleAudioInput(appointmentId, audio);
         return ResponseEntity.ok(ApiResponse.success("Audio processed", nextQuestion));
     }
@@ -36,13 +49,16 @@ public class PreConsultationController {
     public ResponseEntity<ApiResponse<String>> handleChat(
             @PathVariable String appointmentId,
             @RequestBody java.util.Map<String, String> payload) {
+        verifyOwnership(appointmentId);
         String nextQuestion = preConsultationService.handleTextInput(appointmentId, payload.get("message"));
         return ResponseEntity.ok(ApiResponse.success("Message processed", nextQuestion));
     }
 
     @PostMapping("/{appointmentId}/complete")
     public ResponseEntity<ApiResponse<PreConsultation>> complete(@PathVariable String appointmentId) {
+        verifyOwnership(appointmentId);
         PreConsultation pc = preConsultationService.completePreConsultation(appointmentId);
         return ResponseEntity.ok(ApiResponse.success("Completed", pc));
     }
 }
+

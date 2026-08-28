@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/payment")
 public class PaymentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
@@ -28,7 +32,7 @@ public class PaymentController {
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Object> data) {
         try {
-            int amount = (Integer) data.get("amount"); // amount in paise
+            int amount = 50000; // Fixed consultation fee (500 INR) enforced by backend
             if (amount < 100) {
                 return ResponseEntity.badRequest().body(ApiResponse.error("Amount must be at least 100 paise", "INVALID_AMOUNT"));
             }
@@ -49,11 +53,11 @@ public class PaymentController {
 
             return ResponseEntity.ok(ApiResponse.success("Order created", response));
         } catch (RazorpayException e) {
-            e.printStackTrace();
+            logger.error("Payment Error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Error creating Razorpay order: " + e.getMessage(), "RAZORPAY_ERROR"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Payment Error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Internal server error: " + e.getMessage(), "SERVER_ERROR"));
         }
@@ -83,13 +87,15 @@ public class PaymentController {
                 return ResponseEntity.badRequest().body(ApiResponse.error("Invalid payment signature", "INVALID_SIGNATURE"));
             }
         } catch (RazorpayException e) {
-            e.printStackTrace();
+            logger.error("Payment Error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Error verifying payment: " + e.getMessage(), "RAZORPAY_ERROR"));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Payment Error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Internal server error: " + e.getMessage(), "SERVER_ERROR"));
         }
     }
 }
+
+

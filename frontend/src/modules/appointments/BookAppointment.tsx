@@ -128,7 +128,10 @@ export default function BookAppointment() {
                             departmentId: selectedDepartment.id,
                             doctorId: selectedDoctor.id,
                             appointmentDate: selectedDate,
-                            slotStart: selectedSlot
+                            slotStart: selectedSlot,
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpayOrderId: response.razorpay_order_id,
+                            razorpaySignature: response.razorpay_signature
                         };
                         const res = await patientApi.bookAppointment(payload);
                         if(res.success) {
@@ -357,3 +360,4 @@ export default function BookAppointment() {
     </div>
   );
 }
+

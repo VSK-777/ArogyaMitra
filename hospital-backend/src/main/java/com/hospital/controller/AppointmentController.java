@@ -74,3 +74,4 @@ public class AppointmentController {
         return ResponseEntity.ok(ApiResponse.success("Appointment found", apt));
     }
 }
+

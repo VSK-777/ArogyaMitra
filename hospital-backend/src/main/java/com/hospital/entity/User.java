@@ -34,6 +34,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -51,3 +52,4 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 }
+

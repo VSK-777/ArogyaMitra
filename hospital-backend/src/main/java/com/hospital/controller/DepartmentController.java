@@ -6,6 +6,7 @@ import com.hospital.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -16,8 +17,10 @@ public class DepartmentController {
     private final DepartmentRepository departmentRepository;
 
     @GetMapping("/hospital/{hospitalId}")
+    @Cacheable(value = "departments", key = "#hospitalId")
     public ResponseEntity<ApiResponse<List<Department>>> getDepartmentsByHospital(@PathVariable Long hospitalId) {
         List<Department> deps = departmentRepository.findByHospital_Id(hospitalId);
         return ResponseEntity.ok(ApiResponse.success("Success", deps));
     }
 }
+
