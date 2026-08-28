@@ -37,5 +37,15 @@ export const patientApi = {
         });
         return response.data;
     }
+    ,
+    initiateAadhaarAppToApp: async (): Promise<ApiResponse<any>> => {
+        const response = await apiClient.post('/api/patients/me/aadhaar/app-to-app/initiate');
+        return response.data;
+    },
+    getAadhaarAppToAppStatus: async (transactionId: string): Promise<ApiResponse<any>> => {
+        const response = await apiClient.get(`/api/patients/me/aadhaar/app-to-app/status/${transactionId}`);
+        return response.data;
+    }
+
 };
 
