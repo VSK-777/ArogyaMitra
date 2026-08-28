@@ -54,24 +54,33 @@ public class PatientController {
         Patient patient = patientRepository.findByMobile(mobile)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
+        appointmentService.normalizePatientAppointments(patient.getId());
         List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
-        long upcomingCount = appointments.stream().filter(a -> a.getStatus().name().equals("BOOKED") || a.getStatus().name().equals("SCHEDULED")).count();
         
-        long completedCount = consultationRepository.findByPatient_Id(patient.getId()).size();
+        List<Appointment> upcoming = appointments.stream()
+            .filter(a -> a.getStatus() == AppointmentStatus.BOOKED)
+            .collect(Collectors.toList());
+            
+        List<Appointment> visited = appointments.stream()
+            .filter(a -> a.getStatus() == AppointmentStatus.COMPLETED)
+            .collect(Collectors.toList());
+            
+        List<Appointment> notVisited = appointments.stream()
+            .filter(a -> a.getStatus() == AppointmentStatus.NOT_VISITED)
+            .collect(Collectors.toList());
+
         long prescriptionCount = prescriptionRepository.findByPatient_Id(patient.getId()).size();
 
         Map<String, Object> data = new HashMap<>();
-        data.put("upcomingAppointmentsCount", upcomingCount);
-        data.put("completedAppointmentsCount", completedCount);
+        data.put("upcomingAppointmentsCount", upcoming.size());
+        data.put("completedAppointmentsCount", visited.size());
+        data.put("notVisitedCount", notVisited.size());
         data.put("prescriptionCount", prescriptionCount);
         
-        List<Appointment> upcoming = appointments.stream()
-            .filter(a -> a.getStatus().name().equals("BOOKED") || a.getStatus().name().equals("SCHEDULED"))
-            .collect(Collectors.toList());
-            
         data.put("upcomingAppointments", upcoming);
+        data.put("visitedAppointments", visited);
+        data.put("notVisitedAppointments", notVisited);
 
         return ResponseEntity.ok(ApiResponse.success("Success", data));
     }
 }
-
