@@ -66,7 +66,7 @@ public class PatientController {
             .collect(Collectors.toList());
             
         List<Appointment> notVisited = appointments.stream()
-            .filter(a -> a.getStatus() == AppointmentStatus.NOT_VISITED)
+            .filter(a -> a.getStatus() == AppointmentStatus.NO_SHOW)
             .collect(Collectors.toList());
 
         long prescriptionCount = prescriptionRepository.findByPatient_Id(patient.getId()).size();

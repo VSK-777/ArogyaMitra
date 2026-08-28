@@ -46,7 +46,7 @@ public class AppointmentService {
                 boolean isPast = a.getAppointmentDate().isBefore(today) || 
                                  (a.getAppointmentDate().isEqual(today) && a.getSlotStart() != null && a.getSlotStart().isBefore(now));
                 if (isPast) {
-                    a.setStatus(AppointmentStatus.NOT_VISITED);
+                    a.setStatus(AppointmentStatus.NO_SHOW);
                     changed = true;
                 }
             }

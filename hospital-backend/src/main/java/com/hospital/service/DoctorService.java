@@ -73,7 +73,7 @@ public class DoctorService {
             throw new IllegalStateException("Only BOOKED appointments can be marked as No Show");
         }
         
-        appt.setStatus(AppointmentStatus.NOT_VISITED);
+        appt.setStatus(AppointmentStatus.NO_SHOW);
         appointmentRepository.save(appt);
         
         queueTokenRepository.findByAppointment_Id(appt.getId()).ifPresent(token -> {
