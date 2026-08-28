@@ -8,6 +8,8 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
+  const { name } = useAuth();
+  const [activeTab, setActiveTab] = useState<"upcoming" | "visited" | "notVisited">("upcoming");
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,9 +35,7 @@ export default function PatientDashboard() {
     return <div className="text-red-500">{error}</div>;
   }
 
-  const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data;
-  const { name } = useAuth();
-  const [activeTab, setActiveTab] = useState<"upcoming" | "visited" | "notVisited">("upcoming");
+  const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data || {};
 
   return (
     <div className="space-y-6">
