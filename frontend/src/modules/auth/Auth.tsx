@@ -35,7 +35,7 @@ const authSchema = z.object({
 type AuthFormData = z.infer<typeof authSchema>;
 
 export default function Auth() {
-  const [role, setRole] = useState<'Patient' | 'Doctor' | 'Admin'>('Patient');
+  const [role, setRole] = useState<'Patient' | 'Doctor' | 'Receptionist' | 'Admin'>('Patient');
   const [isLogin, setIsLogin] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
   const [apiSuccess, setApiSuccess] = useState<string | null>(null);
@@ -121,7 +121,7 @@ export default function Auth() {
         <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-xl sm:px-10 border border-slate-100">
           
           <div className="flex rounded-lg bg-slate-100 p-1 mb-6">
-            {(['Patient', 'Doctor', 'Admin'] as const).map((r) => (
+            {(['Patient', 'Doctor', 'Receptionist', 'Admin'] as const).map((r) => (
               <button
                 key={r}
                 onClick={() => setRole(r)}
