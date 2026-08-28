@@ -104,22 +104,32 @@ public class AppointmentService {
                 ? request.getAppointmentType()
                 : AppointmentType.ONLINE;
 
-        // 7. Default slotEnd to slotStart + 30 minutes if not provided
-        var slotEnd = request.getSlotEnd() != null
-                ? request.getSlotEnd()
-                : request.getSlotStart().plusMinutes(30);
+        // 7. Find available 15-minute slot in the requested hour
+        int hour = request.getSlotStart().getHour();
+        java.util.List<Appointment> existingInHour = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctor.getId(), request.getAppointmentDate())
+            .stream()
+            .filter(a -> a.getStatus() == AppointmentStatus.BOOKED && a.getSlotStart() != null && a.getSlotStart().getHour() == hour)
+            .toList();
 
-        // 8. Check for duplicate booking (same doctor, same date, same slot, not cancelled)
-        boolean slotTaken = appointmentRepository
-                .existsByDoctor_IdAndAppointmentDateAndSlotStartAndStatus(
-                        doctor.getId(),
-                        request.getAppointmentDate(),
-                        request.getSlotStart(),
-                        AppointmentStatus.BOOKED
-                );
-        if (slotTaken) {
-            throw new IllegalStateException("This appointment slot is no longer available. Please select another slot.");
+        if (existingInHour.size() >= 4) {
+            throw new IllegalStateException("This time slot is fully booked. Please select another slot.");
         }
+
+        java.time.LocalTime exactSlotStart = null;
+        for (int i = 0; i < 4; i++) {
+            java.time.LocalTime candidate = request.getSlotStart().withMinute(i * 15).withSecond(0).withNano(0);
+            boolean taken = existingInHour.stream().anyMatch(a -> a.getSlotStart().equals(candidate));
+            if (!taken) {
+                exactSlotStart = candidate;
+                break;
+            }
+        }
+
+        if (exactSlotStart == null) {
+            throw new IllegalStateException("This time slot is fully booked. Please select another slot.");
+        }
+
+        java.time.LocalTime exactSlotEnd = exactSlotStart.plusMinutes(15);
 
         // 9. Create the appointment
         String dateStr = request.getAppointmentDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -132,8 +142,8 @@ public class AppointmentService {
                 .department(department)
                 .doctor(doctor)
                 .appointmentDate(request.getAppointmentDate())
-                .slotStart(request.getSlotStart())
-                .slotEnd(slotEnd)
+                .slotStart(exactSlotStart)
+                .slotEnd(exactSlotEnd)
                 .appointmentType(appointmentType)
                 .status(AppointmentStatus.BOOKED)
                 .reason(request.getReason())

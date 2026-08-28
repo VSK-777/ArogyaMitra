@@ -55,7 +55,6 @@ export default function BookAppointment() {
     const slots = [];
     for (let i = 9; i <= 17; i++) {
       slots.push(`${i.toString().padStart(2, '0')}:00`);
-      slots.push(`${i.toString().padStart(2, '0')}:30`);
     }
     setTimeSlots(slots);
   };
@@ -276,7 +275,7 @@ export default function BookAppointment() {
                             disabled={isBooked}
                             onClick={() => setSelectedSlot(slot)} 
                             className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-600 bg-blue-600 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
-                              {slot} {isBooked && '(Booked)'}
+                              {slot} - {(parseInt(slot.split(':')[0]) + 1).toString().padStart(2, '0')}:00 {isBooked && '(Full)'}
                           </button>
                         );
                     })}

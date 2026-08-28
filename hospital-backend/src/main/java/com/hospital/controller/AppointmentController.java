@@ -40,14 +40,16 @@ public class AppointmentController {
             @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date) {
         
         java.util.List<Appointment> booked = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctorId, date);
-        java.util.List<String> bookedSlots = booked.stream()
+        java.util.Map<Integer, Long> hourCounts = booked.stream()
                 .filter(a -> a.getStatus() == AppointmentStatus.BOOKED)
-                .map(a -> {
-                    String time = a.getSlotStart().toString();
-                    if(time.length() == 5) time += ":00"; // Normalize HH:mm to HH:mm:ss if needed, but the frontend sends HH:mm usually. Actually frontend sends HH:mm, backend saves it as time.
-                    // Return HH:mm
-                    return String.format("%02d:%02d", a.getSlotStart().getHour(), a.getSlotStart().getMinute());
-                })
+                .collect(java.util.stream.Collectors.groupingBy(
+                        a -> a.getSlotStart().getHour(),
+                        java.util.stream.Collectors.counting()
+                ));
+
+        java.util.List<String> bookedSlots = hourCounts.entrySet().stream()
+                .filter(entry -> entry.getValue() >= 4)
+                .map(entry -> String.format("%02d:00", entry.getKey()))
                 .toList();
 
         return ResponseEntity.ok(ApiResponse.success("Booked slots", bookedSlots));
