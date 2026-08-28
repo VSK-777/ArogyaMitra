@@ -63,7 +63,7 @@ export default function ReceptionistDashboard() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <h2 className="text-lg font-bold border-b pb-2 mb-4">Find Patient</h2>
               <form onSubmit={handleSearch} className="flex gap-2">
-                  <input value={mobile} onChange={e=>setMobile(e.target.value)} type="text" placeholder="Mobile Number" className="flex-1 border p-2 rounded" />
+                  <input value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g, ''))} type="text" pattern="\d{10}" maxLength={10} title="Mobile number must be exactly 10 digits" placeholder="Mobile Number (10 digits)" className="flex-1 border p-2 rounded" />
                   <button disabled={loading} type="submit" className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-700">
                       {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                       Search
@@ -89,7 +89,7 @@ export default function ReceptionistDashboard() {
               <form onSubmit={handleRegister} className="space-y-4 text-sm">
                   <p className="text-slate-500">Register a new walk-in patient who does not have an account.</p>
                   <input required value={regData.fullName} onChange={e=>setRegData({...regData, fullName: e.target.value})} type="text" placeholder="Full Name" className="w-full border p-2 rounded" />
-                  <input required value={regData.mobile} onChange={e=>setRegData({...regData, mobile: e.target.value})} type="text" placeholder="Mobile Number" className="w-full border p-2 rounded" />
+                  <input required value={regData.mobile} onChange={e=>setRegData({...regData, mobile: e.target.value.replace(/\D/g, '')})} type="text" pattern="\d{10}" maxLength={10} title="Mobile number must be exactly 10 digits" placeholder="Mobile Number (10 digits)" className="w-full border p-2 rounded" />
                   <input value={regData.dateOfBirth} onChange={e=>setRegData({...regData, dateOfBirth: e.target.value})} type="date" placeholder="Date of Birth" className="w-full border p-2 rounded" />
                   <button disabled={regLoading} type="submit" className="w-full bg-slate-800 text-white px-4 py-2 rounded font-bold hover:bg-slate-900 disabled:opacity-50 flex justify-center gap-2 items-center">
                       {regLoading && <Loader2 className="w-4 h-4 animate-spin" />}

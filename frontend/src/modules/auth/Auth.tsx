@@ -168,7 +168,12 @@ export default function Auth() {
                   <span className="text-slate-400 sm:text-sm">+91</span>
                 </div>
                 <input
-                  {...register("mobile")}
+                  {...register("mobile", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    }
+                  })}
+                  maxLength={10}
                   className={`block w-full pl-10 pr-3 py-2 border ${errors.mobile ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
                   placeholder="9999999999"
                 />

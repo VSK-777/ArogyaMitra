@@ -9,7 +9,7 @@ import lombok.Data;
 public class PatientRegistrationRequest {
     
     @NotBlank(message = "Mobile number is required")
-    @Pattern(regexp = "^\\+?[0-9]{10,14}$", message = "Invalid mobile number format")
+    @Pattern(regexp = "^\\d{10}$", message = "Mobile number must be exactly 10 digits")
     private String mobile;
     
     @NotBlank(message = "Password is required")
