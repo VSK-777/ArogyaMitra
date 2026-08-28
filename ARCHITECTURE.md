@@ -111,3 +111,5 @@ The frontend is built with React + Vite, designed for speed and modularity.
 *   **Passwords:** Encrypted via `BCryptPasswordEncoder`.
 *   **APIs:** Secured via `SecurityFilterChain`. Only `/api/auth`, `/api/hospitals`, and `/api/departments` are open to the public. All other endpoints require a valid JWT.
 
+
+

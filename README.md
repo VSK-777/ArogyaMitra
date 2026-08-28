@@ -304,3 +304,4 @@ The API uses a global `GlobalExceptionHandler` to prevent any technical details 
 }
 ```
 
+
