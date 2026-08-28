@@ -16,6 +16,11 @@ The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation Sy
 Layered architecture: `Controller -> Service -> Repository -> Database`.
 Providers (`AiProvider`, `SpeechToTextProvider`) abstract third-party API calls, enabling easy swapping and `DEMO_MODE` capabilities.
 
+### 3.1 Aadhaar Identity Verification
+- **Implementation:** Cryptographic validation of UIDAI Paperless Offline e-KYC (.zip/.xml).
+- **Mechanism:** Zip decryption using Zip4j and Share Code, XML Digital Signature validation using javax.xml.crypto, XXE-safe parsing.
+- **Privacy:** Adheres to UIDAI data minimization by avoiding persistent storage of XML, ZIP, or Aadhaar numbers.
+
 ## 4. User Roles
 - `ROLE_PATIENT`: Books appointments, does pre-consultation, views own records.
 - `ROLE_RECEPTIONIST`: Books appointments for walk-in patients.
@@ -209,6 +214,7 @@ The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`.
 - **Container exits immediately**: Check logs with `docker logs hospital-api`. Usually a missing env var or unreachable database.
 - **Cannot connect to PostgreSQL**: Use `host.docker.internal` instead of `localhost` for host-machine databases. On Linux, add `--network host`.
 - **Port conflict**: Change the host port mapping: `-p 9090:8080`.
+
 
 
 

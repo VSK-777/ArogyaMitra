@@ -85,6 +85,8 @@ The application strictly follows the Authoritative System Architecture diagram.
 
 ## 5. Security & AI Policy
 ### Security
+- **Aadhaar Offline e-KYC Identity Verification:** Authenticates patients cryptographically by parsing official UIDAI Offline Paperless e-KYC .zip packages, extracting the XML, and validating the digital signature. Safe memory parsing without persisting sensitive files.
+- **Rate Limiting:** Enforces strict limits on critical endpoints (e.g., 3 verification attempts/15 min) to prevent abuse.
 - **Authentication:** Stateless JWT tokens passed in the `Authorization: Bearer` header.
 - **RBAC:** Endpoints are strictly protected by roles (`ROLE_PATIENT`, `ROLE_DOCTOR`, `ROLE_RECEPTIONIST`, `ROLE_ADMIN`).
 - **Audit Trail:** The `AuditService` logs all critical mutations to the `audit_logs` table.
@@ -303,5 +305,6 @@ The API uses a global `GlobalExceptionHandler` to prevent any technical details 
   "errorCode": "INTERNAL_ERROR"
 }
 ```
+
 
 
