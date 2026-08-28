@@ -53,6 +53,14 @@ public class Patient {
     @Column(columnDefinition = "TEXT")
     private String medicalHistory;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    private String verificationMethod;
+    private String verificationReference;
+    private LocalDateTime verifiedAt;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -60,3 +68,6 @@ public class Patient {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 }
+
+
+

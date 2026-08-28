@@ -26,4 +26,16 @@ export const patientApi = {
         const response = await apiClient.get(`/api/public/doctors/department/${departmentId}`);
         return response.data;
     }
+
+    ,
+    verifyAadhaarOfflineEkyc: async (zipFile: File, shareCode: string): Promise<ApiResponse<any>> => {
+        const formData = new FormData();
+        formData.append('file', zipFile);
+        formData.append('shareCode', shareCode);
+        const response = await apiClient.post('/api/patients/me/aadhaar/offline-ekyc', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    }
 };
+

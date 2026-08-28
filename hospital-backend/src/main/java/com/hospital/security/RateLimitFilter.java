@@ -31,6 +31,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
         } else if (key.contains("/api/payments/create-order") || key.contains("/api/payments/verify")) {
             Bandwidth limit = Bandwidth.classic(10, Refill.intervally(10, Duration.ofMinutes(1)));
             return Bucket.builder().addLimit(limit).build();
+        } else if (key.contains("/api/patients/me/aadhaar")) {
+            Bandwidth limit = Bandwidth.classic(3, Refill.intervally(3, Duration.ofMinutes(15)));
+            return Bucket.builder().addLimit(limit).build();
         } else {
             Bandwidth limit = Bandwidth.classic(100, Refill.intervally(100, Duration.ofMinutes(1)));
             return Bucket.builder().addLimit(limit).build();
@@ -50,6 +53,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             if (path.startsWith("/api/auth/login")) keyType = "/api/auth/login";
             else if (path.startsWith("/api/auth/register")) keyType = "/api/auth/register";
             else if (path.startsWith("/api/payments/")) keyType = "/api/payments/";
+            else if (path.startsWith("/api/patients/me/aadhaar")) keyType = "/api/patients/me/aadhaar";
             String userPrincipal = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : clientIp;
             String key = userPrincipal + ":" + keyType;
 
@@ -64,5 +68,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+
 
 
