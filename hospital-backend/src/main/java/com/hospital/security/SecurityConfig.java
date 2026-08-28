@@ -21,14 +21,12 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${frontend.url:http://localhost:5173}")
-    private String frontendUrl;
+    @Value("${frontend.url:http://localhost:5173,https://sih-hospital-management.vercel.app,https://www.sih-hospital-management.vercel.app}")
+    private String[] frontendUrls;
 
-    private final RateLimitFilter rateLimitFilter;
     
-    public SecurityConfig(RateLimitFilter rateLimitFilter) {
-        this.rateLimitFilter = rateLimitFilter;
-    }
+    
+    
 
     @Bean
     public org.springframework.security.core.userdetails.UserDetailsService userDetailsService() {
@@ -48,7 +46,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl));
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrls));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
@@ -85,12 +83,16 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
 
-                http.addFilterBefore(rateLimitFilter, org.springframework.security.web.context.SecurityContextPersistenceFilter.class);
+                http.addFilterAfter(new RateLimitFilter(), org.springframework.web.filter.CorsFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
+
+
+
+
 
 
 
