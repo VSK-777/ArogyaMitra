@@ -84,6 +84,33 @@ public class DoctorService {
 
 
     @Transactional
+    public void startConsultation(String appointmentId, String doctorUserId) {
+        Doctor doctor = doctorRepository.findByUser_Id(
+            Long.parseLong(doctorUserId)
+        ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+        
+        Appointment appt = appointmentRepository.findByAppointmentId(appointmentId)
+            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            
+        if (!appt.getDoctor().getId().equals(doctor.getId())) {
+            throw new SecurityException("Unauthorized to update this appointment");
+        }
+        
+        if (appt.getCheckInStatus() != CheckInStatus.CHECKED_IN) {
+            throw new IllegalStateException("Patient has not checked in or already in consultation.");
+        }
+        
+        appt.setCheckInStatus(CheckInStatus.IN_CONSULTATION);
+        appointmentRepository.save(appt);
+        
+        queueTokenRepository.findByAppointment_Id(appt.getId()).ifPresent(token -> {
+            token.setStatus(TokenStatus.IN_CONSULTATION);
+            token.setCalledAt(LocalDateTime.now());
+            queueTokenRepository.save(token);
+        });
+    }
+
+    @Transactional
     public Consultation completeConsultation(CompleteConsultationRequest request, String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
             Long.parseLong(doctorUserId)

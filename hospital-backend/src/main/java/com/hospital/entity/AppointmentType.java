@@ -1,5 +1,5 @@
 package com.hospital.entity;
 
 public enum AppointmentType {
-    ONLINE, WALK_IN
+    ONLINE, WALK_IN, EMERGENCY
 }

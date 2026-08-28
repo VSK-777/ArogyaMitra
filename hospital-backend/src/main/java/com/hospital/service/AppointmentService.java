@@ -30,9 +30,16 @@ public class AppointmentService {
     private final HospitalRepository hospitalRepository;
     private final DepartmentRepository departmentRepository;
     private final QueueService queueService;
+    private final com.hospital.repository.QueueTokenRepository queueTokenRepository;
 
     @org.springframework.beans.factory.annotation.Value("${razorpay.key.secret:}")
     private String razorpaySecret;
+
+    @org.springframework.beans.factory.annotation.Value("${hospital.appointment.grace-period-minutes:15}")
+    private int gracePeriodMinutes;
+
+    @org.springframework.beans.factory.annotation.Value("${hospital.appointment.check-in-window-minutes:30}")
+    private int checkInWindowMinutes;
 
     @Transactional
     public void normalizePatientAppointments(Long patientId) {
@@ -42,12 +49,18 @@ public class AppointmentService {
         boolean changed = false;
 
         for (Appointment a : appointments) {
-            if (a.getStatus() == AppointmentStatus.BOOKED) {
+            if (a.getStatus() == AppointmentStatus.BOOKED && a.getCheckInStatus() == com.hospital.entity.CheckInStatus.NOT_CHECKED_IN) {
                 boolean isPast = a.getAppointmentDate().isBefore(today) || 
-                                 (a.getAppointmentDate().isEqual(today) && a.getSlotStart() != null && a.getSlotStart().isBefore(now));
+                                 (a.getAppointmentDate().isEqual(today) && a.getSlotStart() != null && 
+                                  a.getSlotStart().plusMinutes(gracePeriodMinutes).isBefore(now));
                 if (isPast) {
                     a.setStatus(AppointmentStatus.NO_SHOW);
                     changed = true;
+                    com.hospital.entity.QueueToken token = queueTokenRepository.findByAppointment_Id(a.getId()).orElse(null);
+                    if (token != null) {
+                        token.setStatus(com.hospital.entity.TokenStatus.NO_SHOW);
+                        queueTokenRepository.save(token);
+                    }
                 }
             }
         }
@@ -168,6 +181,59 @@ public class AppointmentService {
                 .status(appointment.getStatus())
                 .tokenId(appointment.getTokenId())
                 .build();
+    }
+
+    @Transactional
+    public void checkIn(String mobile, String appointmentId) {
+        Patient patient = patientRepository.findByMobile(mobile)
+            .orElseThrow(() -> new IllegalArgumentException("Patient not found."));
+
+        Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId)
+            .orElseThrow(() -> new IllegalArgumentException("Appointment not found."));
+
+        if (!appointment.getPatient().getId().equals(patient.getId())) {
+            throw new SecurityException("You can only check in for your own appointments.");
+        }
+
+        if (appointment.getStatus() != AppointmentStatus.BOOKED) {
+            throw new IllegalStateException("Appointment is not in BOOKED state.");
+        }
+
+        if (appointment.getCheckInStatus() != com.hospital.entity.CheckInStatus.NOT_CHECKED_IN) {
+            throw new IllegalStateException("Already checked in or in consultation.");
+        }
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalTime now = java.time.LocalTime.now();
+
+        if (appointment.getAppointmentDate().isAfter(today)) {
+            throw new IllegalStateException("Cannot check in before the appointment date.");
+        }
+        if (appointment.getAppointmentDate().isBefore(today)) {
+            throw new IllegalStateException("Appointment date has passed.");
+        }
+
+        if (appointment.getSlotStart() != null) {
+            java.time.LocalTime windowStart = appointment.getSlotStart().minusMinutes(checkInWindowMinutes);
+            if (now.isBefore(windowStart)) {
+                throw new IllegalStateException("Check-in is not yet open. Opens " + checkInWindowMinutes + " mins before slot.");
+            }
+            java.time.LocalTime expiryTime = appointment.getSlotStart().plusMinutes(gracePeriodMinutes);
+            if (now.isAfter(expiryTime)) {
+                appointment.setStatus(AppointmentStatus.NO_SHOW);
+                appointmentRepository.save(appointment);
+                throw new IllegalStateException("Appointment time has passed and was marked as NO_SHOW.");
+            }
+        }
+
+        appointment.setCheckInStatus(com.hospital.entity.CheckInStatus.CHECKED_IN);
+        appointmentRepository.save(appointment);
+
+        com.hospital.entity.QueueToken token = queueTokenRepository.findByAppointment_Id(appointment.getId()).orElse(null);
+        if (token != null) {
+            token.setStatus(com.hospital.entity.TokenStatus.WAITING);
+            queueTokenRepository.save(token);
+        }
     }
 }
 

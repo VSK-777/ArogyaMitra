@@ -10,6 +10,10 @@ export const patientApi = {
         const response = await apiClient.get('/api/patients/me/dashboard');
         return response.data;
     },
+    checkIn: async (appointmentId: string): Promise<ApiResponse<any>> => {
+        const response = await apiClient.post(`/api/patients/me/appointments/${appointmentId}/checkin`);
+        return response.data;
+    },
     getBookedSlots: async (doctorId: number, date: string): Promise<ApiResponse<string[]>> => {
         const response = await apiClient.get(`/api/appointments/slots?doctorId=${doctorId}&date=${date}`);
         return response.data;

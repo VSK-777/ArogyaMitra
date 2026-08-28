@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import AadhaarVerification from "./AadhaarVerification";
+import toast from 'react-hot-toast';
 import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -34,6 +35,20 @@ export default function PatientDashboard() {
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
+
+  const handleCheckIn = async (appointmentId: string) => {
+      try {
+          setLoading(true);
+          const res = await patientApi.checkIn(appointmentId);
+          if (res.success) {
+              toast.success('Successfully checked in!');
+              patientApi.getDashboard().then(r => setData(r.data)).finally(() => setLoading(false));
+          }
+      } catch (e: any) {
+          toast.error(getUserFriendlyMessage(e));
+          setLoading(false);
+      }
+  };
 
   const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data || {};
 
@@ -98,10 +113,30 @@ export default function PatientDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                         <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
-                        <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
-                        <p className="text-xs text-slate-400 mt-1">Token: {apt.queueToken?.tokenNumber || 'Pending'} | ID: {apt.appointmentId}</p>
+                        <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} at {apt.slotStart?.substring(0,5)} @ {apt.hospital?.name || 'Main Hospital'}</p>
+                        <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">{apt.status}</span>
+                    
+                    <div className="flex flex-col items-end gap-2">
+                        {apt.checkInStatus === 'NOT_CHECKED_IN' && (
+                            <>
+                                <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">Upcoming</span>
+                                <button onClick={() => handleCheckIn(apt.appointmentId)} className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-semibold hover:bg-blue-700 shadow-sm transition-colors">
+                                    Check In
+                                </button>
+                            </>
+                        )}
+                        {apt.checkInStatus === 'CHECKED_IN' && (
+                            <>
+                                <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">✓ Checked In</span>
+                                <p className="text-sm text-green-700 font-medium">Queue: {apt.tokenId || 'Pending'}</p>
+                                <p className="text-xs text-green-600">Waiting for Doctor</p>
+                            </>
+                        )}
+                        {apt.checkInStatus === 'IN_CONSULTATION' && (
+                            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 ring-1 ring-inset ring-blue-600/20">In Consultation</span>
+                        )}
+                    </div>
                   </div>
                 </div>
               ))

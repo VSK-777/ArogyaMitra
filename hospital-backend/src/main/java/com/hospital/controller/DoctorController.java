@@ -69,6 +69,14 @@ public class DoctorController {
     }
 
 
+    @PostMapping("/appointments/{appointmentId}/start")
+    public ResponseEntity<ApiResponse<String>> startConsultation(@PathVariable String appointmentId) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByMobile(mobile).orElseThrow();
+        doctorService.startConsultation(appointmentId, user.getId().toString());
+        return ResponseEntity.ok(ApiResponse.success("Consultation started", null));
+    }
+
     @PostMapping("/consultations/complete")
     public ResponseEntity<ApiResponse<Consultation>> completeConsultation(@RequestBody CompleteConsultationRequest request) {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();

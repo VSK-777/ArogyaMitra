@@ -32,7 +32,7 @@ public class QueueService {
                 .department(appointment.getDepartment())
                 .hospital(appointment.getHospital())
                 .queueDate(date)
-                .status(TokenStatus.WAITING)
+                .status(TokenStatus.BOOKED)
                 .build();
 
         return queueTokenRepository.save(token);

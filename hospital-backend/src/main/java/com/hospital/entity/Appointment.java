@@ -54,6 +54,15 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(255) default 'NOT_CHECKED_IN'")
+    @Builder.Default
+    private CheckInStatus checkInStatus = CheckInStatus.NOT_CHECKED_IN;
+
+    public CheckInStatus getCheckInStatus() {
+        return checkInStatus != null ? checkInStatus : CheckInStatus.NOT_CHECKED_IN;
+    }
+
     private String tokenId; // Unique string for token like TOKEN-17
     
     private String reason;

@@ -83,4 +83,11 @@ public class PatientController {
 
         return ResponseEntity.ok(ApiResponse.success("Success", data));
     }
+
+    @PostMapping("/me/appointments/{appointmentId}/checkin")
+    public ResponseEntity<ApiResponse<String>> checkIn(@PathVariable String appointmentId) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        appointmentService.checkIn(mobile, appointmentId);
+        return ResponseEntity.ok(ApiResponse.success("Successfully checked in.", null));
+    }
 }
