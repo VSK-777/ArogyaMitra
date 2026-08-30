@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const authSchema = z.object({
   fullName: z.string().optional(),
+  aadhaarNumber: z.string().optional(),
   mobile: z.string().regex(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string().optional(),
@@ -20,6 +21,13 @@ const authSchema = z.object({
         code: z.ZodIssueCode.custom,
         path: ['fullName'],
         message: "Full Name is required"
+      });
+    }
+    if (!data.aadhaarNumber || !/^\d{12}$/.test(data.aadhaarNumber)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['aadhaarNumber'],
+        message: "Aadhaar number must be exactly 12 digits"
       });
     }
     if (data.password !== data.confirmPassword) {
@@ -71,7 +79,7 @@ export default function Auth() {
         }
       } else {
         if (role === 'Patient') {
-          const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!);
+          const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!, data.aadhaarNumber!);
           if (res.success) {
              setApiSuccess("Registration successful. Please login.");
              toggleMode();
@@ -146,17 +154,31 @@ export default function Auth() {
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             
             {!isLogin && role === 'Patient' && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Full Name *
-                </label>
-                <input
-                  {...register("fullName")}
-                  className={`block w-full px-3 py-2 border ${errors.fullName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
-                  placeholder="e.g. Vajjha Sai Krishna"
-                />
-                {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
-              </div>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    {...register("fullName")}
+                    className={`block w-full px-3 py-2 border ${errors.fullName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                    placeholder="e.g. Vajjha Sai Krishna"
+                  />
+                  {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Aadhaar Number *
+                  </label>
+                  <input
+                    {...register("aadhaarNumber")}
+                    className={`block w-full px-3 py-2 border ${errors.aadhaarNumber ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                    placeholder="e.g. 123456789012"
+                    maxLength={12}
+                  />
+                  {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
+                </div>
+              </>
             )}
 
             <div>

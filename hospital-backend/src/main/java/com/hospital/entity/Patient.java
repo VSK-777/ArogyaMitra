@@ -36,6 +36,9 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private String mobile;
 
+    @Column(unique = true)
+    private String aadhaarNumber;
+
     private LocalDate dateOfBirth;
     private String gender;
     private String bloodGroup;

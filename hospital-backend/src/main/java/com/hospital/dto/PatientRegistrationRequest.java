@@ -18,4 +18,8 @@ public class PatientRegistrationRequest {
 
     @NotBlank(message = "Full name is required")
     private String fullName;
+
+    @NotBlank(message = "Aadhaar number is required")
+    @Pattern(regexp = "^\\d{12}$", message = "Aadhaar number must be exactly 12 digits")
+    private String aadhaarNumber;
 }

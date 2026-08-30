@@ -31,12 +31,17 @@ public class AuthService {
 
 
     @Transactional
-    public void registerPatient(String mobile, String password, String fullName) {
+    public void registerPatient(String mobile, String password, String fullName, String aadhaarNumber) {
         String normalizedMobile = MobileUtils.normalizeMobile(mobile);
         String trimmedName = fullName != null ? fullName.trim() : null;
         
         if (userRepository.findByMobile(normalizedMobile).isPresent()) {
             throw new RuntimeException("Mobile number is already registered.");
+        }
+
+        // Check if Aadhaar is already used
+        if (aadhaarNumber != null && patientRepository.findByAadhaarNumber(aadhaarNumber).isPresent()) {
+            throw new RuntimeException("Aadhaar number is already registered.");
         }
 
         Optional<Patient> existingPatientOpt = patientRepository.findByMobile(normalizedMobile);
@@ -56,6 +61,9 @@ public class AuthService {
             if (existingPatient.getFullName() == null || existingPatient.getFullName().trim().isEmpty()) {
                 existingPatient.setFullName(trimmedName);
             }
+            if (existingPatient.getAadhaarNumber() == null) {
+                existingPatient.setAadhaarNumber(aadhaarNumber);
+            }
             patientRepository.save(existingPatient);
         } else {
             Patient patient = Patient.builder()
@@ -63,6 +71,7 @@ public class AuthService {
                     .user(user)
                     .fullName(trimmedName)
                     .mobile(normalizedMobile)
+                    .aadhaarNumber(aadhaarNumber)
                     .build();
             patientRepository.save(patient);
         }

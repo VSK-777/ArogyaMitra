@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping("/patient/register")
     public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody PatientRegistrationRequest request) {
         try {
-            authService.registerPatient(request.getMobile(), request.getPassword(), request.getFullName());
+            authService.registerPatient(request.getMobile(), request.getPassword(), request.getFullName(), request.getAadhaarNumber());
             return ResponseEntity.ok(ApiResponse.success("Registration successful. Please login.", null));
         } catch (DataIntegrityViolationException e) {
             logger.warn("Registration data integrity violation for mobile: {}", request.getMobile());
