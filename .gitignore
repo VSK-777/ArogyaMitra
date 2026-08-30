@@ -28,3 +28,11 @@ frontend/*.local
 *.pdf
 *.py
 doctor_info.md
+DbCheck.java
+
+#other folders
+.agents
+.claude
+.vscode 
+.agent
+.cursor
