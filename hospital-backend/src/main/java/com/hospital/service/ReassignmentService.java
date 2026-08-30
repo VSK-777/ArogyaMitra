@@ -186,6 +186,10 @@ public class ReassignmentService {
     }
 
     private List<String> getAvailableSlotsForDoctor(Long doctorId, LocalDate date) {
+        if (unavailabilityRepository.isDoctorUnavailableOnDate(doctorId, date)) {
+            return new ArrayList<>();
+        }
+        
         List<Appointment> booked = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctorId, date);
         Map<Integer, Long> hourCounts = booked.stream()
                 .filter(a -> a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)
@@ -210,7 +214,7 @@ public class ReassignmentService {
         Long departmentId = appointment.getDepartment().getId();
         LocalDate date = appointment.getAppointmentDate();
         
-        List<Doctor> departmentDoctors = doctorRepository.findByDepartment_Id(departmentId);
+        List<Doctor> departmentDoctors = doctorRepository.findByDepartment_IdAndStatusTrue(departmentId);
         List<Map<String, Object>> options = new ArrayList<>();
         
         for (Doctor doc : departmentDoctors) {
