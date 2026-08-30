@@ -35,6 +35,6 @@ public class QueueService {
                 .status(TokenStatus.BOOKED)
                 .build();
 
-        return queueTokenRepository.save(token);
+        return queueTokenRepository.saveAndFlush(token);
     }
 }

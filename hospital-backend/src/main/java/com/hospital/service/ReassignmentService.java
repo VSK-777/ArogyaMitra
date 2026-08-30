@@ -217,26 +217,40 @@ public class ReassignmentService {
         Appointment app = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
         Doctor newDoctor = doctorRepository.findById(newDoctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
         
-        LocalTime newSlotStart = LocalTime.parse(newSlotStartStr);
-        LocalTime newSlotEnd = newSlotStart.plusMinutes(15); // Wait, frontend creates slots by hour "10:00". Let's stick to what's requested
+        LocalTime requestedHour = LocalTime.parse(newSlotStartStr);
         
-        // Final availability check
-        long overlapping = appointmentRepository.findByDoctor_IdAndAppointmentDate(newDoctorId, app.getAppointmentDate()).stream()
+        List<Appointment> existingInHour = appointmentRepository.findByDoctor_IdAndAppointmentDate(newDoctorId, app.getAppointmentDate()).stream()
             .filter(a -> a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)
-            .filter(a -> a.getSlotStart().getHour() == newSlotStart.getHour())
-            .count();
-        
-        if (overlapping >= 4) {
+            .filter(a -> a.getSlotStart() != null && a.getSlotStart().getHour() == requestedHour.getHour())
+            .toList();
+            
+        if (existingInHour.size() >= 4) {
             throw new RuntimeException("That appointment slot is no longer available.");
         }
 
+        LocalTime exactSlotStart = null;
+        for (int i = 0; i < 4; i++) {
+            LocalTime candidate = requestedHour.withMinute(i * 15).withSecond(0).withNano(0);
+            boolean taken = existingInHour.stream().anyMatch(a -> candidate.equals(a.getSlotStart()));
+            if (!taken) {
+                exactSlotStart = candidate;
+                break;
+            }
+        }
+        
+        if (exactSlotStart == null) {
+            throw new RuntimeException("No exact 15-minute slot found within this hour.");
+        }
+
+        LocalTime newSlotEnd = exactSlotStart.plusMinutes(15);
+        
         // Save History
         AppointmentReassignment history = AppointmentReassignment.builder()
                 .appointment(app)
                 .originalDoctor(app.getDoctor())
                 .newDoctor(newDoctor)
                 .originalSlotStart(app.getAppointmentDate().atTime(app.getSlotStart()))
-                .newSlotStart(app.getAppointmentDate().atTime(newSlotStart))
+                .newSlotStart(app.getAppointmentDate().atTime(exactSlotStart))
                 .originalToken(app.getTokenId())
                 .reason(app.getReassignmentReason())
                 .reassignedBy("ADMIN")
@@ -256,23 +270,23 @@ public class ReassignmentService {
         }
 
         app.setDoctor(newDoctor);
-        app.setSlotStart(newSlotStart);
-        app.setSlotEnd(newSlotStart.plusMinutes(15));
+        app.setSlotStart(exactSlotStart);
+        app.setSlotEnd(newSlotEnd);
         app.setStatus(AppointmentStatus.REASSIGNED);
         
         QueueToken newToken = queueService.generateToken(app);
         app.setTokenId(String.format("T-%03d", newToken.getTokenNumber()));
         
         history.setNewToken(app.getTokenId());
-        reassignmentRepository.save(history);
-        appointmentRepository.save(app);
+        reassignmentRepository.saveAndFlush(history);
+        appointmentRepository.saveAndFlush(app);
 
         // Notify patient
         Notification notif = Notification.builder()
                 .patient(app.getPatient())
                 .type("APPOINTMENT_REASSIGNED")
                 .message(String.format("Your appointment has been reassigned to %s. New Time: %s. New Token: %s.", 
-                        newDoctor.getUser().getName(), newSlotStart.toString(), app.getTokenId()))
+                        newDoctor.getUser().getName(), exactSlotStart.toString(), app.getTokenId()))
                 .isRead(false)
                 .build();
         notificationRepository.save(notif);
