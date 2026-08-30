@@ -76,6 +76,9 @@ export default function ReceptionistDashboard() {
                       <h3 className="font-bold text-green-900">Patient Found</h3>
                       <p className="text-sm text-green-800">Name: {patient.fullName}</p>
                       <p className="text-sm text-green-800">ID: {patient.patientId}</p>
+                      {patient.aadhaarNumber && (
+                        <p className="text-sm text-green-800">Aadhaar: {patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</p>
+                      )}
                       
                       <div className="mt-4 flex gap-2">
                           <span className="text-xs text-green-700 bg-green-200 px-2 py-1 rounded">Profile Verified</span>
