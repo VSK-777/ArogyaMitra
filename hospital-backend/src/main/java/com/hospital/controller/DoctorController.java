@@ -32,6 +32,14 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Queue fetched", queue));
     }
 
+    @GetMapping("/queue/upcoming")
+    public ResponseEntity<ApiResponse<List<Appointment>>> getUpcomingAppointments() {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByMobile(mobile).orElseThrow();
+        List<Appointment> upcoming = doctorService.getUpcomingAppointments(user.getId().toString());
+        return ResponseEntity.ok(ApiResponse.success("Upcoming appointments fetched", upcoming));
+    }
+
     @GetMapping("/consultations")
     public ResponseEntity<ApiResponse<List<Consultation>>> getPastConsultations() {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();

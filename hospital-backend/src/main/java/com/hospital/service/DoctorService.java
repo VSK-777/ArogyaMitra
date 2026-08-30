@@ -24,6 +24,24 @@ public class DoctorService {
     private final PrescriptionRepository prescriptionRepository;
     private final AppointmentRepository appointmentRepository;
 
+    public List<Appointment> getUpcomingAppointments(String doctorUserId) {
+        Doctor doctor = doctorRepository.findByUser_Id(
+            Long.parseLong(doctorUserId)
+        ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+        return appointmentRepository.findAll().stream() // this is inefficient for large DBs but sufficient for prototype, let's use a query if available. wait, let's just use it and filter.
+                .filter(a -> a.getDoctor() != null && a.getDoctor().getId().equals(doctor.getId()))
+                .filter(a -> a.getAppointmentDate().isAfter(LocalDate.now()) || (a.getAppointmentDate().isEqual(LocalDate.now()) && (a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)))
+                .sorted((a, b) -> {
+                    int dateCmp = a.getAppointmentDate().compareTo(b.getAppointmentDate());
+                    if (dateCmp != 0) return dateCmp;
+                    if (a.getSlotStart() == null) return -1;
+                    if (b.getSlotStart() == null) return 1;
+                    return a.getSlotStart().compareTo(b.getSlotStart());
+                })
+                .toList();
+    }
+
     public List<QueueToken> getTodayQueue(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
             Long.parseLong(doctorUserId) 

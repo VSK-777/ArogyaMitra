@@ -31,6 +31,7 @@ public class AppointmentService {
     private final DepartmentRepository departmentRepository;
     private final QueueService queueService;
     private final com.hospital.repository.QueueTokenRepository queueTokenRepository;
+    private final com.hospital.repository.DoctorUnavailabilityRepository unavailabilityRepository;
 
     @org.springframework.beans.factory.annotation.Value("${razorpay.key.secret:}")
     private String razorpaySecret;
@@ -113,6 +114,11 @@ public class AppointmentService {
         // 5. Validate appointment date is not in the past
         if (request.getAppointmentDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Appointment date cannot be in the past. Please select a future date.");
+        }
+
+        // 5.5 Validate doctor is available on this date
+        if (unavailabilityRepository.isDoctorUnavailableOnDate(doctor.getId(), request.getAppointmentDate())) {
+            throw new IllegalStateException("The selected doctor is unavailable on this date due to an urgent hospital responsibility.");
         }
 
         // 6. Default appointmentType to ONLINE if not provided

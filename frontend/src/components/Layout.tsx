@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Stethoscope, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users } from 'lucide-react';
+import { Stethoscope, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -25,6 +25,7 @@ export default function Layout() {
       case 'Doctor':
         return [
           { name: 'My Queue', path: '/doctor/dashboard', icon: Users },
+          { name: 'Upcoming Appointments', path: '/doctor/upcoming', icon: Calendar },
           { name: 'Past Consultations', path: '/doctor/consultations', icon: ClipboardList },
           { name: 'Settings', path: '/doctor/settings', icon: Settings },
         ];

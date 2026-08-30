@@ -15,6 +15,7 @@ import SystemLogs from './modules/admin/SystemLogs';
 import ReassignmentManager from './modules/admin/ReassignmentManager';
 import PastConsultations from './modules/doctor/PastConsultations';
 import DoctorSettings from './modules/doctor/DoctorSettings';
+import DoctorUpcomingAppointments from './modules/doctor/DoctorUpcomingAppointments';
 import { ProtectedRoute, RoleProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRoutes';
 import Layout from './components/Layout';
 
@@ -45,6 +46,7 @@ export default function App() {
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={['ROLE_DOCTOR']} />}>
                   <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                  <Route path="/doctor/upcoming" element={<DoctorUpcomingAppointments />} />
                   <Route path="/doctor/consultations" element={<PastConsultations />} />
                   <Route path="/doctor/settings" element={<DoctorSettings />} />
                   <Route path="/doctor/consultation/:id" element={<ConsultationMode />} />

@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import com.hospital.entity.DoctorUnavailability;
+import com.hospital.repository.DoctorUnavailabilityRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,106 @@ public class ReassignmentService {
     private final AppointmentReassignmentRepository reassignmentRepository;
     private final NotificationRepository notificationRepository;
     private final AppointmentService appointmentService;
+    private final DoctorUnavailabilityRepository unavailabilityRepository;
+
+    public List<Map<String, Object>> previewAffectedAppointments(Long doctorId, LocalDate startDate, LocalDate endDate) {
+        List<Appointment> appointments = appointmentRepository.findByDoctor_IdAndAppointmentDateBetween(doctorId, startDate, endDate);
+        return appointments.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.BOOKED)
+                .map(a -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("appointmentId", a.getId());
+                    map.put("patientName", a.getPatient().getFullName());
+                    map.put("date", a.getAppointmentDate().toString());
+                    map.put("slotStart", a.getSlotStart().toString());
+                    map.put("department", a.getDepartment().getName());
+                    map.put("token", a.getTokenId());
+                    map.put("status", a.getStatus().name());
+                    return map;
+                }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void createUnavailability(Long doctorId, LocalDate startDate, LocalDate endDate, String reason) {
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        DoctorUnavailability unavailability = DoctorUnavailability.builder()
+                .doctor(doctor)
+                .startDate(startDate)
+                .endDate(endDate)
+                .reason(reason)
+                .createdBy(username)
+                .build();
+        unavailabilityRepository.save(unavailability);
+
+        List<Appointment> appointments = appointmentRepository.findByDoctor_IdAndAppointmentDateBetween(doctorId, startDate, endDate);
+        for (Appointment app : appointments) {
+            if (app.getStatus() == AppointmentStatus.BOOKED || app.getStatus() == AppointmentStatus.REASSIGNED) {
+                app.setStatus(AppointmentStatus.REASSIGNMENT_PENDING);
+                app.setReassignmentReason(reason);
+                appointmentRepository.save(app);
+                
+                Notification notif = Notification.builder()
+                        .patient(app.getPatient())
+                        .type("REASSIGNMENT_PENDING")
+                        .message("We apologize for the inconvenience. Your doctor is currently unavailable due to an urgent hospital responsibility. Our hospital team is arranging the earliest suitable consultation.")
+                        .isRead(false)
+                        .build();
+                notificationRepository.save(notif);
+            }
+        }
+    }
+
+    @Transactional
+    public Map<String, Object> autoReschedule(Long doctorId, LocalDate startDate, LocalDate endDate) {
+        List<Appointment> pendingAppointments = appointmentRepository.findByDoctor_IdAndAppointmentDateBetween(doctorId, startDate, endDate).stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING)
+                .toList();
+
+        int successCount = 0;
+        int failedCount = 0;
+        Map<Long, Integer> replacementAllocation = new HashMap<>();
+
+        for (Appointment app : pendingAppointments) {
+            try {
+                List<Map<String, Object>> replacements = findReplacements(app.getId());
+                if (!replacements.isEmpty()) {
+                    // Pick the first available replacement
+                    Map<String, Object> bestReplacement = replacements.get(0);
+                    Long newDocId = (Long) bestReplacement.get("doctorId");
+                    String newSlot = (String) bestReplacement.get("slotStart");
+
+                    reassignAppointment(app.getId(), newDocId, newSlot);
+                    successCount++;
+                    replacementAllocation.put(newDocId, replacementAllocation.getOrDefault(newDocId, 0) + 1);
+                } else {
+                    failedCount++;
+                }
+            } catch (Exception e) {
+                failedCount++;
+            }
+        }
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("total", pendingAppointments.size());
+        summary.put("successful", successCount);
+        summary.put("pending", failedCount);
+        
+        List<Map<String, Object>> allocationDetails = new ArrayList<>();
+        for (Map.Entry<Long, Integer> entry : replacementAllocation.entrySet()) {
+            Doctor d = doctorRepository.findById(entry.getKey()).orElse(null);
+            if (d != null) {
+                Map<String, Object> alloc = new HashMap<>();
+                alloc.put("doctorName", d.getUser().getName());
+                alloc.put("count", entry.getValue());
+                allocationDetails.add(alloc);
+            }
+        }
+        summary.put("allocations", allocationDetails);
+
+        return summary;
+    }
 
     @Transactional
     public void markDoctorUnavailable(Long doctorId, LocalDate date, String reason) {
