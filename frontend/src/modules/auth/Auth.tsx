@@ -167,24 +167,27 @@ export default function Auth() {
                   />
                   {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
                 </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Aadhaar Number *
-                    </label>
-                    <input
-                      {...register("aadhaarNumber", {
-                        onChange: (e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          const formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
-                          e.target.value = formatted;
-                        }
-                      })}
-                      className={`block w-full px-3 py-2 border ${errors.aadhaarNumber ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
-                      placeholder="e.g. 1234 5678 9012"
-                      maxLength={14}
-                    />
-                    {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
-                  </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Aadhaar Number *
+                      </label>
+                      <input
+                        {...register("aadhaarNumber", {
+                          onChange: (e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            const formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+                            e.target.value = formatted;
+                          }
+                        })}
+                        className={`block w-full px-3 py-2 border ${errors.aadhaarNumber ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                        placeholder="e.g. 1234 5678 9012"
+                        maxLength={14}
+                      />
+                      {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
+                      <div className="mt-2 text-sm text-slate-500 flex items-center justify-between">
+                        <span>Can't use the Aadhaar App? <a href="#" onClick={(e) => e.preventDefault()} className="text-blue-600 font-medium hover:underline">Continue with Offline e-KYC</a></span>
+                      </div>
+                    </div>
               </>
             )}
 
