@@ -16,10 +16,10 @@ The AI-Powered Hospital Appointment, Pre-Consultation & Medical Documentation Sy
 Layered architecture: `Controller -> Service -> Repository -> Database`.
 Providers (`AiProvider`, `SpeechToTextProvider`) abstract third-party API calls, enabling easy swapping and `DEMO_MODE` capabilities.
 
-### 3.1 Aadhaar Identity Verification
-- **Implementation:** Cryptographic validation of UIDAI Paperless Offline e-KYC (.zip/.xml).
-- **Mechanism:** Zip decryption using Zip4j and Share Code, XML Digital Signature validation using javax.xml.crypto, XXE-safe parsing.
-- **Privacy:** Adheres to UIDAI data minimization by avoiding persistent storage of XML, ZIP, or Aadhaar numbers.
+### 3.1 Aadhaar Integration
+- **Implementation:** Secure collection of Aadhaar number at registration with real-time UI formatting.
+- **Mechanism:** Displays across the platform (Patient Dashboard, Doctor Dashboard, Receptionist Patient Search) as a beautifully styled, physical-card-like component.
+- **Privacy:** Minimalist approach that avoids heavy KYC parsing or persistent storage of XML/ZIP files, while providing fallback navigation to Offline e-KYC.
 
 ## 4. User Roles
 - `ROLE_PATIENT`: Books appointments, does pre-consultation, views own records.

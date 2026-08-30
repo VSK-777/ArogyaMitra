@@ -108,10 +108,10 @@ The frontend is built with React + Vite, designed for speed and modularity.
 
 ---
 
-## 5. Security Summary
-*   **Aadhaar Offline e-KYC Identity Verification:** Authenticates patients cryptographically by parsing official UIDAI Offline Paperless e-KYC .zip packages, extracting the XML, validating the digital signature via javax.xml.crypto.dsig.XMLSignature, and safely discarding the ZIP and XML to minimize data persistence.
-*   **Rate Limiting & Anti-Brute-Force:** API rate limiting enforces a maximum of 3 Aadhaar verification attempts per 15 minutes to prevent Share Code brute-forcing.
-*   **No Mock Data:** There is zero hardcoded mock data in the UI. If you see an appointment, it exists in the MySQL database.
+## 5. Security & Privacy Summary
+*   **Aadhaar Number Integration:** Captures the patient's Aadhaar number securely at registration and seamlessly displays it as a formatted, physical-card-style element across Patient, Doctor, and Receptionist dashboards, providing a quick visual reference without persisting heavy KYC documents.
+*   **Offline e-KYC Support:** The registration flow provides built-in navigation and support for patients who cannot use the Aadhaar app, directing them to Offline e-KYC options.
+*   **No Mock Data:** There is zero hardcoded mock data in the UI. If you see an appointment, it exists in the database.
 *   **Passwords:** Encrypted via `BCryptPasswordEncoder`.
 *   **APIs:** Secured via `SecurityFilterChain`. Only `/api/auth`, `/api/hospitals`, and `/api/departments` are open to the public. All other endpoints require a valid JWT.
 
