@@ -94,16 +94,36 @@ public class ReassignmentService {
             try {
                 List<Map<String, Object>> replacements = findReplacements(app.getId());
                 if (!replacements.isEmpty()) {
-                    // Pick the first available replacement
                     Map<String, Object> bestReplacement = replacements.get(0);
                     Long newDocId = (Long) bestReplacement.get("doctorId");
                     String newSlot = (String) bestReplacement.get("slotStart");
 
-                    reassignAppointment(app.getId(), newDocId, newSlot);
+                    reassignAppointment(app.getId(), newDocId, newSlot, app.getAppointmentDate());
                     successCount++;
                     replacementAllocation.put(newDocId, replacementAllocation.getOrDefault(newDocId, 0) + 1);
                 } else {
-                    failedCount++;
+                    // OPTION B: Fallback to original doctor on the next available day
+                    LocalDate nextAvailableDate = null;
+                    String nextAvailableSlot = null;
+                    
+                    // Search up to 30 days ahead for an available slot
+                    for (int i = 1; i <= 30; i++) {
+                        LocalDate candidateDate = endDate.plusDays(i);
+                        List<String> availableSlots = getAvailableSlotsForDoctor(doctorId, candidateDate);
+                        if (!availableSlots.isEmpty()) {
+                            nextAvailableDate = candidateDate;
+                            nextAvailableSlot = availableSlots.get(0);
+                            break;
+                        }
+                    }
+                    
+                    if (nextAvailableDate != null && nextAvailableSlot != null) {
+                        reassignAppointment(app.getId(), doctorId, nextAvailableSlot, nextAvailableDate);
+                        successCount++;
+                        replacementAllocation.put(doctorId, replacementAllocation.getOrDefault(doctorId, 0) + 1);
+                    } else {
+                        failedCount++;
+                    }
                 }
             } catch (Exception e) {
                 failedCount++;
@@ -215,11 +235,17 @@ public class ReassignmentService {
     @Transactional
     public void reassignAppointment(Long appointmentId, Long newDoctorId, String newSlotStartStr) {
         Appointment app = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
+        reassignAppointment(appointmentId, newDoctorId, newSlotStartStr, app.getAppointmentDate());
+    }
+
+    @Transactional
+    public void reassignAppointment(Long appointmentId, Long newDoctorId, String newSlotStartStr, LocalDate newDate) {
+        Appointment app = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
         Doctor newDoctor = doctorRepository.findById(newDoctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
         
         LocalTime requestedHour = LocalTime.parse(newSlotStartStr);
         
-        List<Appointment> existingInHour = appointmentRepository.findByDoctor_IdAndAppointmentDate(newDoctorId, app.getAppointmentDate()).stream()
+        List<Appointment> existingInHour = appointmentRepository.findByDoctor_IdAndAppointmentDate(newDoctorId, newDate).stream()
             .filter(a -> a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)
             .filter(a -> a.getSlotStart() != null && a.getSlotStart().getHour() == requestedHour.getHour())
             .toList();
@@ -270,7 +296,9 @@ public class ReassignmentService {
             queueTokenRepository.flush(); // Force DELETE before the new token INSERT to avoid @OneToOne unique constraint violation
         }
 
+        app.setAppointmentDate(newDate);
         app.setDoctor(newDoctor);
+        app.setDepartment(newDoctor.getDepartment());
         app.setSlotStart(exactSlotStart);
         app.setSlotEnd(newSlotEnd);
         app.setStatus(AppointmentStatus.REASSIGNED);
@@ -286,8 +314,8 @@ public class ReassignmentService {
         Notification notif = Notification.builder()
                 .patient(app.getPatient())
                 .type("APPOINTMENT_REASSIGNED")
-                .message(String.format("Your appointment has been reassigned to %s. New Time: %s. New Token: %s.", 
-                        newDoctor.getUser().getName(), exactSlotStart.toString(), app.getTokenId()))
+                .message(String.format("Your appointment has been reassigned to %s. New Date: %s. New Time: %s. New Token: %s.", 
+                        newDoctor.getUser().getName(), newDate.toString(), exactSlotStart.toString(), app.getTokenId()))
                 .isRead(false)
                 .build();
         notificationRepository.save(notif);
