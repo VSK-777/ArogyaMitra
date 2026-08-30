@@ -88,7 +88,10 @@ export default function DoctorDashboard() {
                   {queue.filter(q => q.status === 'IN_CONSULTATION').map(q => (
                       <div key={q.id} className="p-4 flex items-center justify-between">
                           <div>
-                              <p className="font-bold text-slate-900 text-xl">{q.appointment?.patient?.fullName}</p>
+                              <p className="font-bold text-slate-900 text-xl">
+                                {q.appointment?.patient?.fullName}
+                                {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
+                              </p>
                               <p className="text-sm font-medium text-slate-700">Type: {q.appointment?.appointmentType} • Queue: T-{q.tokenNumber}</p>
                           </div>
                           <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700">Resume / Complete</button>
@@ -107,7 +110,10 @@ export default function DoctorDashboard() {
                   {queue.filter(q => q.appointment?.appointmentType === 'EMERGENCY' && q.status !== 'COMPLETED' && q.status !== 'NO_SHOW' && q.status !== 'IN_CONSULTATION').map(q => (
                       <div key={q.id} className="p-4 flex items-center justify-between">
                           <div>
-                              <p className="font-bold text-slate-900 text-lg">{q.appointment?.patient?.fullName}</p>
+                                <p className="font-bold text-slate-900 text-lg">
+                                  {q.appointment?.patient?.fullName}
+                                  {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
+                                </p>
                               <p className="text-sm font-medium text-red-600">Priority: HIGH • Status: {q.status}</p>
                           </div>
                           <button onClick={() => handleStartConsultation(q.appointment?.appointmentId)} className="bg-red-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-red-700">Start Emergency</button>
@@ -126,7 +132,10 @@ export default function DoctorDashboard() {
                   {queue.filter(q => q.appointment?.appointmentType === 'WALK_IN' && q.status === 'WAITING').map(q => (
                       <div key={q.id} className="p-4 flex items-center justify-between">
                           <div>
-                              <p className="font-bold text-slate-900 text-lg">{q.appointment?.patient?.fullName}</p>
+                                <p className="font-bold text-slate-900 text-lg">
+                                  {q.appointment?.patient?.fullName}
+                                  {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
+                                </p>
                               <p className="text-sm font-medium text-slate-500">Status: {q.status} • Queue: T-{q.tokenNumber}</p>
                           </div>
                           <button onClick={() => handleStartConsultation(q.appointment?.appointmentId)} className="bg-purple-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-purple-700">Start Walk-In</button>
@@ -149,7 +158,10 @@ export default function DoctorDashboard() {
                         <div className="flex items-center gap-4">
                             <div className="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center font-bold text-slate-500 text-lg">{q.tokenNumber}</div>
                             <div>
-                                <p className="font-bold text-slate-900 text-lg">{q.appointment?.patient?.fullName}</p>
+                                  <p className="font-bold text-slate-900 text-lg">
+                                  {q.appointment?.patient?.fullName}
+                                  {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
+                                </p>
                                 <p className="text-sm text-slate-500 font-medium">Time: {q.appointment?.slotStart?.substring(0,5)} • ✓ Checked In</p>
                             </div>
                         </div>
@@ -174,7 +186,10 @@ export default function DoctorDashboard() {
                     <div key={q.id} className="p-4 flex items-center justify-between transition-colors">
                         <div className="flex items-center gap-4">
                             <div>
-                                <p className="font-bold text-slate-900 text-lg">{q.appointment?.patient?.fullName}</p>
+                                  <p className="font-bold text-slate-900 text-lg">
+                                  {q.appointment?.patient?.fullName}
+                                  {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
+                                </p>
                                 <p className="text-sm text-slate-500 font-medium">Time: {q.appointment?.slotStart?.substring(0,5) || 'N/A'} • Type: {q.appointment?.appointmentType}</p>
                             </div>
                         </div>

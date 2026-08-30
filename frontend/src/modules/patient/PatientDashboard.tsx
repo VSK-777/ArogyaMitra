@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import AadhaarVerification from "./AadhaarVerification";
 import toast from 'react-hot-toast';
 import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
@@ -50,14 +49,21 @@ export default function PatientDashboard() {
       }
   };
 
-  const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments } = data || {};
+  const { upcomingAppointmentsCount, completedAppointmentsCount, prescriptionCount, upcomingAppointments, patient } = data || {};
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Good morning, {name || 'Patient'}</h1>
-          <p className="text-slate-500 text-sm mt-1">Here is your healthcare summary.</p>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-slate-500 text-sm">Here is your healthcare summary.</p>
+            {patient?.aadhaarNumber && (
+              <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">
+                Aadhaar: {patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}
+              </span>
+            )}
+          </div>
         </div>
         <button onClick={() => navigate('/patient/book')} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 shadow-sm transition-colors">
           Book New Appointment
@@ -70,8 +76,6 @@ export default function PatientDashboard() {
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completedAppointmentsCount}</p></div></div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-purple-100"><FileText className="h-6 w-6 text-purple-600" /></div><div><p className="text-sm font-medium text-slate-500">Prescriptions</p><p className="text-2xl font-bold text-slate-900">{prescriptionCount}</p></div></div>
       </div>
-
-      <AadhaarVerification patientData={data} />
 
 
       {upcomingAppointmentsCount > 0 && (

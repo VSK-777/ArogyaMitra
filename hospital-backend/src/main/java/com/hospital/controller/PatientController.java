@@ -72,6 +72,7 @@ public class PatientController {
         long prescriptionCount = prescriptionRepository.findByPatient_Id(patient.getId()).size();
 
         Map<String, Object> data = new HashMap<>();
+        data.put("patient", patient);
         data.put("upcomingAppointmentsCount", upcoming.size());
         data.put("completedAppointmentsCount", visited.size());
         data.put("notVisitedCount", notVisited.size());
