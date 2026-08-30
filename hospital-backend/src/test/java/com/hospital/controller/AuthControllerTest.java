@@ -53,7 +53,7 @@ public class AuthControllerTest {
     @Test
     public void testRegister_Duplicate() throws Exception {
         doThrow(new RuntimeException("Mobile number is already registered."))
-            .when(authService).registerPatient(anyString(), anyString(), anyString());
+            .when(authService).registerPatient(anyString(), anyString(), anyString(), anyString());
 
         PatientRegistrationRequest request = new PatientRegistrationRequest();
         request.setMobile("9999999999");
