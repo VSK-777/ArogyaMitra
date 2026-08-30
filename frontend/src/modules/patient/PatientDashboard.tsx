@@ -59,11 +59,13 @@ export default function PatientDashboard() {
             <p className="text-slate-500 text-sm mt-1">Here is your healthcare summary.</p>
           </div>
           {patient?.aadhaarNumber && (
-            <div className="bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:items-end">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Aadhaar Number</span>
-              <span className="text-xl font-bold text-slate-800 tracking-widest font-mono">
-                {patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}
-              </span>
+            <div className="bg-white px-6 py-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:items-end min-w-[280px]">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2">Aadhaar Number</span>
+              <div className="flex gap-5 text-2xl font-bold text-slate-800 tracking-wider font-mono">
+                {patient.aadhaarNumber.match(/.{1,4}/g)?.map((part: string, idx: number) => (
+                  <span key={idx}>{part}</span>
+                ))}
+              </div>
             </div>
           )}
         </div>
