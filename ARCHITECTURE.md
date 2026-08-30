@@ -118,3 +118,14 @@ The frontend is built with React + Vite, designed for speed and modularity.
 
 
 
+
+## 6. Advanced Clinical Operations
+
+### 6.1 Doctor Unavailability & Bulk Rescheduling Engine
+A critical real-world hospital requirement is handling sudden doctor unavailabilities (surgery, emergency, illness) without arbitrarily canceling patient appointments.
+*   **The Problem:** Canceling an appointment deletes the patient's place in line, leading to severe patient dissatisfaction and manual rescheduling chaos.
+*   **The AI Reassignment Engine:**
+    *   **Same-Day Peer Distribution:** The system algorithmically scans the department for other doctors with available slots on the exact same day. If found, it silently reassigns the patient, calculates a new 15-minute slot based on the peer doctor's existing load, and regenerates a fresh Queue Token.
+    *   **Automated Next-Day Fallback (Option B):** If no peer doctors are available on the same day, the algorithm calculates the *original doctor's* next available working day (scanning up to 3 days post-unavailability). It automatically pushes the appointment to this new date, preserving the patient's booking.
+    *   **Graceful Degradation (Pending Manual):** If both automated attempts fail, the system parks the appointment in a REASSIGNMENT_PENDING state. This prevents data loss and surfaces the appointment to the Receptionist/Admin queue for manual phone-call resolution.
+*   **Database Constraints & Migrations:** The engine is built on robust PostgreSQL transactions. A dedicated startup fixer (DatabaseConstraintFixer) patches legacy CHECK constraints to ensure new enum values (REASSIGNMENT_PENDING, REASSIGNED) are accepted natively by the database engine.
