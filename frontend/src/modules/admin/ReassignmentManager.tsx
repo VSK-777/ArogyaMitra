@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Users, Loader2, AlertTriangle, CheckCircle, RefreshCcw, UserPlus } from "lucide-react";
+import { Loader2, AlertTriangle, CheckCircle, RefreshCcw } from "lucide-react";
 import toast from "react-hot-toast";
-import apiClient from "../../api/axiosConfig";
+import { apiClient } from "../../api/client";
 
 export default function ReassignmentManager() {
     const [doctors, setDoctors] = useState<any[]>([]);
@@ -16,7 +16,7 @@ export default function ReassignmentManager() {
 
     useEffect(() => {
         // Fetch all doctors for the dropdown
-        apiClient.get("/api/admin/doctors").then(res => {
+        apiClient.get("/api/admin/doctors").then((res: any) => {
             if (res.data.success) {
                 // Map to match the expected UI fields
                 const formatted = res.data.data.map((d: any) => ({
