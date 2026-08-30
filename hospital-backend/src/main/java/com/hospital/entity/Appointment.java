@@ -59,6 +59,16 @@ public class Appointment {
     @Builder.Default
     private CheckInStatus checkInStatus = CheckInStatus.NOT_CHECKED_IN;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_doctor_id")
+    private Doctor originalDoctor;
+    
+    private LocalTime originalSlotStart;
+    private String originalTokenId;
+    private String originalAppointmentId;
+    
+    private String reassignmentReason;
+
     public CheckInStatus getCheckInStatus() {
         return checkInStatus != null ? checkInStatus : CheckInStatus.NOT_CHECKED_IN;
     }

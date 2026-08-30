@@ -69,13 +69,26 @@ export default function PatientDashboard() {
             </div>
           )}
         </div>
-      
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-blue-100"><Calendar className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Upcoming</p><p className="text-2xl font-bold text-slate-900">{upcomingAppointmentsCount}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-orange-100"><Clock className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Not Visited</p><p className="text-2xl font-bold text-slate-900">{data.notVisitedCount}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completedAppointmentsCount}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-purple-100"><FileText className="h-6 w-6 text-purple-600" /></div><div><p className="text-sm font-medium text-slate-500">Prescriptions</p><p className="text-2xl font-bold text-slate-900">{prescriptionCount}</p></div></div>
-      </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-blue-100"><Calendar className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Upcoming</p><p className="text-2xl font-bold text-slate-900">{upcomingAppointmentsCount}</p></div></div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-orange-100"><Clock className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Not Visited</p><p className="text-2xl font-bold text-slate-900">{data.notVisitedCount}</p></div></div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completedAppointmentsCount}</p></div></div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-purple-100"><FileText className="h-6 w-6 text-purple-600" /></div><div><p className="text-sm font-medium text-slate-500">Prescriptions</p><p className="text-2xl font-bold text-slate-900">{prescriptionCount}</p></div></div>
+        </div>
+
+        {data.notifications && data.notifications.length > 0 && (
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+            <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><AlertCircle className="h-5 w-5" /> Notifications</h3>
+            <div className="space-y-2">
+              {data.notifications.map((n: any) => (
+                <div key={n.id} className="bg-white p-3 rounded shadow-sm border border-blue-100 text-sm text-blue-800">
+                  <span className="font-semibold">{n.type === 'REASSIGNMENT_PENDING' ? 'Action Required' : 'Update'}: </span>
+                  {n.message}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
 
       {upcomingAppointmentsCount > 0 && (
@@ -119,10 +132,19 @@ export default function PatientDashboard() {
                         <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} at {apt.slotStart?.substring(0,5)} @ {apt.hospital?.name || 'Main Hospital'}</p>
                         <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
+                        {apt.status === 'REASSIGNED' && apt.originalDoctor && (
+                            <p className="text-xs text-orange-600 font-medium mt-1 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                Reassigned (Originally: Dr. {apt.originalDoctor.name})
+                            </p>
+                        )}
                     </div>
                     
                     <div className="flex flex-col items-end gap-2">
-                        {apt.checkInStatus === 'NOT_CHECKED_IN' && (
+                        {apt.status === 'REASSIGNMENT_PENDING' && (
+                            <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">Reassignment Pending</span>
+                        )}
+                        {(apt.status === 'BOOKED' || apt.status === 'REASSIGNED') && apt.checkInStatus === 'NOT_CHECKED_IN' && (
                             <>
                                 <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">Upcoming</span>
                                 <button onClick={() => handleCheckIn(apt.appointmentId)} className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-semibold hover:bg-blue-700 shadow-sm transition-colors">
@@ -130,7 +152,7 @@ export default function PatientDashboard() {
                                 </button>
                             </>
                         )}
-                        {apt.checkInStatus === 'CHECKED_IN' && (
+                        {(apt.status === 'BOOKED' || apt.status === 'REASSIGNED') && apt.checkInStatus === 'CHECKED_IN' && (
                             <>
                                 <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">✓ Checked In</span>
                                 <p className="text-sm text-green-700 font-medium">Queue: {apt.tokenId || 'Pending'}</p>

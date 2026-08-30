@@ -12,6 +12,7 @@ import ReceptionistDashboard from './modules/receptionist/ReceptionistDashboard'
 import AdminDashboard from './modules/admin/AdminDashboard';
 import StaffManagement from './modules/admin/StaffManagement';
 import SystemLogs from './modules/admin/SystemLogs';
+import ReassignmentManager from './modules/admin/ReassignmentManager';
 import PastConsultations from './modules/doctor/PastConsultations';
 import DoctorSettings from './modules/doctor/DoctorSettings';
 import { ProtectedRoute, RoleProtectedRoute, PublicOnlyRoute } from './components/layout/ProtectedRoutes';
@@ -55,6 +56,9 @@ export default function App() {
               </Route>
               <Route element={<RoleProtectedRoute allowedRoles={['ROLE_RECEPTIONIST']} />}>
                   <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+              </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_RECEPTIONIST']} />}>
+                  <Route path="/admin/reassignments" element={<ReassignmentManager />} />
               </Route>
            </Route>
         </Route>

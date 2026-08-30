@@ -28,6 +28,7 @@ public class PatientController {
     private final AppointmentRepository appointmentRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final ConsultationRepository consultationRepository;
+    private final com.hospital.repository.NotificationRepository notificationRepository;
     private final AppointmentService appointmentService;
 
     @GetMapping("/me")
@@ -58,7 +59,7 @@ public class PatientController {
         List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
         
         List<Appointment> upcoming = appointments.stream()
-            .filter(a -> a.getStatus() == AppointmentStatus.BOOKED)
+            .filter(a -> a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED || a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING)
             .collect(Collectors.toList());
             
         List<Appointment> visited = appointments.stream()
@@ -82,7 +83,11 @@ public class PatientController {
         data.put("visitedAppointments", visited);
         data.put("notVisitedAppointments", notVisited);
 
-        return ResponseEntity.ok(ApiResponse.success("Success", data));
+        // Fetch notifications
+        List<com.hospital.entity.Notification> notifications = notificationRepository.findByPatient_IdOrderByCreatedAtDesc(patient.getId());
+        data.put("notifications", notifications);
+
+        return ResponseEntity.ok(ApiResponse.success("Dashboard data fetched successfully", data));
     }
 
     @PostMapping("/me/appointments/{appointmentId}/checkin")

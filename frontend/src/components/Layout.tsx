@@ -11,6 +11,7 @@ export default function Layout() {
   
   const role = location.pathname.includes('/doctor') ? 'Doctor' 
     : location.pathname.includes('/admin') ? 'Admin' 
+    : location.pathname.includes('/receptionist') ? 'Receptionist'
     : 'Patient';
 
   const handleLogout = () => {
@@ -31,7 +32,13 @@ export default function Layout() {
         return [
           { name: 'Hospital Management', path: '/admin/dashboard', icon: Activity },
           { name: 'Staff Management', path: '#', icon: Users },
+          { name: 'Doctor Reassignments', path: '/admin/reassignments', icon: ClipboardList },
           { name: 'System Logs', path: '#', icon: Search },
+        ];
+      case 'Receptionist':
+        return [
+          { name: 'Patient Search', path: '/receptionist/dashboard', icon: Search },
+          { name: 'Doctor Reassignments', path: '/admin/reassignments', icon: ClipboardList },
         ];
       default: // Patient
         return [
