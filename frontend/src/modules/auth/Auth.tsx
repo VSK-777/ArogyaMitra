@@ -23,7 +23,7 @@ const authSchema = z.object({
         message: "Full Name is required"
       });
     }
-    if (!data.aadhaarNumber || !/^\d{12}$/.test(data.aadhaarNumber)) {
+    if (!data.aadhaarNumber || !/^\d{12}$/.test(data.aadhaarNumber.replace(/\s/g, ''))) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['aadhaarNumber'],
@@ -79,7 +79,8 @@ export default function Auth() {
         }
       } else {
         if (role === 'Patient') {
-          const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!, data.aadhaarNumber!);
+          const rawAadhaar = data.aadhaarNumber!.replace(/\s/g, '');
+          const res = await authApi.patientRegister(data.mobile, data.password, data.fullName!, rawAadhaar);
           if (res.success) {
              setApiSuccess("Registration successful. Please login.");
              toggleMode();
@@ -166,18 +167,24 @@ export default function Auth() {
                   />
                   {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Aadhaar Number *
-                  </label>
-                  <input
-                    {...register("aadhaarNumber")}
-                    className={`block w-full px-3 py-2 border ${errors.aadhaarNumber ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
-                    placeholder="e.g. 123456789012"
-                    maxLength={12}
-                  />
-                  {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
-                </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Aadhaar Number *
+                    </label>
+                    <input
+                      {...register("aadhaarNumber", {
+                        onChange: (e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          const formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+                          e.target.value = formatted;
+                        }
+                      })}
+                      className={`block w-full px-3 py-2 border ${errors.aadhaarNumber ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg shadow-sm sm:text-sm`}
+                      placeholder="e.g. 1234 5678 9012"
+                      maxLength={14}
+                    />
+                    {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
+                  </div>
               </>
             )}
 
