@@ -47,15 +47,16 @@ GEMINI_API_KEY=gsk_...
 
 ## 7. Complete Workflow
 1. Patient logs in via Mobile and Password.
-2. Patient books an appointment for a specific slot.
+2. Patient books an appointment for a specific hourly slot (capped at 4 patients/hour).
 3. System atomically generates a globally unique Appointment ID and a date/doctor-scoped Token ID.
 4. Patient performs Pre-consultation (uploads audio).
 5. Audio is transcribed via Gemini Speech-to-Text.
 6. Gemini AI asks follow-up questions and generates a structured summary.
-7. Doctor opens daily queue, clicks the Token.
-8. System maps Token -> Appointment -> Patient + Pre-consultation AI Summary.
-9. Doctor completes Consultation.
-10. System generates Prescription.
+7. Patient Checks-In during the active window (triggers check-in status from NOT_CHECKED_IN to CHECKED_IN).
+8. Doctor opens daily queue, starts consultation (moving patient from WAITING to IN_CONSULTATION).
+9. System maps Token -> Appointment -> Patient + Pre-consultation AI Summary.
+10. Doctor completes Consultation (Token becomes COMPLETED).
+11. System generates Prescription.
 
 ## 8. API Reference
 

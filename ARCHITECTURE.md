@@ -45,12 +45,13 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 ### 2.1 Patient Portal
 *   **Authentication:** Standard Mobile + Password login returning a JWT.
-*   **Dashboard:** Displays real-time counts of upcoming appointments, past consultations, and active prescriptions fetched directly from the database.
+*   **Dashboard:** Displays categories of UPCOMING, VISITED, and NOT VISITED appointments. Shows active prescriptions.
 *   **Smart Appointment Booking:** A dynamic 4-step wizard:
     *   *Step 1:* Select Hospital (Fetched via `/api/hospitals`)
     *   *Step 2:* Select Department (Fetched via `/api/departments/hospital/{id}`)
     *   *Step 3:* Select Doctor (Fetched via `/api/public/doctors/department/{id}`)
-    *   *Step 4:* Select Date & Slot -> System assigns a Token.
+    *   *Step 4:* Select Date & Hourly Slot (15-minute allocations up to 4 patients per hour) -> System assigns a Token.
+*   **Check-In Workflow:** Patients must check in within their designated window. Failure to check in results in an automatic `NO_SHOW` via the grace period automation.
 *   **AI Pre-Consultation:** 
     *   Patients can use their **microphone** to speak their symptoms.
     *   The frontend uses `MediaRecorder` to capture audio and sends a `multipart/form-data` payload to the backend.
@@ -62,9 +63,10 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 *   **Walk-In Booking:** Receptionists can bypass the standard flow to immediately assign a doctor and a Token to a walk-in patient.
 
 ### 2.3 Doctor Workspace
-*   **Live Queue Management:** The dashboard hits `/api/doctor/queue/today`. It displays the exact patients waiting outside.
-*   **AI Context Review:** Before calling a patient in, the doctor clicks their Token to read the AI-generated Pre-Consultation summary, saving 3-5 minutes of initial questioning.
+*   **Live Queue Management:** The dashboard handles multiple priority queues (Current Consultation, Emergency, Walk-Ins, Waiting, Today's Appointments).
+*   **AI Context Review:** Before calling a patient in, the doctor clicks their Token to read the AI-generated Pre-Consultation summary.
 *   **Clinical Consultation:** 
+    *   Doctor clicks "Start Consultation" to move the patient from `WAITING` to `IN_CONSULTATION`.
     *   Doctor inputs Observations, Diagnosis, and Treatment Plan.
     *   Doctor adds Medicines (Name, Dosage, Frequency) to generate a Prescription.
     *   Clicking "Finalize" marks the Token as `COMPLETED` and saves the medical record immutably.
