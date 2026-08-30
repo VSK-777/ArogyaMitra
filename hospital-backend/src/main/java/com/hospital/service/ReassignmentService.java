@@ -106,8 +106,8 @@ public class ReassignmentService {
                     LocalDate nextAvailableDate = null;
                     String nextAvailableSlot = null;
                     
-                    // Search up to 30 days ahead for an available slot
-                    for (int i = 1; i <= 30; i++) {
+                    // Search up to 3 days ahead for an available slot
+                    for (int i = 1; i <= 3; i++) {
                         LocalDate candidateDate = endDate.plusDays(i);
                         List<String> availableSlots = getAvailableSlotsForDoctor(doctorId, candidateDate);
                         if (!availableSlots.isEmpty()) {
