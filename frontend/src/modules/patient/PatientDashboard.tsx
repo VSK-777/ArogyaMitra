@@ -53,22 +53,20 @@ export default function PatientDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Good morning, {name || 'Patient'}</h1>
-          <div className="flex items-center gap-4 mt-1">
-            <p className="text-slate-500 text-sm">Here is your healthcare summary.</p>
-            {patient?.aadhaarNumber && (
-              <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">
-                Aadhaar: {patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}
-              </span>
-            )}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Good morning, {name || 'Patient'}</h1>
+            <p className="text-slate-500 text-sm mt-1">Here is your healthcare summary.</p>
           </div>
+          {patient?.aadhaarNumber && (
+            <div className="bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:items-end">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Aadhaar Number</span>
+              <span className="text-xl font-bold text-slate-800 tracking-widest font-mono">
+                {patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}
+              </span>
+            </div>
+          )}
         </div>
-        <button onClick={() => navigate('/patient/book')} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 shadow-sm transition-colors">
-          Book New Appointment
-        </button>
-      </div>
       
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-blue-100"><Calendar className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Upcoming</p><p className="text-2xl font-bold text-slate-900">{upcomingAppointmentsCount}</p></div></div>
