@@ -79,5 +79,10 @@ export function getUserFriendlyMessage(error: unknown): string {
         return 'The request timed out. Please try again.';
     }
 
+    // Misconfiguration error
+    if (axiosError?.message && axiosError.message.includes('VITE_API_BASE_URL')) {
+        return 'Backend connection failed. Please ensure the backend is deployed and VITE_API_BASE_URL is set correctly in Vercel Environment Variables.';
+    }
+
     return 'Something went wrong. Please try again later.';
 }

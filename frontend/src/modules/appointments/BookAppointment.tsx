@@ -14,6 +14,7 @@ export default function BookAppointment() {
   
   // Data from APIs
   const [hospitals, setHospitals] = useState<any[]>([]);
+  const [isLoadingHospitals, setIsLoadingHospitals] = useState(true);
   const [hospitalSearchQuery, setHospitalSearchQuery] = useState("");
   const [departments, setDepartments] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -46,7 +47,8 @@ export default function BookAppointment() {
   useEffect(() => {
     patientApi.getHospitals()
       .then(res => setHospitals(res.data || []))
-      .catch(e => setError(getUserFriendlyMessage(e)));
+      .catch(e => setError(getUserFriendlyMessage(e)))
+      .finally(() => setIsLoadingHospitals(false));
   }, []);
 
   const handleNext = () => setStep(step + 1);
@@ -229,7 +231,8 @@ export default function BookAppointment() {
                   <p className="text-sm text-slate-500 mt-1">{h.address}</p>
                 </div>
               ))}
-              {hospitals.length === 0 && <p className="text-slate-500">Loading hospitals...</p>}
+              {isLoadingHospitals && <p className="text-slate-500 col-span-2">Loading hospitals...</p>}
+              {!isLoadingHospitals && hospitals.length === 0 && <p className="text-slate-500 col-span-2">No hospitals found.</p>}
             </div>
           </div>
         )}

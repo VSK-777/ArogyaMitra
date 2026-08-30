@@ -18,9 +18,17 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
-// Interceptor to handle 401 Unauthorized
+// Interceptor to handle errors and HTML responses
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // If the API base URL is misconfigured in production (e.g. Vercel), it might return the index.html page instead of JSON.
+        // We catch that here and throw an error.
+        const contentType = response.headers['content-type'] as string | undefined;
+        if (contentType && typeof contentType === 'string' && contentType.includes('text/html')) {
+            return Promise.reject(new Error("API returned HTML instead of JSON. Please check VITE_API_BASE_URL."));
+        }
+        return response;
+    },
     (error) => {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('jwt_token');
