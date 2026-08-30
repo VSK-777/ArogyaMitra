@@ -53,7 +53,12 @@ export default function BookAppointment() {
 
   const generateTimeSlots = () => {
     const slots = [];
+    const now = new Date();
+    const isToday = selectedDate === now.toISOString().split('T')[0];
+    const currentHour = now.getHours();
+
     for (let i = 9; i <= 17; i++) {
+      if (isToday && i <= currentHour) continue;
       slots.push(`${i.toString().padStart(2, '0')}:00`);
     }
     setTimeSlots(slots);
@@ -174,11 +179,9 @@ export default function BookAppointment() {
     }
   };
 
-  // Get tomorrow's date as minimum selectable date
+  // Get today's date as minimum selectable date
   const getMinDate = () => {
-    const today = new Date();
-    today.setDate(today.getDate() + 1);
-    return today.toISOString().split('T')[0];
+    return new Date().toISOString().split('T')[0];
   };
 
   return (
