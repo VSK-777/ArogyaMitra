@@ -36,7 +36,7 @@ public class AuthIntegrationTest {
         assertTrue(userRepository.findByMobile(mobile).isEmpty());
         assertTrue(patientRepository.findByMobile(mobile).isEmpty());
 
-        authService.registerPatient(mobile, "password123", "Test User");
+        authService.registerPatient(mobile, "password123", "Test User", "123456789012");
 
         Optional<User> userOpt = userRepository.findByMobile(mobile);
         assertTrue(userOpt.isPresent());
@@ -61,7 +61,7 @@ public class AuthIntegrationTest {
         assertTrue(userRepository.findByMobile(mobile).isEmpty());
         assertTrue(patientRepository.findByMobile(mobile).isPresent());
 
-        authService.registerPatient(mobile, "password123", "Test User");
+        authService.registerPatient(mobile, "password123", "Test User", "123456789012");
 
         Optional<User> userOpt = userRepository.findByMobile(mobile);
         assertTrue(userOpt.isPresent());
@@ -95,7 +95,7 @@ public class AuthIntegrationTest {
         patientRepository.save(patient);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            authService.registerPatient(mobile, "password123", "Test User");
+            authService.registerPatient(mobile, "password123", "Test User", "123456789012");
         });
         
         assertTrue(exception.getMessage().contains("already registered"));
@@ -106,7 +106,7 @@ public class AuthIntegrationTest {
         String mobile = "9998887774";
         String rawPassword = "password123";
         
-        authService.registerPatient(mobile, rawPassword, "Test User");
+        authService.registerPatient(mobile, rawPassword, "Test User", "123456789012");
         
         long userCountBefore = userRepository.count();
         long patientCountBefore = patientRepository.count();
