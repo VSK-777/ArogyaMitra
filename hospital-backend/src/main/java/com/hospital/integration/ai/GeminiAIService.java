@@ -71,10 +71,11 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateStructuredSummary(String fullConversation) {
-        String systemInstruction = "You are a clinical AI. Summarize the following patient complaint into a structured format. " +
-                "This MUST be marked as 'AI-generated pre-consultation summary'. " +
+        String systemInstruction = "You are a clinical AI. Summarize the following patient complaint into a clear, easy-to-read bulleted list. " +
+                "Do NOT use JSON format, arrays, or technical brackets. Output exactly as simple, readable text. " +
+                "Always start your response with 'AI-generated pre-consultation summary:' on the first line. " +
                 "Do not present this as a medical diagnosis. " +
-                "Include 'chiefComplaint', 'duration', 'symptoms' (array), 'severity', and a brief 'summary' string.";
+                "Please include these points if discussed: Chief Complaint, Duration, Symptoms, Severity, and a brief Overall Summary.";
                 
         List<Map<String, Object>> contents = List.of(
                 Map.of("role", "user", "parts", List.of(Map.of("text", "Conversation:\n" + fullConversation)))

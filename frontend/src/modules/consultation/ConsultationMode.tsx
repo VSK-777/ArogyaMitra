@@ -1,4 +1,4 @@
-import { useState,  } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorApi } from '../../api/doctorApi';
 import toast from 'react-hot-toast';
@@ -10,6 +10,15 @@ export default function ConsultationMode() {
   const { id } = useParams(); // this is appointmentId
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [aiSummary, setAiSummary] = useState('');
+
+  useEffect(() => {
+    if(id) {
+      doctorApi.getPreConsultation(id).then(res => {
+        if(res.success && res.data) setAiSummary(res.data.aiSummary || '');
+      }).catch(e => console.error(e));
+    }
+  }, [id]);
   
   const [observations, setObservations] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
@@ -73,7 +82,7 @@ export default function ConsultationMode() {
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Patient Information</h3>
                 <p className="text-sm text-slate-600 mb-2"><strong>AI Summary:</strong> This information is pulled from the pre-consultation workflow.</p>
                 <div className="bg-slate-50 p-3 rounded border text-sm text-slate-700 h-64 overflow-y-auto mb-6">
-                    Chief Complaint, Symptoms, and AI Notes will appear here if the patient completed the pre-consultation step.
+                    {aiSummary ? (<p className="whitespace-pre-wrap">{aiSummary}</p>) : "No pre-consultation summary available."}
                 </div>
                 
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">
