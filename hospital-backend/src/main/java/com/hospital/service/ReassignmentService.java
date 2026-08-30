@@ -267,6 +267,7 @@ public class ReassignmentService {
         QueueToken oldToken = queueTokenRepository.findByAppointment_Id(app.getId()).orElse(null);
         if (oldToken != null) {
             queueTokenRepository.delete(oldToken);
+            queueTokenRepository.flush(); // Force DELETE before the new token INSERT to avoid @OneToOne unique constraint violation
         }
 
         app.setDoctor(newDoctor);
