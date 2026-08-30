@@ -103,7 +103,32 @@ export default function BookAppointment() {
     setLoading(true);
     setError('');
     try {
-        // 1. Create order
+        // 1. Create order (if key exists)
+        const RZP_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
+        
+        if (!RZP_KEY || RZP_KEY.trim() === '') {
+            // DEMO MODE / NO KEY PROVIDED: Bypass payment and book directly
+            const payload = {
+                hospitalId: selectedHospital.id,
+                departmentId: selectedDepartment.id,
+                doctorId: selectedDoctor.id,
+                appointmentDate: selectedDate,
+                slotStart: selectedSlot,
+                razorpayPaymentId: "mock_payment_" + Math.random().toString(36).substring(7),
+                razorpayOrderId: "mock_order_" + Math.random().toString(36).substring(7),
+                razorpaySignature: "mock_signature"
+            };
+            const res = await patientApi.bookAppointment(payload);
+            if(res.success) {
+                setConfirmedData(res.data);
+                setStep(5);
+            } else {
+                setError(res.message || 'Unable to book the appointment.');
+            }
+            setLoading(false);
+            return;
+        }
+
         const { paymentApi } = await import('../../api/paymentApi');
         const orderRes = await paymentApi.createOrder(50000); // 500 INR
         if (!orderRes.success) {
@@ -113,7 +138,7 @@ export default function BookAppointment() {
         }
 
         const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            key: RZP_KEY,
             amount: orderRes.data.amount,
             currency: orderRes.data.currency,
             name: 'Hospital System',
@@ -176,7 +201,9 @@ export default function BookAppointment() {
         });
         rzp.open();
     } catch (e: any) {
-        setError(getUserFriendlyMessage(e));
+        // Fallback generic error
+        console.error("Booking error:", e);
+        setError("Unable to process booking. If you don't have Razorpay configured, please set VITE_RAZORPAY_KEY_ID or clear it to use demo mode.");
         setLoading(false);
     }
   };

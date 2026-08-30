@@ -37,6 +37,14 @@ public class PaymentController {
                 return ResponseEntity.badRequest().body(ApiResponse.error("Amount must be at least 100 paise", "INVALID_AMOUNT"));
             }
 
+            if (razorpayKeyId == null || razorpayKeyId.trim().isEmpty()) {
+                Map<String, Object> mockResponse = new HashMap<>();
+                mockResponse.put("order_id", "mock_order_" + UUID.randomUUID().toString().substring(0, 8));
+                mockResponse.put("amount", amount);
+                mockResponse.put("currency", data.getOrDefault("currency", "INR"));
+                return ResponseEntity.ok(ApiResponse.success("Mock Order created", mockResponse));
+            }
+
             RazorpayClient razorpay = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 
             JSONObject orderRequest = new JSONObject();
