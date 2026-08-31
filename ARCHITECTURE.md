@@ -28,7 +28,8 @@ graph TD
     
     H -.->|Real-time Queue| J[WebSockets / STOMP]
     H -.->|Speech-to-Text| K[Gemini Speech-to-Text AI]
-    H -.->|Clinical Summaries| L[Gemini AI]
+    H -.->|Clinical Summaries| L[Python AI Microservice (FastAPI + HuggingFace)]
+    L -.-> N[(Local ML Models)]
     H -.->|File Storage| M[MinIO / S3 Storage]
 ```
 
@@ -55,7 +56,7 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 *   **AI Pre-Consultation:** 
     *   Patients can use their **microphone** to speak their symptoms.
     *   The frontend uses `MediaRecorder` to capture audio and sends a `multipart/form-data` payload to the backend.
-    *   The backend pipes this to **Gemini Speech-to-Text** for transcription, asks follow-up questions via **Gemini AI**, and generates a structured clinical summary.
+    *   The backend pipes this to **Gemini Speech-to-Text** for transcription, asks follow-up questions via **Gemini AI**, and generates a structured clinical summary by delegating to our dedicated **Python AI Microservice (FastAPI + PyTorch/HuggingFace)**.
 
 ### 2.2 Receptionist Portal
 *   **Patient Search:** Can search the database via mobile number, patient ID, or name.
@@ -82,8 +83,8 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 The backend (Java Spring Boot 3.3) is engineered for production-readiness, not just as a hackathon prototype.
 
-1.  **Gemini AI Integration:** 
-    *   `GeminiAiProvider` handles LLM calls for structuring patient complaints into medical summaries.
+1.  **Hybrid AI Integration (Spring Boot + Python FastAPI):** 
+    *   `GeminiAiProvider` delegates clinical summarization to a specialized local Python AI Microservice running on FastAPI with PyTorch/HuggingFace models, while still using Gemini for conversational follow-ups.
     *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
 2.  **MinIO (S3) Document Storage:** 

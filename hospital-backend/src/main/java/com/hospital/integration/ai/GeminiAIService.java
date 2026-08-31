@@ -71,16 +71,29 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateStructuredSummary(String fullConversation) {
-        String systemInstruction = "You are a clinical AI. Summarize the following patient complaint into a clear, easy-to-read bulleted list. " +
-                "Do NOT use JSON format, arrays, or technical brackets. Output exactly as simple, readable text. " +
-                "Always start your response with 'AI-generated pre-consultation summary:' on the first line. " +
-                "Do not present this as a medical diagnosis. " +
-                "Please include these points if discussed: Chief Complaint, Duration, Symptoms, Severity, and a brief Overall Summary.";
-                
-        List<Map<String, Object>> contents = List.of(
-                Map.of("role", "user", "parts", List.of(Map.of("text", "Conversation:\n" + fullConversation)))
-        );
-        return callGeminiChatApi(systemInstruction, contents);
+        try {
+            String pythonApiUrl = "http://localhost:8000/summarize";
+            Map<String, Object> request = Map.of("text", fullConversation);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+            
+            ResponseEntity<Map> response = restTemplate.postForEntity(pythonApiUrl, entity, Map.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                // The python service returns {"summary": "..."} or {"error": "..."}
+                Map<String, Object> body = response.getBody();
+                if (body.containsKey("error")) {
+                    return "Error from Python AI: " + body.get("error");
+                }
+                return (String) body.getOrDefault("summary", "Summary not generated.");
+            }
+            return "Failed to generate summary from Python AI service.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Exception calling Python AI service: " + e.getMessage();
+        }
     }
 
     @Override

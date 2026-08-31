@@ -59,6 +59,7 @@ The application strictly follows the Authoritative System Architecture diagram.
 - Spring Data JPA + Hibernate
 - Database: MySQL (or Neon PostgreSQL in cloud deployment)
 - AI Text: Gemini API
+- Local AI Summarization: Python, FastAPI, PyTorch, HuggingFace Transformers
 - AI Speech: Gemini Speech-to-Text (Speech-to-Text)
 
 ## 4. Role-Based Workflows
