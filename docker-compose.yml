@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./hospital-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=\
+      - SPRING_DATASOURCE_USERNAME=\
+      - SPRING_DATASOURCE_PASSWORD=\
+      - JWT_SECRET=\
+      - GEMINI_API_KEY=\
+      - PYTHON_AI_URL=http://python-ai:8000
+    depends_on:
+      - python-ai
+
+  python-ai:
+    build:
+      context: ./python-ai
+    ports:
+      - "8000:8000"
