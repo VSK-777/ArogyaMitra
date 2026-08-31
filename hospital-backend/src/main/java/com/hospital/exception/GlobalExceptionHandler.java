@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleAiException(AiIntegrationException ex) {
         logger.error("AI Integration error: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ApiResponse.error("AI assistant is temporarily unavailable. Please try again in a moment.", "AI_ERROR"));
+                .body(ApiResponse.error(ex.getMessage(), "AI_ERROR"));
     }
 
     // ── Catch-all for any unexpected exception ──────────────────

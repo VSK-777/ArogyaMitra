@@ -127,7 +127,7 @@ public class GeminiAIService implements AiProvider {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, Object> requestBody = Map.of(
-                "system_instruction", Map.of("parts", Map.of("text", systemInstruction)),
+                "system_instruction", Map.of("parts", List.of(Map.of("text", systemInstruction))),
                 "contents", contents
         );
 
