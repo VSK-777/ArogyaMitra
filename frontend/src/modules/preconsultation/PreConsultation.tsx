@@ -155,7 +155,7 @@ export default function PreConsultation() {
     }
   };
 
-  const handleComplete = async () => {
+    const handleComplete = async () => {
     setLoading(true);
     setRetryAction(null);
     try {
@@ -163,9 +163,12 @@ export default function PreConsultation() {
         if (res.success) {
             setAiSummary(res.data.aiSummary || "Summary completed successfully.");
             setStep(3);
+        } else {
+            setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: res.message || 'Error saving consultation. Please try again.', isError: true }]);
+            setRetryAction(() => handleComplete);
         }
     } catch (e: any) {
-        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: e.response?.data?.message || 'Server error. Please try again.', isError: true }]);
         setRetryAction(() => handleComplete);
     } finally {
         setLoading(false);
@@ -331,6 +334,7 @@ export default function PreConsultation() {
     </div>
   );
 }
+
 
 
 

@@ -120,7 +120,17 @@ class MedicalSummarizer:
             }
         
         # Get the base summary
-        full_summary = self.summarize_long_text(text)
+                full_summary = self.summarize_long_text(text)
+        
+        # Post-process for clinical third-person pronoun correction
+        import re
+        full_summary = re.sub(r'(?i)\byou have\b', 'the patient has', full_summary)
+        full_summary = re.sub(r'(?i)\byou are\b', 'the patient is', full_summary)
+        full_summary = re.sub(r'(?i)\byour\b', "the patient's", full_summary)
+        full_summary = re.sub(r'(?i)\bi have\b', 'the patient has', full_summary)
+        full_summary = re.sub(r'(?i)\bi am\b', 'the patient is', full_summary)
+        full_summary = re.sub(r'(?i)\bmy\b', "the patient's", full_summary)
+        full_summary = re.sub(r'(?i)\bwe have\b', 'the patient has', full_summary)
         
         # Try to extract structured information
         structured = {

@@ -125,7 +125,19 @@ public class PreConsultationService {
             fullConv.append("Patient: ").append(r.getAnswerText()).append("\n");
         }
 
-        String summary = aiProvider.generateStructuredSummary(fullConv.toString());
+                String summary = aiProvider.generateStructuredSummary(fullConv.toString());
+        
+        // Post-process the AI summary to ensure third-person clinical language instead of first/second person
+        if (summary != null) {
+            summary = summary.replaceAll("(?i)\\byou have\\b", "the patient has");
+            summary = summary.replaceAll("(?i)\\byou are\\b", "the patient is");
+            summary = summary.replaceAll("(?i)\\byour\\b", "the patient's");
+            summary = summary.replaceAll("(?i)\\bi have\\b", "the patient has");
+            summary = summary.replaceAll("(?i)\\bi am\\b", "the patient is");
+            summary = summary.replaceAll("(?i)\\bmy\\b", "the patient's");
+            summary = summary.replaceAll("(?i)\\bwe have\\b", "the patient has");
+        }
+
         preConsultation.setAiSummary(summary);
         preConsultation.setAiGenerated(true);
         preConsultation.setStatus("COMPLETED");
@@ -134,4 +146,5 @@ public class PreConsultationService {
         return preConsultationRepository.save(preConsultation);
     }
 }
+
 
