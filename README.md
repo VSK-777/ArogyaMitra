@@ -139,10 +139,23 @@ The `DataSeeder` automatically populates the database if it is empty.
 - **Receptionist:** Mobile: `8888888888` | Password: `receptionist123`
 - **Admin:** Mobile: `7777777777` | Password: `admin123`
 
-## 8. Deployment Notes
-- **Frontend Build:** Strict TypeScript mode is enabled. Unused imports will cause Vite/Vercel build failures. Always ensure `tsc -b && vite build` passes locally.
-- **Database:** Uses PostgreSQL via `application.properties` in production environments (like Neon).
+## 8. Deployment & Docker Notes
 
+The project natively supports both **Cloud Deployment (Vercel + Render)** and local containerization via **Docker Compose**.
+
+### 8.1 Local Docker Compose (One-Click Start)
+Run the entire Hybrid Architecture (React + Java Spring Boot + Python FastAPI) locally using Docker:
+```bash
+docker-compose up --build
+```
+- Frontend available at: `http://localhost:5173`
+- Java Backend at: `http://localhost:8080`
+- Python AI Microservice at: `http://localhost:8000`
+
+### 8.2 Cloud Deployment (Vercel + Render)
+1. **Frontend (Vercel):** Deploy the `frontend` directory. Set `VITE_API_BASE_URL` to your Java backend URL.
+2. **Java Backend (Render):** Deploy `hospital-backend` as a Java Web Service (`mvn clean package -DskipTests`). Set `PYTHON_AI_URL` to your Python service URL, along with your DB credentials and `GEMINI_API_KEY`.
+3. **Python AI (Render):** Deploy `python-ai` as a Python Web Service. Use `pip install -r Medical_Sumzr/medical_summarizer/requirements.txt` and start with `uvicorn main:app --host 0.0.0.0 --port $PORT`.
 
 ## 9. Supabase Storage Document Storage Architecture
 
