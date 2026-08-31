@@ -1,10 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, Clock, FileText, CheckCircle2, AlertCircle, Loader2, Ticket, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
+
+
+function TokenModal({ apt, onClose }: { apt: any; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="bg-blue-700 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Ticket className="h-6 w-6 text-white" />
+            <h3 className="text-lg font-bold text-white">Appointment Token</h3>
+          </div>
+          <button onClick={onClose} className="text-white/80 hover:text-white"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="px-6 py-6 text-center border-b border-slate-200 bg-slate-50">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Your Token</p>
+          <p className="text-4xl font-black text-blue-700 tracking-wide">{apt.tokenId || 'Not Assigned'}</p>
+        </div>
+        <div className="px-6 py-4 space-y-0">
+          {[
+            ['Appointment ID', apt.appointmentId],
+            ['Doctor', apt.doctor?.name || '\u2014'],
+            ['Department', apt.department?.name || '\u2014'],
+            ['Hospital', apt.hospital?.name || 'Main Hospital'],
+            ['Date', apt.appointmentDate],
+            ['Time Slot', (apt.slotStart?.substring(0,5) || '') + ' \u2013 ' + (apt.slotEnd?.substring(0,5) || '')],
+            ['Status', apt.status === 'BOOKED' ? 'Booked' : apt.status === 'REASSIGNED' ? 'Reassigned' : apt.status === 'COMPLETED' ? 'Completed' : apt.status === 'NO_SHOW' ? 'Not Visited' : apt.status],
+            ['Check-In', apt.checkInStatus === 'CHECKED_IN' ? '\u2713 Checked In' : apt.checkInStatus === 'IN_CONSULTATION' ? 'In Consultation' : 'Not Checked In'],
+          ].map(([label, value]) => (
+            <div key={label} className="flex justify-between items-center py-2.5 border-b border-slate-100 last:border-0">
+              <span className="text-sm text-slate-500">{label}</span>
+              <span className="text-sm font-semibold text-slate-900">{value}</span>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+          <button onClick={onClose} className="w-full bg-blue-700 text-white py-2.5 rounded-md font-semibold hover:bg-blue-800 transition-colors">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
@@ -13,6 +54,7 @@ export default function PatientDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [tokenApt, setTokenApt] = useState<any>(null);
 
   useEffect(() => {
     patientApi.getDashboard()
@@ -53,6 +95,8 @@ export default function PatientDashboard() {
 
   return (
     <div className="space-y-6">
+        {tokenApt && <TokenModal apt={tokenApt} onClose={() => setTokenApt(null)} />}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Good morning, {name || 'Patient'}</h1>
@@ -164,6 +208,9 @@ export default function PatientDashboard() {
                         {apt.checkInStatus === 'IN_CONSULTATION' && (
                             <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 ring-1 ring-inset ring-blue-600/20">In Consultation</span>
                         )}
+                        <button onClick={() => setTokenApt(apt)} className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors border border-blue-200">
+                          <Ticket className="h-3.5 w-3.5" /> View Token
+                        </button>
                     </div>
                   </div>
                 </div>
@@ -182,7 +229,12 @@ export default function PatientDashboard() {
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
                         <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Visited</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setTokenApt(apt)} className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors border border-blue-200">
+                        <Ticket className="h-3.5 w-3.5" /> View Token
+                      </button>
+                      <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Visited</span>
+                    </div>
                   </div>
                 </div>
               ))
@@ -200,7 +252,12 @@ export default function PatientDashboard() {
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || 'Main Hospital'}</p>
                         <p className="text-xs text-slate-400 mt-1">ID: {apt.appointmentId}</p>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Not Visited</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setTokenApt(apt)} className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors border border-blue-200">
+                        <Ticket className="h-3.5 w-3.5" /> View Token
+                      </button>
+                      <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Not Visited</span>
+                    </div>
                   </div>
                 </div>
               ))
