@@ -120,7 +120,7 @@ class MedicalSummarizer:
             }
         
         # Get the base summary
-                full_summary = self.summarize_long_text(text)
+        full_summary = self.summarize_long_text(text)
         
         # Post-process for clinical third-person pronoun correction
         import re
