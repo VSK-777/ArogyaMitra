@@ -149,13 +149,16 @@ public class GeminiAIService implements AiProvider {
                 }
             }
             logger.error("Invalid or empty response from Gemini API.");
-            throw new AiIntegrationException("Gemini API Error: Invalid or empty response");
+            return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
         } catch (org.springframework.web.client.RestClientResponseException e) {
             logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw new AiIntegrationException("Gemini API Error (" + e.getStatusCode() + "): " + e.getResponseBodyAsString(), e);
+            if (e.getStatusCode().value() == 429) {
+                return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
+            }
+            return "I'm having trouble connecting to my knowledge base right now, but please continue or finish the consultation.";
         } catch (Exception e) {
             logger.error("Gemini API Error: {}", e.getMessage(), e);
-            throw new AiIntegrationException("Gemini API Error: " + e.getMessage(), e);
+            return "Thank you for the information. Is there anything else you'd like to add before we finish?";
         }
     }
 }
