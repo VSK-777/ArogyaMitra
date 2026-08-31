@@ -175,9 +175,9 @@ export default function PreConsultation() {
   return (
     <div className="max-w-4xl mx-auto py-8">
       
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[600px]">
+      <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[600px]">
         {/* Header */}
-        <div className="bg-blue-600 px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-blue-700 px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-lg">
               <Bot className="h-6 w-6 text-white" />
@@ -188,7 +188,7 @@ export default function PreConsultation() {
             </div>
           </div>
           {step === 2 && (
-             <button onClick={handleComplete} disabled={loading} className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold text-sm hover:bg-blue-50">
+             <button onClick={handleComplete} disabled={loading} className="bg-white text-blue-700 px-4 py-2 rounded-md font-semibold text-sm hover:bg-blue-50">
                Finish Consultation
              </button>
           )}
@@ -198,8 +198,8 @@ export default function PreConsultation() {
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50 flex flex-col">
           
           {step === 1 && (
-            <div className="m-auto w-full max-w-lg bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-              <Bot className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <div className="m-auto w-full max-w-lg bg-white p-8 rounded-md shadow-sm border border-slate-200">
+              <Bot className="h-12 w-12 text-blue-700 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-center text-slate-900 mb-2">Welcome to your Pre-Consultation</h3>
               <p className="text-slate-500 text-center mb-6">Briefly describe your main symptom or reason for visit to get started.</p>
               
@@ -213,7 +213,7 @@ export default function PreConsultation() {
               <button 
                 onClick={handleStart} 
                 disabled={loading || !complaint.trim()} 
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
+                className="w-full bg-blue-700 text-white font-bold py-3 rounded-lg hover:bg-blue-800 disabled:opacity-50 flex items-center justify-center"
               >
                 {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Start Chat"}
               </button>
@@ -224,10 +224,10 @@ export default function PreConsultation() {
             <div className="flex flex-col gap-4">
                  {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                      <div className={`max-w-[80%] p-4 rounded-xl ${
+                      <div className={`max-w-[80%] p-4 rounded-md ${
                         msg.isError ? 'bg-orange-50 border border-orange-200 text-orange-800 rounded-tl-none' :
                         msg.role === 'ai' ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-none' : 
-                        'bg-blue-600 text-white rounded-tr-none'
+                        'bg-blue-700 text-white rounded-tr-none'
                       }`}>
                           <p>{msg.content}</p>
                           {msg.isError && retryAction && (
@@ -243,8 +243,8 @@ export default function PreConsultation() {
                  ))}
                {loading && (
                  <div className="flex justify-start">
-                    <div className="bg-white border border-slate-200 p-4 rounded-xl rounded-tl-none flex items-center gap-2">
-                       <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                    <div className="bg-white border border-slate-200 p-4 rounded-md rounded-tl-none flex items-center gap-2">
+                       <Loader2 className="h-5 w-5 animate-spin text-blue-700" />
                        <span className="text-slate-500 text-sm">Doctor AI is typing...</span>
                     </div>
                  </div>
@@ -254,7 +254,7 @@ export default function PreConsultation() {
           )}
 
           {step === 3 && (
-            <div className="m-auto w-full max-w-2xl bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
+            <div className="m-auto w-full max-w-2xl bg-white p-8 rounded-md shadow-sm border border-slate-200 text-center">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-slate-900 mb-2">Pre-Consultation Complete</h3>
               <p className="text-slate-500 mb-6">A summary of this conversation has been sent to your doctor.</p>
@@ -266,7 +266,7 @@ export default function PreConsultation() {
 
               <button 
                 onClick={() => navigate('/patient/dashboard')} 
-                className="bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700"
+                className="bg-blue-700 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-800"
               >
                 Return to Dashboard
               </button>
@@ -304,7 +304,7 @@ export default function PreConsultation() {
                            aria-label="Start voice input"
                            className="bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-600 h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors"
                         >
-                           {isTranscribing ? <Loader2 className="h-5 w-5 animate-spin text-blue-600" /> : <Mic className="h-5 w-5" />}
+                           {isTranscribing ? <Loader2 className="h-5 w-5 animate-spin text-blue-700" /> : <Mic className="h-5 w-5" />}
                         </button>
                     )}
 
@@ -320,7 +320,7 @@ export default function PreConsultation() {
                     <button 
                        onClick={handleSendMessage}
                        disabled={loading || !inputText.trim() || isRecording || isTranscribing}
-                       className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors"
+                       className="bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white h-12 w-12 rounded-full flex items-center justify-center shrink-0 transition-colors"
                     >
                        <Send className="h-5 w-5 ml-1" />
                     </button>
@@ -331,5 +331,6 @@ export default function PreConsultation() {
     </div>
   );
 }
+
 
 

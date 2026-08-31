@@ -42,15 +42,15 @@ export default function DocumentsPage() {
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-slate-900">Medical Documents</h1>
-                <button onClick={() => navigate('/patient/dashboard')} className="text-blue-600 font-medium">Back to Dashboard</button>
+                <button onClick={() => navigate('/patient/dashboard')} className="text-blue-700 font-medium">Back to Dashboard</button>
             </div>
 
             {appointments.length === 0 ? (
-                <div className="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
+                <div className="bg-white p-8 rounded-md border border-slate-200 text-center text-slate-500">
                     You have no upcoming appointments to attach documents to.
                 </div>
             ) : (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div className="bg-white p-6 rounded-md border border-slate-200 shadow-sm">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Select Appointment</label>
                     <select 
                         className="w-full border border-slate-300 rounded-lg p-3 mb-6 focus:ring-blue-500 focus:border-blue-500"
@@ -81,3 +81,4 @@ export default function DocumentsPage() {
         </div>
     );
 }
+

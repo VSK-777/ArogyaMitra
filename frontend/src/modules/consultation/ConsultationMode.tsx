@@ -99,7 +99,7 @@ export default function ConsultationMode() {
         
         <div className="lg:col-span-1 space-y-6">
             {/* Patient Context Sidebar */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Patient Information</h3>
                 <p className="text-sm text-slate-600 mb-2"><strong>AI Summary:</strong> This information is pulled from the pre-consultation workflow.</p>
                 <div className="bg-slate-50 p-3 rounded border text-sm text-slate-700 h-64 overflow-y-auto mb-6">
@@ -146,7 +146,7 @@ export default function ConsultationMode() {
 
         <div className="lg:col-span-2 space-y-6">
             {/* Doctor Input Workspace */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Doctor Consultation</h3>
                 
                 <div className="space-y-4">
@@ -165,7 +165,7 @@ export default function ConsultationMode() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Prescription</h3>
                 
                 <div className="flex gap-2 mb-4">
@@ -199,6 +199,7 @@ export default function ConsultationMode() {
     </div>
   );
 }
+
 
 
 

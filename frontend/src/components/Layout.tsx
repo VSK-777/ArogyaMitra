@@ -97,7 +97,7 @@ export default function Layout() {
               <span className="text-sm font-medium text-slate-900">{name || `${role} Account`}</span>
               <span className="text-xs text-slate-500">{role}</span>
             </div>
-            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold uppercase border border-blue-200">
+            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold uppercase border border-slate-200">
               {name ? name.split(' ').map(n => n[0]).join('').substring(0, 2) : role[0]}
             </div>
           </div>
@@ -109,4 +109,5 @@ export default function Layout() {
     </div>
   );
 }
+
 

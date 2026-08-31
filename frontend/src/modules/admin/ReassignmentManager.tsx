@@ -100,7 +100,7 @@ export default function ReassignmentManager() {
                 <p className="text-slate-500 mt-1">Manage unexpected doctor unavailability and reassign patients.</p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <div className="bg-white p-6 rounded-md border border-slate-200 shadow-sm">
                 <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-orange-500" />
                     Declare Unavailability
@@ -132,7 +132,7 @@ export default function ReassignmentManager() {
             </div>
 
             {affectedAppointments.length > 0 && (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div className="bg-white p-6 rounded-md border border-slate-200 shadow-sm">
                     <h2 className="font-bold text-slate-900 mb-4">Affected Appointments ({affectedAppointments.length})</h2>
                     <div className="space-y-4">
                         {affectedAppointments.map(apt => (
@@ -142,7 +142,7 @@ export default function ReassignmentManager() {
                                     <p className="text-sm text-slate-600">Original Slot: {apt.slotStart.substring(0,5)} • {apt.department}</p>
                                     <p className="text-xs text-orange-600 font-medium mt-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Reassignment Pending</p>
                                 </div>
-                                <button onClick={() => loadReplacements(apt)} className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
+                                <button onClick={() => loadReplacements(apt)} className="bg-blue-700 text-white px-4 py-2 rounded font-medium hover:bg-blue-800">
                                     Find Replacement
                                 </button>
                             </div>
@@ -152,7 +152,7 @@ export default function ReassignmentManager() {
             )}
 
             {selectedAppointment && (
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
+                <div className="bg-white p-6 rounded-md border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
                     <h2 className="font-bold text-slate-900 mb-4">Suitable Replacements for {selectedAppointment.patientName}</h2>
                     {replacements.length === 0 ? (
                         <p className="text-red-500 text-sm">No suitable doctors available for {selectedAppointment.department} on this date.</p>
@@ -176,3 +176,4 @@ export default function ReassignmentManager() {
         </div>
     );
 }
+

@@ -114,7 +114,7 @@ export default function Auth() {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-16 h-16 bg-blue-700 rounded-md flex items-center justify-center shadow-sm">
             <Activity className="w-10 h-10 text-white" />
           </div>
         </div>
@@ -127,7 +127,7 @@ export default function Auth() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-xl sm:px-10 border border-slate-100">
+        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-md sm:px-10 border border-slate-100">
           
           <div className="flex rounded-lg bg-slate-100 p-1 mb-6">
             {(['Patient', 'Doctor', 'Receptionist', 'Admin'] as const).map((r) => (
@@ -185,7 +185,7 @@ export default function Auth() {
                       />
                       {errors.aadhaarNumber && <p className="mt-1 text-sm text-red-600">{errors.aadhaarNumber.message}</p>}
                       <div className="mt-2 text-sm text-slate-500 flex items-center justify-between">
-                        <span>Can't use the Aadhaar App? <a href="#" onClick={(e) => e.preventDefault()} className="text-blue-600 font-medium hover:underline">Continue with Offline e-KYC</a></span>
+                        <span>Can't use the Aadhaar App? <a href="#" onClick={(e) => e.preventDefault()} className="text-blue-700 font-medium hover:underline">Continue with Offline e-KYC</a></span>
                       </div>
                     </div>
               </>
@@ -244,7 +244,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Sign In' : 'Register')}
             </button>
@@ -254,7 +254,7 @@ export default function Auth() {
             <div className="mt-6 text-center">
               <button
                 onClick={toggleMode}
-                className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                className="text-sm font-medium text-blue-700 hover:text-blue-500"
               >
                 {isLogin ? "Don't have an account? Register" : "Already have an account? Sign in"}
               </button>
@@ -265,3 +265,4 @@ export default function Auth() {
     </div>
   );
 }
+

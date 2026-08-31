@@ -60,11 +60,11 @@ export default function ReceptionistDashboard() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
               <h2 className="text-lg font-bold border-b pb-2 mb-4">Find Patient</h2>
               <form onSubmit={handleSearch} className="flex gap-2">
                   <input value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g, ''))} type="text" pattern="\d{10}" maxLength={10} title="Mobile number must be exactly 10 digits" placeholder="Mobile Number (10 digits)" className="flex-1 border p-2 rounded" />
-                  <button disabled={loading} type="submit" className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-700">
+                  <button disabled={loading} type="submit" className="bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-800">
                       {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                       Search
                   </button>
@@ -87,7 +87,7 @@ export default function ReceptionistDashboard() {
               )}
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
               <h2 className="text-lg font-bold border-b pb-2 mb-4 flex items-center gap-2"><UserPlus className="w-5 h-5" /> Quick Registration</h2>
               <form onSubmit={handleRegister} className="space-y-4 text-sm">
                   <p className="text-slate-500">Register a new walk-in patient who does not have an account.</p>
@@ -105,3 +105,4 @@ export default function ReceptionistDashboard() {
     </div>
   );
 }
+

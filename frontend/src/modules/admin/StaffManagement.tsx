@@ -27,7 +27,7 @@ export default function StaffManagement() {
         });
     }, []);
 
-    if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
+    if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-blue-700" /></div>;
 
     return (
         <div className="space-y-6">
@@ -36,7 +36,7 @@ export default function StaffManagement() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Users List */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
                     <div className="border-b border-slate-200 px-6 py-4 flex items-center gap-2 bg-slate-50">
                         <Users className="w-5 h-5 text-slate-500" />
                         <h2 className="text-lg font-semibold text-slate-900">System Users</h2>
@@ -57,7 +57,7 @@ export default function StaffManagement() {
                 </div>
 
                 {/* Doctors List */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
                     <div className="border-b border-slate-200 px-6 py-4 flex items-center gap-2 bg-slate-50">
                         <Stethoscope className="w-5 h-5 text-slate-500" />
                         <h2 className="text-lg font-semibold text-slate-900">Medical Staff (Doctors)</h2>
@@ -77,4 +77,5 @@ export default function StaffManagement() {
         </div>
     );
 }
+
 

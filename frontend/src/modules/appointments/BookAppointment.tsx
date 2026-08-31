@@ -228,14 +228,14 @@ export default function BookAppointment() {
         <div className="flex items-center justify-between mb-8">
           {[1, 2, 3, 4].map((s) => (
             <div key={s} className="flex items-center flex-1 last:flex-none">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= s ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'}`}>{s}</div>
-              {s !== 4 && <div className={`h-1 flex-1 mx-2 rounded-full ${step > s ? 'bg-blue-600' : 'bg-slate-200'}`} />}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= s ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-500'}`}>{s}</div>
+              {s !== 4 && <div className={`h-1 flex-1 mx-2 rounded-full ${step > s ? 'bg-blue-700' : 'bg-slate-200'}`} />}
             </div>
           ))}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <h2 className="text-lg font-semibold">Select Hospital</h2>
@@ -253,7 +253,7 @@ export default function BookAppointment() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {hospitals.filter(h => h.name.toLowerCase().includes(hospitalSearchQuery.toLowerCase()) || h.address.toLowerCase().includes(hospitalSearchQuery.toLowerCase())).map(h => (
-                <div key={h.id} onClick={() => fetchDepartments(h)} className="border border-slate-200 hover:border-blue-600 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
+                <div key={h.id} onClick={() => fetchDepartments(h)} className="border border-slate-200 hover:border-blue-700 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
                   <h3 className="font-bold text-slate-900">{h.name}</h3>
                   <p className="text-sm text-slate-500 mt-1">{h.address}</p>
                 </div>
@@ -275,10 +275,10 @@ export default function BookAppointment() {
               ))}
             </select>
             
-            {loading ? <Loader2 className="animate-spin h-6 w-6 text-blue-600" /> : (
+            {loading ? <Loader2 className="animate-spin h-6 w-6 text-blue-700" /> : (
                 <div className="grid grid-cols-1 gap-4">
                     {doctors.map(doc => (
-                        <div key={doc.id} onClick={() => { setSelectedDoctor(doc); handleNext(); }} className="border border-slate-200 hover:border-blue-600 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
+                        <div key={doc.id} onClick={() => { setSelectedDoctor(doc); handleNext(); }} className="border border-slate-200 hover:border-blue-700 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
                             <h3 className="font-bold text-slate-900">{doc.name}</h3>
                             <p className="text-sm text-slate-500 mt-1">{doc.specialization} • {doc.qualification}</p>
                         </div>
@@ -307,7 +307,7 @@ export default function BookAppointment() {
                             key={slot} 
                             disabled={isBooked}
                             onClick={() => setSelectedSlot(slot)} 
-                            className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-600 bg-blue-600 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
+                            className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-700 bg-blue-700 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
                               {slot} - {(parseInt(slot.split(':')[0]) + 1).toString().padStart(2, '0')}:00 {isBooked && '(Full)'}
                           </button>
                         );
@@ -317,7 +317,7 @@ export default function BookAppointment() {
             
             <div className="flex gap-4 mt-6">
               <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">Back</button>
-              <button disabled={!selectedSlot} onClick={handleNext} className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50">Next Step</button>
+              <button disabled={!selectedSlot} onClick={handleNext} className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 disabled:opacity-50">Next Step</button>
             </div>
           </div>
         )}
@@ -351,7 +351,7 @@ export default function BookAppointment() {
               <p className="text-slate-500 mt-2">Your appointment has been successfully scheduled.</p>
             </div>
             
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 grid gap-4 sm:grid-cols-2">
+            <div className="bg-slate-50 rounded-md p-6 border border-slate-200 grid gap-4 sm:grid-cols-2">
                 <div>
                     <p className="text-sm text-slate-500">Patient</p>
                     <p className="font-semibold text-slate-900">{name || 'Patient'}</p>
@@ -381,15 +381,15 @@ export default function BookAppointment() {
                 </div>
                 <div>
                     <p className="text-sm text-slate-500 flex items-center gap-1 font-bold"><Ticket className="w-4 h-4" /> TOKEN NUMBER</p>
-                    <p className="text-2xl font-black text-blue-600">{confirmedData.tokenId}</p>
+                    <p className="text-2xl font-black text-blue-700">{confirmedData.tokenId}</p>
                 </div>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <button onClick={() => navigate('/patient/pre-consultation')} className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold shadow-sm text-center">
+              <button onClick={() => navigate('/patient/pre-consultation')} className="flex-1 bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-bold shadow-sm text-center">
                 Start AI Pre-Consultation
               </button>
-              <button onClick={() => navigate('/patient/documents')} className="flex-1 bg-white text-blue-600 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-50 font-bold shadow-sm text-center">
+              <button onClick={() => navigate('/patient/documents')} className="flex-1 bg-white text-blue-700 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-50 font-bold shadow-sm text-center">
                 Upload Medical Reports
               </button>
             </div>
@@ -405,6 +405,7 @@ export default function BookAppointment() {
     </div>
   );
 }
+
 
 
 

@@ -114,7 +114,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
 
     if (status === 'VERIFIED') {
         return (
-            <div className="rounded-xl border border-green-200 bg-green-50 p-6 flex items-start gap-4 shadow-sm mt-6">
+            <div className="rounded-md border border-green-200 bg-green-50 p-6 flex items-start gap-4 shadow-sm mt-6">
                 <ShieldCheck className="h-6 w-6 text-green-600 mt-1" />
                 <div>
                     <h3 className="font-semibold text-green-800">Aadhaar Identity Verified</h3>
@@ -126,7 +126,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
 
     if (status === 'REVIEW_REQUIRED') {
         return (
-            <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 flex items-start gap-4 shadow-sm mt-6">
+            <div className="rounded-md border border-orange-200 bg-orange-50 p-6 flex items-start gap-4 shadow-sm mt-6">
                 <ShieldAlert className="h-6 w-6 text-orange-600 mt-1" />
                 <div>
                     <h3 className="font-semibold text-orange-800">Verification Under Review</h3>
@@ -137,22 +137,22 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
     }
 
     return (
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm mt-6">
+        <div className="rounded-md border border-slate-200 bg-white p-6 shadow-sm mt-6">
             <div className="flex items-center gap-3 mb-4">
-                <ShieldAlert className="h-6 w-6 text-blue-600" />
+                <ShieldAlert className="h-6 w-6 text-blue-700" />
                 <h3 className="text-lg font-bold text-slate-900">Aadhaar Identity Verification</h3>
             </div>
             
             {verificationStep === 'IDLE' && (
                 <div className="bg-slate-50 p-5 rounded-lg border border-slate-200 mb-6 text-center">
-                    <Smartphone className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+                    <Smartphone className="h-12 w-12 text-blue-700 mx-auto mb-3" />
                     <h4 className="font-semibold text-slate-800 text-lg mb-2">Verify your identity securely using the official Aadhaar App.</h4>
                     <p className="text-sm text-slate-600 mb-6 max-w-lg mx-auto">
                         Fast and seamless verification. Your Aadhaar authentication and explicit consent are handled securely by the official UIDAI application. We will only request the minimum information required to verify your profile.
                     </p>
                     <button 
                         onClick={() => setVerificationStep('CONSENT')}
-                        className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow-sm"
+                        className="bg-blue-700 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-800 shadow-sm"
                     >
                         Verify with Aadhaar
                     </button>
@@ -176,7 +176,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
                         <button 
                             onClick={handleInitiateAppToApp}
                             disabled={appToAppLoading}
-                            className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow-sm flex items-center justify-center min-w-[120px]"
+                            className="bg-blue-700 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-800 shadow-sm flex items-center justify-center min-w-[120px]"
                         >
                             {appToAppLoading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Continue'}
                         </button>
@@ -202,7 +202,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
 
             {verificationStep === 'VERIFYING' && (
                 <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-6 text-center">
-                    <Loader2 className="h-10 w-10 text-blue-600 animate-spin mx-auto mb-4" />
+                    <Loader2 className="h-10 w-10 text-blue-700 animate-spin mx-auto mb-4" />
                     <h4 className="font-semibold text-blue-900 text-lg mb-2">⏳ Verifying your identity securely...</h4>
                     <p className="text-sm text-blue-800">
                         Processing the response from UIDAI...
@@ -214,7 +214,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
                 <div className="text-center">
                     <p className="text-sm text-slate-500">
                         Can't use the Aadhaar App? 
-                        <button onClick={() => setShowFallback(true)} className="ml-2 text-blue-600 hover:underline font-medium">
+                        <button onClick={() => setShowFallback(true)} className="ml-2 text-blue-700 hover:underline font-medium">
                             Continue with Offline e-KYC
                         </button>
                     </p>
@@ -225,7 +225,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
                 <div className="mt-8 border-t border-slate-200 pt-6">
                     <h4 className="font-semibold text-slate-800 mb-2">Offline e-KYC Fallback</h4>
                     <p className="text-sm text-slate-600 mb-6">
-                        Download your Offline e-KYC ZIP from the <a href="https://myaadhaar.uidai.gov.in/offline-ekyc" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">official UIDAI portal</a>, and upload it here along with your 4-digit Share Code.
+                        Download your Offline e-KYC ZIP from the <a href="https://myaadhaar.uidai.gov.in/offline-ekyc" target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">official UIDAI portal</a>, and upload it here along with your 4-digit Share Code.
                     </p>
 
                     <div className="grid gap-6 sm:grid-cols-2">
@@ -240,7 +240,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
                                             <UploadCloud className="mx-auto h-12 w-12 text-slate-400" />
                                         )}
                                         <div className="flex text-sm text-slate-600 justify-center">
-                                            <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">
+                                            <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-700 hover:text-blue-500">
                                                 <span>{file ? file.name : 'Upload a file'}</span>
                                                 <input id="file-upload" name="file-upload" type="file" className="sr-only" accept=".zip" onChange={handleFallbackFileChange} />
                                             </label>
@@ -276,3 +276,4 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
         </div>
     );
 }
+

@@ -74,7 +74,7 @@ export default function DoctorUpcomingAppointments() {
 
     return (
         <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <div className="flex justify-between items-center bg-white p-6 rounded-md shadow-sm border border-slate-200">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <Calendar className="w-6 h-6 text-indigo-600" />
@@ -97,7 +97,7 @@ export default function DoctorUpcomingAppointments() {
                 </div>
             )}
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left">
                     <thead className="bg-slate-50 border-b border-slate-200">
                         <tr>
@@ -148,7 +148,7 @@ export default function DoctorUpcomingAppointments() {
             {/* Unavailability Modal */}
             {showUnavailabilityModal && (
                 <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+                    <div className="bg-white rounded-md shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
                         <div className="p-6 border-b border-slate-200">
                             <h2 className="text-xl font-bold text-gray-900">Mark Unavailability & Reschedule</h2>
                             <p className="text-sm text-gray-500 mt-1">
@@ -306,3 +306,4 @@ export default function DoctorUpcomingAppointments() {
         </div>
     );
 }
+

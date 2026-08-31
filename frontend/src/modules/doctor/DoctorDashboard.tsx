@@ -71,18 +71,18 @@ export default function DoctorDashboard() {
         <h1 className="text-2xl font-bold text-slate-900">Doctor Dashboard</h1>
       </div>
       
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded-md">{error}</div>}
+      {error && <div className="bg-white text-red-600 p-3 rounded-md">{error}</div>}
 
       <div className="grid gap-6 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-blue-100"><Users className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Total Today</p><p className="text-2xl font-bold text-slate-900">{total}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-orange-100"><Activity className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Waiting</p><p className="text-2xl font-bold text-slate-900">{waiting}</p></div></div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-lg p-3 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completed}</p></div></div>
+        <div className="rounded-md border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-md p-2 bg-blue-100"><Users className="h-6 w-6 text-blue-600" /></div><div><p className="text-sm font-medium text-slate-500">Total Today</p><p className="text-2xl font-bold text-slate-900">{total}</p></div></div>
+        <div className="rounded-md border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-md p-2 bg-orange-100"><Activity className="h-6 w-6 text-orange-600" /></div><div><p className="text-sm font-medium text-slate-500">Waiting</p><p className="text-2xl font-bold text-slate-900">{waiting}</p></div></div>
+        <div className="rounded-md border border-slate-200 bg-white p-6 shadow-sm flex items-center gap-4"><div className="rounded-md p-2 bg-green-100"><CheckCircle2 className="h-6 w-6 text-green-600" /></div><div><p className="text-sm font-medium text-slate-500">Completed</p><p className="text-2xl font-bold text-slate-900">{completed}</p></div></div>
       </div>
 
       {queue.filter(q => q.status === 'IN_CONSULTATION').length > 0 && (
-          <div className="rounded-xl border-2 border-blue-500 bg-blue-50 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 flex justify-between items-center bg-blue-100/50">
-                  <h2 className="text-lg font-bold text-blue-900 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" /> Current Consultation</h2>
+          <div className="rounded-md border border-blue-200 bg-blue-50 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 flex justify-between items-center bg-slate-50">
+                  <h2 className="text-lg font-bold text-blue-900 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-700 animate-pulse" /> Current Consultation</h2>
               </div>
               <div className="divide-y divide-blue-200">
                   {queue.filter(q => q.status === 'IN_CONSULTATION').map(q => (
@@ -94,7 +94,7 @@ export default function DoctorDashboard() {
                               </p>
                               <p className="text-sm font-medium text-slate-700">Type: {q.appointment?.appointmentType} • Queue: T-{q.tokenNumber}</p>
                           </div>
-                          <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700">Resume / Complete</button>
+                          <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-700 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-800">Resume / Complete</button>
                       </div>
                   ))}
               </div>
@@ -102,8 +102,8 @@ export default function DoctorDashboard() {
       )}
 
       {queue.filter(q => q.appointment?.appointmentType === 'EMERGENCY' && q.status !== 'COMPLETED' && q.status !== 'NO_SHOW' && q.status !== 'IN_CONSULTATION').length > 0 && (
-          <div className="rounded-xl border border-red-200 bg-white shadow-sm overflow-hidden">
-              <div className="border-b border-red-200 px-6 py-4 flex justify-between items-center bg-red-50">
+          <div className="rounded-md border border-red-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-red-200 px-6 py-4 flex justify-between items-center bg-white">
                   <h2 className="text-lg font-bold text-red-700 flex items-center gap-2">🚨 Emergency Queue</h2>
               </div>
               <div className="divide-y divide-red-100">
@@ -124,7 +124,7 @@ export default function DoctorDashboard() {
       )}
 
       {queue.filter(q => q.appointment?.appointmentType === 'WALK_IN' && q.status === 'WAITING').length > 0 && (
-          <div className="rounded-xl border border-purple-200 bg-white shadow-sm overflow-hidden">
+          <div className="rounded-md border border-purple-200 bg-white shadow-sm overflow-hidden">
               <div className="border-b border-purple-200 px-6 py-4 flex justify-between items-center bg-purple-50">
                   <h2 className="text-lg font-bold text-purple-900 flex items-center gap-2">Walk-In Patients</h2>
               </div>
@@ -145,7 +145,7 @@ export default function DoctorDashboard() {
           </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4 flex justify-between items-center bg-slate-50">
           <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Waiting Patients</h2>
         </div>
@@ -165,7 +165,7 @@ export default function DoctorDashboard() {
                                 <p className="text-sm text-slate-500 font-medium">Time: {q.appointment?.slotStart?.substring(0,5)} • ✓ Checked In</p>
                             </div>
                         </div>
-                        <button onClick={() => handleStartConsultation(q.appointment?.appointmentId)} className="bg-blue-600 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-700 shadow-sm">
+                        <button onClick={() => handleStartConsultation(q.appointment?.appointmentId)} className="bg-blue-700 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-800 shadow-sm">
                             Start Consultation
                         </button>
                     </div>
@@ -174,7 +174,7 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4 flex justify-between items-center bg-slate-50">
           <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">Today's Appointments</h2>
         </div>
@@ -212,5 +212,7 @@ export default function DoctorDashboard() {
     </div>
   );
 }
+
+
 
 
