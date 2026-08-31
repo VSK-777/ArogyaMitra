@@ -69,10 +69,13 @@ public class GeminiAIService implements AiProvider {
         return callGeminiChatApi(systemInstruction, contents);
     }
 
+    @Value("${python.ai.url:http://localhost:8000}")
+    private String pythonAiBaseUrl;
+
     @Override
     public String generateStructuredSummary(String fullConversation) {
         try {
-            String pythonApiUrl = "http://localhost:8000/summarize";
+            String pythonApiUrl = pythonAiBaseUrl + "/summarize";
             Map<String, Object> request = Map.of("text", fullConversation);
             
             HttpHeaders headers = new HttpHeaders();
