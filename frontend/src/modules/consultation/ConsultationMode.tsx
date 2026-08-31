@@ -7,6 +7,34 @@ import { Loader2, FileText } from 'lucide-react';
 import { DocumentList } from '../../components/documents/DocumentList';
 
 export default function ConsultationMode() {
+  const parseAiSummary = (text: string) => {
+    if (!text) return { isParsed: false, raw: '' };
+    
+    // Clean up Pegasus tokens
+    const cleanedText = text.replace(/<n>/g, '\n').replace(/<s>/g, '');
+    
+    // Check if it's our bulleted format
+    if (cleanedText.includes('• Summary:')) {
+        const extract = (label: string) => {
+            const regex = new RegExp(•  + label + :\\s*([\\s\\S]*?)(?=• |$));
+            const match = cleanedText.match(regex);
+            return match ? match[1].trim() : 'Not specified';
+        };
+
+        return {
+            isParsed: true,
+            summary: extract('Summary'),
+            symptoms: extract('Symptoms'),
+            diagnosis: extract('Potential Diagnosis/Impression'),
+            medications: extract('Current Medications'),
+            labValues: extract('Lab Values Mentioned')
+        };
+    }
+    
+    return { isParsed: false, raw: cleanedText };
+  };
+
+  const parsedAi = parseAiSummary(aiSummary);
   const { id } = useParams(); // this is appointmentId
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -82,7 +110,38 @@ export default function ConsultationMode() {
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4">Patient Information</h3>
                 <p className="text-sm text-slate-600 mb-2"><strong>AI Summary:</strong> This information is pulled from the pre-consultation workflow.</p>
                 <div className="bg-slate-50 p-3 rounded border text-sm text-slate-700 h-64 overflow-y-auto mb-6">
-                    {aiSummary ? (<p className="whitespace-pre-wrap">{aiSummary}</p>) : "No pre-consultation summary available."}
+                                        {aiSummary ? (
+                        parsedAi.isParsed ? (
+                            <div className="space-y-4">
+                                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                                    <h4 className="font-bold text-blue-900 text-xs uppercase tracking-wider mb-1">Clinical Summary</h4>
+                                    <p className="text-sm text-slate-700 whitespace-pre-wrap">{parsedAi.summary}</p>
+                                </div>
+                                <div className="grid grid-cols-1 gap-3">
+                                    <div className="bg-orange-50 border border-orange-100 rounded-lg p-3">
+                                        <h4 className="font-bold text-orange-900 text-xs uppercase tracking-wider mb-1">Symptoms</h4>
+                                        <p className="text-sm text-slate-700">{parsedAi.symptoms}</p>
+                                    </div>
+                                    <div className="bg-purple-50 border border-purple-100 rounded-lg p-3">
+                                        <h4 className="font-bold text-purple-900 text-xs uppercase tracking-wider mb-1">Diagnosis / Impression</h4>
+                                        <p className="text-sm text-slate-700">{parsedAi.diagnosis}</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-3">
+                                        <h4 className="font-bold text-emerald-900 text-xs uppercase tracking-wider mb-1">Medications</h4>
+                                        <p className="text-sm text-slate-700">{parsedAi.medications}</p>
+                                    </div>
+                                    <div className="bg-rose-50 border border-rose-100 rounded-lg p-3">
+                                        <h4 className="font-bold text-rose-900 text-xs uppercase tracking-wider mb-1">Lab Values</h4>
+                                        <p className="text-sm text-slate-700">{parsedAi.labValues}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="whitespace-pre-wrap text-sm text-slate-700">{parsedAi.raw}</p>
+                        )
+                    ) : "No pre-consultation summary available."}
                 </div>
                 
                 <h3 className="font-bold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">
