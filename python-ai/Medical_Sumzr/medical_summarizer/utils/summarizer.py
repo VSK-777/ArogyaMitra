@@ -24,17 +24,10 @@ class MedicalSummarizer:
         else:
             self.device = device
         
-        # Load model and tokenizer
+                # Load model and tokenizer
         print(f"Loading model {model_name} on {self.device}...")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(self.device)
-        self.summarizer = pipeline(
-           "summarization",
-            model=self.model,
-            tokenizer=self.tokenizer,
-            device=0 if self.device == "cuda" else -1
-             )
-        
         print("Model loaded successfully!")
     
     def chunk_text(self, text: str, max_tokens: int = 900) -> List[str]:
@@ -75,15 +68,15 @@ class MedicalSummarizer:
             return "Insufficient text for summarization."
         
         try:
-            result = self.summarizer(
-                text,
+            inputs = self.tokenizer(text, return_tensors="pt", max_length=1024, truncation=True).to(self.device)
+            summary_ids = self.model.generate(
+                inputs["input_ids"],
                 max_length=max_length,
                 min_length=min_length,
-                do_sample=False,
                 num_beams=4,
                 early_stopping=True
             )
-            return result[0]['summary_text']
+            return self.tokenizer.decode(summary_ids[0], skip_special_tokens=True)
         except Exception as e:
             print(f"Summarization error: {e}")
             return f"Error summarizing: {str(e)}"
