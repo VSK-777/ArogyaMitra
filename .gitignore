@@ -27,7 +27,7 @@ frontend/*.local
 #other files
 *.pdf
 
-doctor_info.md
+doctor-info.md
 DbCheck.java
 
 #other folders
