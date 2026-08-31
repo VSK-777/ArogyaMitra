@@ -51,7 +51,7 @@ export default function PreConsultation() {
             setStep(2);
         }
     } catch (e: any) {
-        setMessages([{ role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setMessages([{ role: 'ai', content: e.response?.data?.message || e.message || 'AI assistant is temporarily unavailable.', isError: true }]);
         setStep(2);
         setRetryAction(() => handleStart);
     } finally {
@@ -148,7 +148,7 @@ export default function PreConsultation() {
             setMessages(prev => prev.filter(m => !m.isError).concat([{ role: 'ai', content: res.data || '' }]));
         }
     } catch (e: any) {
-        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: 'AI assistant is temporarily unavailable. Please try again.', isError: true }]);
+        setMessages(prev => [...prev.filter(m => !m.isError), { role: 'ai', content: e.response?.data?.message || e.message || 'AI assistant is temporarily unavailable.', isError: true }]);
         setRetryAction(() => () => handleSendMessage(userMsg));
     } finally {
         setLoading(false);
@@ -334,6 +334,7 @@ export default function PreConsultation() {
     </div>
   );
 }
+
 
 
 
