@@ -135,7 +135,7 @@ export default function PatientDashboard() {
                         {apt.status === 'REASSIGNED' && apt.originalDoctor && (
                             <p className="text-xs text-orange-600 font-medium mt-1 flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" />
-                                Reassigned (Originally: Dr. {apt.originalDoctor.name})
+                                Reassigned (Originally: {apt.originalDoctor.name})
                             </p>
                         )}
                     </div>

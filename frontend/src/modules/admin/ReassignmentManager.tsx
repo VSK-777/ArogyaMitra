@@ -161,7 +161,7 @@ export default function ReassignmentManager() {
                             {replacements.map(rep => (
                                 <div key={rep.doctorId} className="border p-4 rounded-lg bg-slate-50 flex justify-between items-center">
                                     <div>
-                                        <p className="font-bold text-slate-900">Dr. {rep.doctorName}</p>
+                                        <p className="font-bold text-slate-900">{rep.doctorName}</p>
                                         <p className="text-sm text-green-600 font-medium">Available at: {rep.slotStart}</p>
                                     </div>
                                     <button onClick={() => reassign(rep.doctorId, rep.slotStart)} className="bg-green-600 text-white px-4 py-2 rounded font-medium hover:bg-green-700 flex items-center gap-2">
