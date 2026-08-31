@@ -104,7 +104,7 @@ export default function BookAppointment() {
     setError('');
     try {
         // 1. Create order (if key exists)
-        const RZP_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
+        const RZP_KEY = ''; // Forced mock mode for demo
         
         if (!RZP_KEY || RZP_KEY.trim() === '') {
             // DEMO MODE / NO KEY PROVIDED: Bypass payment and book directly
@@ -405,4 +405,5 @@ export default function BookAppointment() {
     </div>
   );
 }
+
 
