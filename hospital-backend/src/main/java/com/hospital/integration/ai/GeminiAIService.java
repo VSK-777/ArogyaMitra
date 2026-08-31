@@ -51,18 +51,16 @@ public class GeminiAIService implements AiProvider {
 
         List<Map<String, Object>> contents = new ArrayList<>();
         
-        contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", chiefComplaint))));
-
         for (PreConsultationResponse r : previousResponses) {
-            if (r.getQuestion() != null && !r.getQuestion().isEmpty()) {
-                contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", r.getQuestion()))));
-            }
-            if (r.getAnswerText() != null && !r.getAnswerText().isEmpty() && !r.getAnswerText().equals(chiefComplaint)) {
+            if (r.getAnswerText() != null && !r.getAnswerText().trim().isEmpty()) {
                 contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", r.getAnswerText()))));
+            }
+            if (r.getQuestion() != null && !r.getQuestion().trim().isEmpty()) {
+                contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", r.getQuestion()))));
             }
         }
         
-        if (!patientInput.equals(chiefComplaint)) {
+        if (patientInput != null && !patientInput.trim().isEmpty()) {
             contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", patientInput))));
         }
 
@@ -151,13 +149,13 @@ public class GeminiAIService implements AiProvider {
                 }
             }
             logger.error("Invalid or empty response from Gemini API.");
-            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.");
+            throw new AiIntegrationException("Gemini API Error: Invalid or empty response");
         } catch (org.springframework.web.client.RestClientResponseException e) {
             logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.", e);
+            throw new AiIntegrationException("Gemini API Error (" + e.getStatusCode() + "): " + e.getResponseBodyAsString(), e);
         } catch (Exception e) {
             logger.error("Gemini API Error: {}", e.getMessage(), e);
-            throw new AiIntegrationException("AI assistant is temporarily unavailable. Please try again in a moment.", e);
+            throw new AiIntegrationException("Gemini API Error: " + e.getMessage(), e);
         }
     }
 }
