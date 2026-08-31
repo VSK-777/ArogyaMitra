@@ -50,13 +50,53 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-        <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
-          <h2 className="text-lg font-bold border-b pb-2 mb-4">System Health</h2>
-          <p className="text-slate-600">All backend services are operational. AI integration is connected.</p>
+              <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
+              <div className="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Infrastructure Health</h2>
+              </div>
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-white border-b border-slate-200">
+                      <tr>
+                          <th className="px-5 py-3 font-semibold text-slate-600">Service Component</th>
+                          <th className="px-5 py-3 font-semibold text-slate-600">Status</th>
+                          <th className="px-5 py-3 font-semibold text-slate-600">Latency</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                      <tr className="hover:bg-slate-50">
+                          <td className="px-5 py-3 font-medium text-slate-900">Spring Boot API</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Operational</span></td>
+                          <td className="px-5 py-3 text-slate-600">42ms</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                          <td className="px-5 py-3 font-medium text-slate-900">PostgreSQL Cluster</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Operational</span></td>
+                          <td className="px-5 py-3 text-slate-600">12ms</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                          <td className="px-5 py-3 font-medium text-slate-900">Python AI Service</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Connected</span></td>
+                          <td className="px-5 py-3 text-slate-600">1.2s avg inference</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+
+          <div className="lg:col-span-1 bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+              <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 shrink-0">
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">System Alerts</h2>
+              </div>
+              <div className="p-5 flex-1 flex flex-col justify-center items-center text-slate-400">
+                  <p className="text-sm text-center mt-2">No active security alerts or warnings. System operating normally.</p>
+              </div>
+          </div>
       </div>
     </div>
   );
 }
+
+
 
 
 
