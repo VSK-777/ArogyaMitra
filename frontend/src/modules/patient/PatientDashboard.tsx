@@ -23,7 +23,7 @@ export default function PatientDashboard() {
           setError(res.message || 'Unable to load dashboard data.');
         }
       })
-      .catch((e) => setError(getUserFriendlyMessage(e)))
+      .catch((e) => setError(e.response?.data?.message || e.message || getUserFriendlyMessage(e)))
       .finally(() => setLoading(false));
   }, []);
 
@@ -209,5 +209,6 @@ export default function PatientDashboard() {
     </div>
   );
 }
+
 
 

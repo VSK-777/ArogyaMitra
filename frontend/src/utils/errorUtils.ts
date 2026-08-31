@@ -66,7 +66,7 @@ export function getUserFriendlyMessage(error: unknown): string {
         if (status === 403) return 'You do not have permission to perform this action.';
         if (status === 404) return 'The requested resource was not found.';
         if (status === 409) return 'A conflict occurred. Please refresh and try again.';
-        if (status >= 500) return 'Something went wrong. Please try again later.';
+        if (status >= 500) return axiosError.response.data?.message || 'Server Error ' + status;
     }
 
     // Network error (no response from server)
@@ -86,3 +86,4 @@ export function getUserFriendlyMessage(error: unknown): string {
 
     return 'Something went wrong. Please try again later.';
 }
+
