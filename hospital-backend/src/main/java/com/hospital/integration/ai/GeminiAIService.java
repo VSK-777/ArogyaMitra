@@ -85,12 +85,26 @@ public class GeminiAIService implements AiProvider {
             ResponseEntity<Map> response = restTemplate.postForEntity(pythonApiUrl, entity, Map.class);
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                // The python service returns {"summary": "..."} or {"error": "..."}
                 Map<String, Object> body = response.getBody();
                 if (body.containsKey("error")) {
                     return "Error from Python AI: " + body.get("error");
                 }
-                return (String) body.getOrDefault("summary", "Summary not generated.");
+                
+                String mainSummary = (String) body.getOrDefault("summary", "Summary not generated.");
+                String symptoms = (String) body.getOrDefault("symptoms", "Not specified");
+                String diagnosis = (String) body.getOrDefault("diagnosis", "Not specified");
+                String medications = (String) body.getOrDefault("medications", "Not specified");
+                String labValues = (String) body.getOrDefault("lab_values", "Not specified");
+
+                return String.format(
+                    "AI-generated pre-consultation summary:\n\n" +
+                    "• Summary: %s\n" +
+                    "• Symptoms: %s\n" +
+                    "• Potential Diagnosis/Impression: %s\n" +
+                    "• Current Medications: %s\n" +
+                    "• Lab Values Mentioned: %s",
+                    mainSummary, symptoms, diagnosis, medications, labValues
+                );
             }
             return "Failed to generate summary from Python AI service.";
         } catch (Exception e) {
