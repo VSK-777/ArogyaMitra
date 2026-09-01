@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function PreConsultation() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const aptId = searchParams.get('appointmentId'); 
@@ -211,13 +211,13 @@ export default function PreConsultation() {
           {step === 1 && (
             <div className="m-auto w-full max-w-lg bg-white p-8 rounded-md shadow-sm border border-slate-200">
               <Bot className="h-12 w-12 text-blue-700 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-center text-slate-900 mb-2">Welcome to your Pre-Consultation</h3>
-              <p className="text-slate-500 text-center mb-6">Briefly describe your main symptom or reason for visit to get started.</p>
+              <h3 className="text-xl font-bold text-center text-slate-900 mb-2">{t('preConsultation.welcome')}</h3>
+              <p className="text-slate-500 text-center mb-6">{t('preConsultation.describe_symptom')}</p>
               
               <textarea 
                 value={complaint}
                 onChange={(e) => setComplaint(e.target.value)}
-                placeholder="e.g. I have been having severe chest pain for the last 2 hours."
+                placeholder={t('preConsultation.placeholder')}
                 className="w-full border border-slate-300 rounded-lg p-4 h-32 focus:ring-blue-500 focus:border-blue-500 mb-4"
               />
               
@@ -226,7 +226,7 @@ export default function PreConsultation() {
                 disabled={loading || !complaint.trim()} 
                 className="w-full bg-blue-700 text-white font-bold py-3 rounded-lg hover:bg-blue-800 disabled:opacity-50 flex items-center justify-center"
               >
-                {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Start Chat"}
+                {loading ? <Loader2 className="animate-spin h-5 w-5" /> : t('preConsultation.start_chat')}
               </button>
             </div>
           )}
@@ -256,7 +256,7 @@ export default function PreConsultation() {
                  <div className="flex justify-start">
                     <div className="bg-white border border-slate-200 p-4 rounded-md rounded-tl-none flex items-center gap-2">
                        <Loader2 className="h-5 w-5 animate-spin text-blue-700" />
-                       <span className="text-slate-500 text-sm">Doctor AI is typing...</span>
+                       <span className="text-slate-500 text-sm">{t('preConsultation.doc_typing')}</span>
                     </div>
                  </div>
                )}
@@ -267,11 +267,11 @@ export default function PreConsultation() {
           {step === 3 && (
             <div className="m-auto w-full max-w-2xl bg-white p-8 rounded-md shadow-sm border border-slate-200 text-center">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Pre-Consultation Complete</h3>
-              <p className="text-slate-500 mb-6">A summary of this conversation has been sent to your doctor.</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('preConsultation.pre_consult_complete')}</h3>
+              <p className="text-slate-500 mb-6">{t('preConsultation.summary_sent')}</p>
               
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-left mb-8">
-                 <h4 className="font-bold text-slate-700 mb-2">AI Summary</h4>
+                 <h4 className="font-bold text-slate-700 mb-2">{t('preConsultation.ai_summary')}</h4>
                  <p className="text-slate-600 whitespace-pre-wrap">{aiSummary}</p>
               </div>
 
@@ -293,7 +293,7 @@ export default function PreConsultation() {
                     <div className="mb-3 p-3 bg-red-50 text-red-700 text-sm rounded-lg flex items-start gap-2">
                         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
                         <div className="flex-1">{recordingError}</div>
-                        <button onClick={() => setRecordingError(null)} className="text-red-500 hover:text-red-700 text-xs font-bold uppercase">Dismiss</button>
+                        <button onClick={() => setRecordingError(null)} className="text-red-500 hover:text-red-700 text-xs font-bold uppercase">{t('preConsultation.dismiss')}</button>
                     </div>
                 )}
                 <div className="flex items-center gap-3">
@@ -305,7 +305,7 @@ export default function PreConsultation() {
                            className="bg-red-100 hover:bg-red-200 text-red-600 h-12 px-4 rounded-full flex items-center justify-center shrink-0 transition-colors"
                         >
                            <Square className="h-4 w-4 fill-current mr-2" />
-                           <span className="font-semibold text-sm">Recording...</span>
+                           <span className="font-semibold text-sm">{t('preConsultation.recording')}</span>
                         </button>
                     ) : (
                         <button 
@@ -321,10 +321,10 @@ export default function PreConsultation() {
 
                     <input 
                        type="text"
-                       value={isTranscribing ? "Transcribing..." : inputText}
+                       value={isTranscribing ? t('preConsultation.transcribing') : inputText}
                        onChange={(e) => setInputText(e.target.value)}
                        onKeyDown={(e) => { if(e.key === 'Enter') handleSendMessage() }}
-                       placeholder={isRecording ? "Listening..." : "Type your answer here..."}
+                       placeholder={isRecording ? t('preConsultation.listening') : t('preConsultation.type_answer')}
                        disabled={isRecording || isTranscribing}
                        className="flex-1 bg-slate-50 border border-slate-300 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     />

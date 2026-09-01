@@ -140,6 +140,20 @@
     "error_starting": "Failed to start consultation.",
     "error_msg": "Failed to send message.",
     "error_summary": "Failed to submit consultation.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "welcome": "Welcome to your Pre-Consultation",
+    "describe_symptom": "Briefly describe your main symptom or reason for visit to get started.",
+    "placeholder": "e.g. I have been having severe chest pain for the last 2 hours.",
+    "start_chat": "Start Chat",
+    "try_again": "Try Again",
+    "doc_typing": "Doctor AI is typing...",
+    "pre_consult_complete": "Pre-Consultation Complete",
+    "summary_sent": "A summary of this conversation has been sent to your doctor.",
+    "ai_summary": "AI Summary",
+    "dismiss": "Dismiss",
+    "recording": "Recording...",
+    "transcribing": "Transcribing...",
+    "listening": "Listening...",
+    "type_answer": "Type your answer here..."
   }
 }
