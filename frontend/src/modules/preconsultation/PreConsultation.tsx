@@ -10,8 +10,11 @@ interface Message {
   isError?: boolean;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export default function PreConsultation() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const aptId = searchParams.get('appointmentId'); 
@@ -43,7 +46,11 @@ export default function PreConsultation() {
     setLoading(true);
     setRetryAction(null);
     try {
-        const res = await preConsultationApi.start(aptId!, complaint);
+        let apiComplaint = complaint;
+        if (i18n.language.startsWith('te')) {
+            apiComplaint += "\n(System note: Please reply to me and ask the next follow-up question entirely in Telugu language)";
+        }
+        const res = await preConsultationApi.start(aptId!, apiComplaint);
         if (res.success) {
             setMessages([
               { role: 'patient', content: complaint },

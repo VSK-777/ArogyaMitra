@@ -39,7 +39,7 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
             Map<String, Object> requestBody = Map.of(
                     "contents", List.of(
                             Map.of("parts", List.of(
-                                    Map.of("text", "Please carefully transcribe this audio. Return ONLY the transcribed text with no extra commentary."),
+                                    Map.of("text", "Please carefully transcribe this audio in its original language. If the user speaks in Telugu, return the transcription in Telugu script. If English, return English. Return ONLY the transcribed text with no extra commentary."),
                                     Map.of("inline_data", Map.of(
                                             "mime_type", mimeType,
                                             "data", base64Audio
