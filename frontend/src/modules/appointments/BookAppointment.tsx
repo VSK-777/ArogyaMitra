@@ -4,7 +4,7 @@ import { patientApi } from '../../api/patientApi';
 import { Loader2, CheckCircle2, Ticket } from 'lucide-react';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 export default function BookAppointment() {
   const navigate = useNavigate();
@@ -326,20 +326,24 @@ export default function BookAppointment() {
 
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 text-center">
-            <h2 className="text-xl font-bold text-green-600 mb-2">Confirm Your Booking & Pay Fee</h2>
-            <p className="text-slate-600">You are about to book an appointment with <strong>{selectedDoctor?.name}</strong> at <strong>{selectedHospital?.name}</strong> on <strong>{selectedDate} at {selectedSlot}</strong>.</p>
+            <h2 className="text-xl font-bold text-green-600 mb-2">{t('bookAppointment.confirm_pay')}</h2>
+            <p className="text-slate-600"><Trans
+                i18nKey="bookAppointment.about_to_book"
+                values={{ doctor: selectedDoctor?.name, hospital: selectedHospital?.name, date: selectedDate, time: selectedSlot }}
+                components={{ bold: <strong /> }}
+              /></p>
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-4 max-w-sm mx-auto text-left">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-600">Registration Fee:</span>
+                <span className="text-slate-600">{t('bookAppointment.reg_fee')}</span>
                 <span className="font-bold text-slate-900">₹500.00</span>
               </div>
-              <p className="text-xs text-slate-500">This fee is required to confirm your appointment.</p>
+              <p className="text-xs text-slate-500">{t('bookAppointment.fee_required')}</p>
             </div>
             <div className="flex justify-center gap-4 mt-8">
-              <button disabled={loading} onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">Go Back</button>
+              <button disabled={loading} onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.go_back')}</button>
               <button disabled={loading} onClick={handleFinish} className="bg-green-600 text-white px-8 py-2 rounded-md hover:bg-green-700 font-bold shadow-sm flex items-center gap-2">
                 {loading && <Loader2 className="animate-spin h-4 w-4" />}
-                Pay ₹500 & Confirm Booking
+                {t('bookAppointment.pay_confirm')}
               </button>
             </div>
           </div>
@@ -349,13 +353,13 @@ export default function BookAppointment() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
             <div className="text-center">
               <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-slate-900">Appointment Confirmed ✓</h2>
-              <p className="text-slate-500 mt-2">Your appointment has been successfully scheduled.</p>
+              <h2 className="text-2xl font-bold text-slate-900">{t('bookAppointment.apt_confirmed')}</h2>
+              <p className="text-slate-500 mt-2">{t('bookAppointment.apt_scheduled')}</p>
             </div>
             
             <div className="bg-slate-50 rounded-md p-6 border border-slate-200 grid gap-4 sm:grid-cols-2">
                 <div>
-                    <p className="text-sm text-slate-500">Patient</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.patient')}</p>
                     <p className="font-semibold text-slate-900">{name || 'Patient'}</p>
                 </div>
                 <div>

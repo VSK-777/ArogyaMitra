@@ -92,7 +92,17 @@
     "processing": "Processing...",
     "booking_success": "Booking Successful!",
     "booking_success_desc": "Your appointment has been confirmed. You will receive an SMS shortly.",
-    "view_dashboard": "View Dashboard"
+    "view_dashboard": "View Dashboard",
+    "confirm_pay": "Confirm Your Booking & Pay Fee",
+    "about_to_book": "You are about to book an appointment with <bold>{{doctor}}</bold> at <bold>{{hospital}}</bold> on <bold>{{date}} at {{time}}</bold>.",
+    "reg_fee": "Registration Fee:",
+    "fee_required": "This fee is required to confirm your appointment.",
+    "go_back": "Go Back",
+    "pay_confirm": "Pay ₹500 & Confirm Booking",
+    "apt_confirmed": "Appointment Confirmed ✓",
+    "apt_scheduled": "Your appointment has been successfully scheduled.",
+    "patient": "Patient",
+    "at": "at"
   },
   "documentsPage": {
     "title": "Medical Documents",
