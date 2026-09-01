@@ -5,3 +5,7 @@
 *.py
 
 .idea
+
+# Private training files
+DEV_README.md
+DEV_ARCHITECTURE.md
