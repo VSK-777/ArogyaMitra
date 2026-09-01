@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface PreConsultationResponseRepository extends JpaRepository<PreConsultationResponse, Long> {
     List<PreConsultationResponse> findByPreConsultation_IdOrderByTimestampAsc(Long preConsultationId);
+    void deleteByPreConsultation_Id(Long preConsultationId);
 }

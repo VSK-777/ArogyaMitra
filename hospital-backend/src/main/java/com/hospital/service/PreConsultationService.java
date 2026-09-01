@@ -55,14 +55,10 @@ public class PreConsultationService {
                     return preConsultationRepository.save(newPc);
                 });
 
-        java.util.List<PreConsultationResponse> previous = responseRepository.findByPreConsultation_IdOrderByTimestampAsc(pc.getId());
-        if (!previous.isEmpty()) {
-            pc.setFirstQuestion(previous.get(0).getQuestion());
-            return pc;
-        }
+        // If restarting a session, clear the old chat history for this appointment so we don't bleed old context
+        responseRepository.deleteByPreConsultation_Id(pc.getId());
 
-        // Generate the first real AI question instead of relying on frontend hardcoding
-        String history = "Initial complaint: " + complaint;
+        // Generate the first real AI question based on the new complaint
         String question = aiProvider.generateFollowUpQuestion(complaint, java.util.Collections.emptyList(), complaint);
 
         PreConsultationResponse response = PreConsultationResponse.builder()
