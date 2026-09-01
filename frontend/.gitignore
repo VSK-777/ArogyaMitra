@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *.py.env
+
+# Private training files
+DEV_README.md
+DEV_ARCHITECTURE.md
