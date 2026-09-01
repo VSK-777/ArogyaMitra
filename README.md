@@ -332,3 +332,16 @@ The system handles sudden doctor unavailabilities robustly without indiscriminat
 - **Fallback Reassignment (Option B):** If no peer doctors are available on the same day, the algorithm scans up to 3 days ahead of the unavailability end date. If the *original doctor* has open slots within those 3 days, the patient is automatically pushed to the doctor's next working day.
 - **Pending Manual:** If both automated reassignments fail, the appointment safely remains in \REASSIGNMENT_PENDING\ (Pending Manual) so a receptionist can intervene. The system *never* cancels the appointment.
 - **Database Architecture:** A Postgres \DatabaseConstraintFixer\ runs on startup to ensure enum transitions on legacy database check constraints don't crash the reassignment engine.
+
+
+## 12. Hybrid AI Architecture
+
+The system utilizes a split-workload Hybrid AI architecture to maximize performance and minimize hallucinations:
+
+1. **Gemini 2.5 Flash API (Native Java Integration)**
+   - **Role:** Conversational AI & Rapid Inference
+   - **Responsibilities:** Powers the Pre-Consultation patient chat, asks contextual follow-up questions, extracts structured summaries from the chat, and expands brief doctor notes into full clinical assessments.
+
+2. **Python FastAPI Microservice (google/pegasus-pubmed)**
+   - **Role:** Heavy NLP Document Analysis
+   - **Responsibilities:** Summarizes dense clinical records and uploaded medical documents. By running a Hugging Face model natively fine-tuned on PubMed medical abstracts, it achieves superior clinical abstraction while keeping the main Spring Boot transactional backend lightweight.

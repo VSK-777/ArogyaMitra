@@ -84,7 +84,8 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 The backend (Java Spring Boot 3.3) is engineered for production-readiness, not just as a hackathon prototype.
 
 1.  **Hybrid AI Integration (Spring Boot + Python FastAPI):** 
-    *   `GeminiAiProvider` delegates clinical summarization to a specialized local Python AI Microservice running on FastAPI with PyTorch/HuggingFace models, while still using Gemini for conversational follow-ups.
+    *   **Gemini 2.5 Flash API (Native Java):** Handles the Conversational AI for patient pre-consultation chat, extracting structured symptom/diagnosis bullet points seamlessly without hallucination. It also powers the Doctor Notes expansion feature.
+    *   **Python FastAPI Microservice (`google/pegasus-pubmed`):** Handles the heavy NLP task of Clinical Record and Document Summarization. By utilizing a model specifically fine-tuned on PubMed medical abstracts, we offload dense document analysis from the main transactional backend.
     *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
 2.  **MinIO (S3) Document Storage:** 
@@ -130,3 +131,4 @@ A critical real-world hospital requirement is handling sudden doctor unavailabil
     *   **Automated Next-Day Fallback (Option B):** If no peer doctors are available on the same day, the algorithm calculates the *original doctor's* next available working day (scanning up to 3 days post-unavailability). It automatically pushes the appointment to this new date, preserving the patient's booking.
     *   **Graceful Degradation (Pending Manual):** If both automated attempts fail, the system parks the appointment in a REASSIGNMENT_PENDING state. This prevents data loss and surfaces the appointment to the Receptionist/Admin queue for manual phone-call resolution.
 *   **Database Constraints & Migrations:** The engine is built on robust PostgreSQL transactions. A dedicated startup fixer (DatabaseConstraintFixer) patches legacy CHECK constraints to ensure new enum values (REASSIGNMENT_PENDING, REASSIGNED) are accepted natively by the database engine.
+
