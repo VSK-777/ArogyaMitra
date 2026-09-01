@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Bot, Loader2, Send, CheckCircle, Mic, Square, AlertCircle } from 'lucide-react';
 import { preConsultationApi } from '../../api/preConsultationApi';
 
+
 interface Message {
   role: 'ai' | 'patient';
   content: string;

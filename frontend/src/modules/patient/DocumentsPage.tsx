@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DocumentList } from '../../components/documents/DocumentList';
@@ -5,6 +6,7 @@ import { DocumentUploader } from '../../components/documents/DocumentUploader';
 import { patientApi } from '../../api/patientApi';
 
 export default function DocumentsPage() {
+  const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(location.search);
@@ -41,7 +43,7 @@ export default function DocumentsPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-slate-900">Medical Documents</h1>
+                <h1 className="text-2xl font-bold text-slate-900">{t('documentsPage.title')}</h1>
                 <button onClick={() => navigate('/patient/dashboard')} className="text-blue-700 font-medium">Back to Dashboard</button>
             </div>
 

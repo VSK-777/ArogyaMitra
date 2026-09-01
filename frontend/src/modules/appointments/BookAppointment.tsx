@@ -4,9 +4,11 @@ import { patientApi } from '../../api/patientApi';
 import { Loader2, CheckCircle2, Ticket } from 'lucide-react';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function BookAppointment() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { name } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -217,8 +219,8 @@ export default function BookAppointment() {
     <div className="max-w-3xl mx-auto space-y-8">
       {step < 5 && (
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book New Appointment</h1>
-          <p className="text-slate-500 mt-1">Follow the steps to secure your slot.</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('bookAppointment.title')}</h1>
+          <p className="text-slate-500 mt-1">{t('bookAppointment.subtitle')}</p>
         </div>
       )}
 
@@ -238,11 +240,11 @@ export default function BookAppointment() {
       <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-lg font-semibold">Select Hospital</h2>
+            <h2 className="text-lg font-semibold">{t('bookAppointment.select_hospital')}</h2>
             <div className="relative mb-4">
               <input
                 type="text"
-                placeholder="Search hospitals by name or address..."
+                placeholder={t('bookAppointment.search_hospitals')}
                 value={hospitalSearchQuery}
                 onChange={(e) => setHospitalSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -258,18 +260,18 @@ export default function BookAppointment() {
                   <p className="text-sm text-slate-500 mt-1">{h.address}</p>
                 </div>
               ))}
-              {isLoadingHospitals && <p className="text-slate-500 col-span-2">Loading hospitals...</p>}
-              {!isLoadingHospitals && hospitals.length === 0 && <p className="text-slate-500 col-span-2">No hospitals found.</p>}
+              {isLoadingHospitals && <p className="text-slate-500 col-span-2">{t('bookAppointment.loading_hospitals')}</p>}
+              {!isLoadingHospitals && hospitals.length === 0 && <p className="text-slate-500 col-span-2">{t('bookAppointment.no_hospitals')}</p>}
             </div>
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-lg font-semibold">Select Department & Doctor</h2>
+            <h2 className="text-lg font-semibold">{t('bookAppointment.select_dept_doctor')}</h2>
             
             <select onChange={fetchDoctors} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 bg-white focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Select a Department</option>
+              <option value="">{t('bookAppointment.select_department')}</option>
               {departments.map(d => (
                   <option key={d.id} value={d.id}>{d.name}</option>
               ))}
@@ -283,19 +285,19 @@ export default function BookAppointment() {
                             <p className="text-sm text-slate-500 mt-1">{doc.specialization} • {doc.qualification}</p>
                         </div>
                     ))}
-                    {selectedDepartment && doctors.length === 0 && <p className="text-slate-500">No doctors available in this department.</p>}
+                    {selectedDepartment && doctors.length === 0 && <p className="text-slate-500">{t('bookAppointment.no_doctors')}</p>}
                 </div>
             )}
             
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">Back</button>
+              <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.back')}</button>
             </div>
           </div>
         )}
 
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-lg font-semibold">Select Date & Time</h2>
+            <h2 className="text-lg font-semibold">{t('bookAppointment.select_date_time')}</h2>
             <input type="date" min={getMinDate()} value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 focus:ring-blue-500 focus:border-blue-500" />
             
             {selectedDate && (
@@ -316,7 +318,7 @@ export default function BookAppointment() {
             )}
             
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">Back</button>
+              <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.back')}</button>
               <button disabled={!selectedSlot} onClick={handleNext} className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 disabled:opacity-50">Next Step</button>
             </div>
           </div>
@@ -357,15 +359,15 @@ export default function BookAppointment() {
                     <p className="font-semibold text-slate-900">{name || 'Patient'}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500">Hospital</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.hospital')}</p>
                     <p className="font-semibold text-slate-900">{confirmedData.hospitalName}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500">Department</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.department')}</p>
                     <p className="font-semibold text-slate-900">{confirmedData.departmentName}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500">Doctor</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.doctor')}</p>
                     <p className="font-semibold text-slate-900">{confirmedData.doctorName}</p>
                 </div>
                 <div>
