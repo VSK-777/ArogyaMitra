@@ -21,6 +21,7 @@ export const PublicOnlyRoute: React.FC = () => {
         if (role === 'ROLE_PATIENT' || role === 'Patient') return <Navigate to="/patient/dashboard" replace />;
         if (role === 'ROLE_DOCTOR' || role === 'Doctor') return <Navigate to="/doctor/dashboard" replace />;
         if (role === 'ROLE_ADMIN' || role === 'Admin') return <Navigate to="/admin/dashboard" replace />;
+        if (role === 'ROLE_RECEPTIONIST' || role === 'Receptionist') return <Navigate to="/receptionist/dashboard" replace />;
         return <Navigate to="/" replace />;
     }
     return <Outlet />;
