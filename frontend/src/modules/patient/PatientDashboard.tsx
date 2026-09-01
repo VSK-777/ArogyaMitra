@@ -80,6 +80,21 @@ export default function PatientDashboard() {
     return <div className="text-red-500">{error}</div>;
   }
 
+  
+  const translateNotificationMessage = (msg: string) => {
+    if (!msg) return msg;
+    if (msg.includes('We apologize for the inconvenience')) {
+      return t('patientDashboard.apology');
+    }
+    if (msg.includes('Your appointment has been reassigned to Dr.')) {
+      const match = msg.match(/Dr\. (.*?)\. New Date: (.*?)\. New Time: (.*?)\. New Token: (.*?)\./);
+      if (match) {
+        return t('patientDashboard.reassigned_notice', { newDoctor: match[1], date: match[2], time: match[3], token: match[4] });
+      }
+    }
+    return msg;
+  };
+
   const handleCheckIn = async (appointmentId: string) => {
       try {
           setLoading(true);
@@ -129,8 +144,8 @@ export default function PatientDashboard() {
             <div className="space-y-2">
               {data.notifications.map((n: any) => (
                 <div key={n.id} className="bg-white p-3 rounded shadow-sm border border-blue-100 text-sm text-blue-800">
-                  <span className="font-semibold">{n.type === 'REASSIGNMENT_PENDING' ? t('patientDashboard.action_required') : t('patientDashboard.update_label')}: </span>
-                  {n.message}
+                  <span className="font-semibold">{n.type === 'REASSIGNMENT_PENDING' ? t('patientDashboard.action_required') : t('patientDashboard.update_label')} </span>
+                  {translateNotificationMessage(n.message)}
                 </div>
               ))}
             </div>
@@ -158,13 +173,13 @@ export default function PatientDashboard() {
       <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4 flex gap-4">
           <button onClick={() => setActiveTab('upcoming')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'upcoming' ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-            Upcoming ({data.upcomingAppointmentsCount})
+            {t('patientDashboard.upcoming')} ({data.upcomingAppointmentsCount})
           </button>
           <button onClick={() => setActiveTab('visited')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'visited' ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-            Visited ({data.completedAppointmentsCount})
+            {t('patientDashboard.visited')} ({data.completedAppointmentsCount})
           </button>
           <button onClick={() => setActiveTab('notVisited')} className={`text-sm font-semibold pb-4 -mb-4 border-b-2 ${activeTab === 'notVisited' ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-            Not Visited ({data.notVisitedCount})
+            {t('patientDashboard.not_visited')} ({data.notVisitedCount})
           </button>
         </div>
         <div className="divide-y divide-slate-100">
@@ -196,9 +211,7 @@ export default function PatientDashboard() {
                         {(apt.status === 'BOOKED' || apt.status === 'REASSIGNED') && apt.checkInStatus === 'NOT_CHECKED_IN' && (
                             <>
                                 <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">{t('patientDashboard.upcoming')}</span>
-                                <button onClick={() => handleCheckIn(apt.appointmentId)} className="bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-semibold hover:bg-blue-800 shadow-sm transition-colors">
-                                    Check In
-                                </button>
+                                <button onClick={() => handleCheckIn(apt.appointmentId)} className="bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm font-semibold hover:bg-blue-800 shadow-sm transition-colors">{t('patientDashboard.check_in_button')}</button>
                             </>
                         )}
                         {(apt.status === 'BOOKED' || apt.status === 'REASSIGNED') && apt.checkInStatus === 'CHECKED_IN' && (
