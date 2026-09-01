@@ -11,26 +11,26 @@ The application is built using a modern, scalable, and modular **Spring Boot + R
 ### 1.1 Architecture Diagram Flow
 ```mermaid
 graph TD
-    A[Users: Patients, Doctors, Admin, Receptionist] -->|HTTPS| B(Frontend: React + Vite)
-    B -->|REST API + JWT| C{API Gateway / Spring Security}
+    A["Users: Patients, Doctors, Admin, Receptionist"] -->|HTTPS| B("Frontend: React + Vite")
+    B -->|REST API + JWT| C{"API Gateway / Spring Security"}
     
-    C -->|Role: PATIENT| D[Patient Module]
-    C -->|Role: DOCTOR| E[Doctor Module]
-    C -->|Role: RECEPTIONIST| F[Receptionist Module]
-    C -->|Role: ADMIN| G[Admin Module]
+    C -->|Role: PATIENT| D["Patient Module"]
+    C -->|Role: DOCTOR| E["Doctor Module"]
+    C -->|Role: RECEPTIONIST| F["Receptionist Module"]
+    C -->|Role: ADMIN| G["Admin Module"]
     
-    D --> H((Business Logic / Service Layer))
+    D --> H(("Business Logic / Service Layer"))
     E --> H
     F --> H
     G --> H
     
-    H --> I[(MySQL / PostgreSQL)]
+    H --> I[("MySQL / PostgreSQL")]
     
-    H -.->|Real-time Queue| J[WebSockets / STOMP]
-    H -.->|Speech-to-Text| K[Gemini Speech-to-Text AI]
-    H -.->|Clinical Summaries| L[Python AI Microservice (FastAPI + HuggingFace)]
-    L -.-> N[(Local ML Models)]
-    H -.->|File Storage| M[MinIO / S3 Storage]
+    H -.->|Real-time Queue| J["WebSockets / STOMP"]
+    H -.->|Speech-to-Text| K["Gemini Speech-to-Text AI"]
+    H -.->|Clinical Summaries| L["Python AI Microservice (FastAPI + HuggingFace)"]
+    L -.-> N[("Local ML Models")]
+    H -.->|File Storage| M["MinIO / S3 Storage"]
 ```
 
 ### 1.2 The "Appointment ID" vs "Token" Paradigm
