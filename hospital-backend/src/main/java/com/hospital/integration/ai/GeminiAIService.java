@@ -73,41 +73,27 @@ public class GeminiAIService implements AiProvider {
     @Override
     public String generateStructuredSummary(String fullConversation) {
         try {
-            String pythonApiUrl = "https://discolor-palpitate-lard.ngrok-free.dev/summarize"; // Hardcoded for Colab ngrok
-            Map<String, Object> request = Map.of("text", fullConversation);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-            
-            ResponseEntity<Map> response = restTemplate.postForEntity(pythonApiUrl, entity, Map.class);
-            
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                Map<String, Object> body = response.getBody();
-                if (body.containsKey("error")) {
-                    return "Error from Python AI: " + body.get("error");
-                }
-                
-                String mainSummary = (String) body.getOrDefault("summary", "Summary not generated.");
-                String symptoms = (String) body.getOrDefault("symptoms", "Not specified");
-                String diagnosis = (String) body.getOrDefault("diagnosis", "Not specified");
-                String medications = (String) body.getOrDefault("medications", "Not specified");
-                String labValues = (String) body.getOrDefault("lab_values", "Not specified");
+            String systemInstruction = "You are a clinical AI assistant. You will be provided with a raw transcript of a pre-consultation chat between a patient and an AI, as well as any uploaded document text. "
+                    + "Your job is to carefully extract the facts and write a professional, clinical structured summary for the doctor. "
+                    + "Do NOT invent or hallucinate any information. Only use the provided text. "
+                    + "Format your response EXACTLY like this (include the bullet points):\n"
+                    + "• Summary: [A concise 2-3 sentence clinical summary of the patient's condition]\n"
+                    + "• Symptoms: [Comma-separated list of symptoms]\n"
+                    + "• Diagnosis: [Potential diagnosis if mentioned, else 'Not specified']\n"
+                    + "• Medications: [Any medications mentioned, else 'Not specified']\n"
+                    + "• Lab Values: [Any lab values or vitals mentioned, else 'Not specified']";
 
-                return String.format(
-                    "AI-generated pre-consultation summary:\n\n" +
-                    "• Summary: %s\n" +
-                    "• Symptoms: %s\n" +
-                    "• Potential Diagnosis/Impression: %s\n" +
-                    "• Current Medications: %s\n" +
-                    "• Lab Values Mentioned: %s",
-                    mainSummary, symptoms, diagnosis, medications, labValues
-                );
-            }
-            return "Failed to generate summary from Python AI service.";
+            List<Map<String, Object>> contents = new ArrayList<>();
+            contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", "Here is the consultation data:\n\n" + fullConversation))));
+
+            String aiResponse = callGeminiChatApi(systemInstruction, contents);
+            
+            // Format the response slightly if needed to match the frontend expectations
+            return "AI-generated clinical summary:\n\n" + aiResponse;
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Exception calling Python AI service: " + e.getMessage();
+            logger.error("Error generating Gemini summary: {}", e.getMessage(), e);
+            return "Could not generate summary due to an error. Please refer to the raw chat logs.";
         }
     }
 
