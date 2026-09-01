@@ -14,12 +14,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.util.concurrent.TimeUnit;
 
 
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final Cache<String, Bucket> buckets = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).maximumSize(10000).build();
 
     private Bucket createNewBucket(String key) {
         if (key.contains("/api/auth/login")) {
@@ -57,7 +59,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             String userPrincipal = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : clientIp;
             String key = userPrincipal + ":" + keyType;
 
-            Bucket bucket = buckets.computeIfAbsent(key, this::createNewBucket);
+            Bucket bucket = buckets.get(key, this::createNewBucket);
             if (!bucket.tryConsume(1)) {
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.setContentType("application/json");

@@ -4,12 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import com.hospital.validation.ValidPhoneNumber;
 
 @Data
 public class PatientRegistrationRequest {
     
     @NotBlank(message = "Mobile number is required")
-    @Pattern(regexp = "^\\d{10}$", message = "Mobile number must be exactly 10 digits")
+    @ValidPhoneNumber(region = "IN", message = "Must be a valid mobile number")
     private String mobile;
     
     @NotBlank(message = "Password is required")
