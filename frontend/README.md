@@ -1,5 +1,7 @@
 # SIH Hospital Management - Frontend Dashboard
 
+🚀 **Live Demo:** [https://sih-hospital-management.vercel.app](https://sih-hospital-management.vercel.app)
+
 This directory contains the professional frontend UI prototype for the SIH Hospital Management System. It is built using modern web technologies to provide a lightning-fast, responsive, and intuitive interface for Patients, Doctors, and Administrators.
 
 ## 🛠️ Technology Stack
@@ -14,39 +16,30 @@ This directory contains the professional frontend UI prototype for the SIH Hospi
 
 ## 📂 Architecture Overview
 
-The frontend is structured as a Role-Based Dashboard application using a domain-driven module structure:
-
-- `src/App.tsx`: Central router that maps URLs to specific role dashboards.
-- `src/components/Layout.tsx`: A dynamic global layout containing a responsive Sidebar and Top Navigation bar. The navigation links automatically adjust depending on whether the authenticated user is a Patient, Doctor, Receptionist, or Admin.
-- `src/modules/auth/*`: Unified authentication portal handling registration and login for all user types.
-- `src/modules/patient/*`: Views dedicated to patients (Dashboard, Book Appointment flow).
-- `src/modules/preconsultation/*`: Voice-enabled AI Pre-Consultation flow with Gemini.
-- `src/modules/doctor/*`: Views dedicated to doctors (Live Queue Monitor, Interactive Consultation Mode).
-- `src/modules/receptionist/*`: Views dedicated to receptionists (Walk-ins, Patient Search).
-- `src/modules/admin/*`: Views dedicated to system administrators (Analytics, Staff Management, Logs).
+For a detailed breakdown of the frontend's Domain-Driven Modularity, state management, and role-based routing, please see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## 🚀 Local Development
 
 To run this frontend prototype locally:
 
 1. Install dependencies:
-   ```bash
+   `ash
    npm install
-   ```
+   `
 
 2. Run the development server:
-   ```bash
+   `ash
    npm run dev
-   ```
-   The application will be available at `http://localhost:5173`.
+   `
+   The application will be available at http://localhost:5173.
 
-3. Ensure the Spring Boot backend is running concurrently on `http://localhost:8080`. (The API Base URL defaults to this address, but can be overridden via `VITE_API_BASE_URL` in your `.env`).
+3. Ensure the Spring Boot backend is running concurrently on http://localhost:8080. (The API Base URL defaults to this address, but can be overridden via VITE_API_BASE_URL in your .env).
 
 ## 📦 Production Build
 
 To build the application for production deployment (e.g., Vercel, Netlify):
 
-```bash
+`ash
 npm run build
-```
-This will compile the TypeScript, optimize assets, and output the production-ready static files into the `dist/` directory.
+`
+This will compile the TypeScript, optimize assets, and output the production-ready static files into the dist/ directory.
