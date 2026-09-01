@@ -23,6 +23,25 @@ public class DoctorController {
     private final AppointmentRepository appointmentRepository;
     private final PreConsultationRepository preConsultationRepository;
     private final AuditService auditService;
+    private final com.hospital.integration.ai.AiProvider aiProvider;
+
+    @PostMapping("/summarize-clinical-record")
+    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> summarizeClinicalRecord(@RequestBody java.util.Map<String, String> request) {
+        String text = request.get("text");
+        if (text == null || text.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("No text provided", "INVALID_REQUEST"));
+        }
+        
+        try {
+            java.util.Map<String, Object> summary = aiProvider.summarizeClinicalRecord(text);
+            if (summary.containsKey("error")) {
+                return ResponseEntity.status(500).body(ApiResponse.error((String) summary.get("error"), "AI_ERROR"));
+            }
+            return ResponseEntity.ok(ApiResponse.success("Summarized successfully", summary));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.error("Exception calling Python AI service: " + e.getMessage(), "AI_ERROR"));
+        }
+    }
 
     @GetMapping("/queue/today")
     public ResponseEntity<ApiResponse<List<QueueToken>>> getTodayQueue() {

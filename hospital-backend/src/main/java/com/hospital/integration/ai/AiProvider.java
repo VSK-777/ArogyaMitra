@@ -7,4 +7,5 @@ public interface AiProvider {
     String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput);
     String generateStructuredSummary(String fullConversation);
     String draftClinicalDocumentation(String doctorNotes);
+    java.util.Map<String, Object> summarizeClinicalRecord(String text);
 }

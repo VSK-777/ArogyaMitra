@@ -106,6 +106,28 @@ public class GeminiAIService implements AiProvider {
         return callGeminiChatApi(systemInstruction, contents);
     }
 
+    @Override
+    public java.util.Map<String, Object> summarizeClinicalRecord(String text) {
+        try {
+            String pythonApiUrl = pythonAiBaseUrl + "/summarize";
+            java.util.Map<String, Object> request = java.util.Map.of("text", text);
+            
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            org.springframework.http.HttpEntity<java.util.Map<String, Object>> entity = new org.springframework.http.HttpEntity<>(request, headers);
+            
+            org.springframework.http.ResponseEntity<java.util.Map> response = restTemplate.postForEntity(pythonApiUrl, entity, java.util.Map.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody();
+            }
+            return java.util.Map.of("error", "Failed to generate summary from Python AI service. Invalid response.");
+        } catch (Exception e) {
+            logger.error("Error calling Python AI service for record summary: {}", e.getMessage(), e);
+            return java.util.Map.of("error", "Exception calling Python AI service: " + e.getMessage());
+        }
+    }
+
     private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + geminiApiKey;
 
