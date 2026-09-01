@@ -113,7 +113,7 @@ export default function PatientDashboard() {
           <Trans
             i18nKey="patientDashboard.reassigned_notice"
             values={{ newDoctor: getDoctorName(match[1]), date: match[2], time: match[3], token: match[4] }}
-            components={{ bold: <strong className="font-extrabold text-blue-900 bg-blue-100 px-1.5 py-0.5 rounded shadow-sm mx-1" /> }}
+            components={{ bold: <strong className="font-bold text-slate-900" /> }}
           />
         );
       }
@@ -143,7 +143,7 @@ export default function PatientDashboard() {
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{t('patientDashboard.good_morning').replace('{name}', name || 'Patient')}</h1>
+            <h1 className="text-2xl font-bold text-slate-900">{t('patientDashboard.good_morning', { name: name || 'Patient' })}</h1>
             <p className="text-slate-500 text-sm mt-1">{t('patientDashboard.healthcare_summary')}</p>
           </div>
           {patient?.aadhaarNumber && (
