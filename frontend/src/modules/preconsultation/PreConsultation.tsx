@@ -150,7 +150,11 @@ export default function PreConsultation() {
     setRetryAction(null);
     
     try {
-        const res = await preConsultationApi.chat(aptId!, userMsg);
+        let apiMsg = userMsg;
+        if (i18n.language.startsWith('te')) {
+            apiMsg += "\n(System note: Please reply to me and ask the next follow-up question entirely in Telugu language)";
+        }
+        const res = await preConsultationApi.chat(aptId!, apiMsg);
         if (res.success) {
             // Remove previous error messages
             setMessages(prev => prev.filter(m => !m.isError).concat([{ role: 'ai', content: res.data || '' }]));
