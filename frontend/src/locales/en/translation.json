@@ -42,7 +42,7 @@
     "prescriptions": "Prescriptions",
     "notifications": "Notifications",
     "update_label": "Update:",
-    "reassigned_notice": "Your appointment has been reassigned to Dr. {{newDoctor}}. New Date: {{date}}. New Time: {{time}}. New Token: {{token}}.",
+    "reassigned_notice": "Your appointment has been reassigned to Dr. <bold>{{newDoctor}}</bold>. New Date: <bold>{{date}}</bold>. New Time: <bold>{{time}}</bold>. New Token: <bold>{{token}}</bold>.",
     "action_required": "Action Required:",
     "apology": "We apologize for the inconvenience. Your doctor is currently unavailable due to an urgent hospital responsibility. Our hospital team is arranging the earliest suitable consultation.",
     "pre_consultation_required": "Pre-Consultation Required",

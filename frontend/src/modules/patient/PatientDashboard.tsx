@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 
 function TokenModal({ apt, onClose }: { apt: any; onClose: () => void }) {
@@ -50,7 +50,7 @@ function TokenModal({ apt, onClose }: { apt: any; onClose: () => void }) {
 }
 
 export default function PatientDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { name } = useAuth();
   const [activeTab, setActiveTab] = useState<"upcoming" | "visited" | "notVisited">("upcoming");
@@ -81,18 +81,44 @@ export default function PatientDashboard() {
   }
 
   
+  const getDoctorName = (engName: string) => {
+    if (!engName) return engName;
+    if (!i18n.language.startsWith('te')) return engName;
+    const teluguDoctorNames: Record<string, string> = {
+      "Ramesh Sharma": "రమేష్ శర్మ",
+      "Priya Desai": "ప్రియా దేశాయ్",
+      "Anil Kumar": "అనిల్ కుమార్",
+      "Meena Iyer": "మీనా అయ్యర్",
+      "Suresh Patel": "సురేష్ పటేల్",
+      "Kavita Singh": "కవితా సింగ్",
+      "Rohan Das": "రోహన్ దాస్",
+      "Vikram Seth": "విక్రమ్ సేథ్",
+      "Anjali Menon": "అంజలి మీనన్",
+      "Naveen Kumar": "నవీన్ కుమార్"
+    };
+    let cleanName = engName.replace("Dr. ", "");
+    let translated = teluguDoctorNames[cleanName] || cleanName;
+    return engName.includes("Dr. ") ? "డా. " + translated : translated;
+  };
+
   const translateNotificationMessage = (msg: string) => {
     if (!msg) return msg;
     if (msg.includes('We apologize for the inconvenience')) {
-      return t('patientDashboard.apology');
+      return <span>{t('patientDashboard.apology')}</span>;
     }
     if (msg.includes('Your appointment has been reassigned to Dr.')) {
       const match = msg.match(/Dr\. (.*?)\. New Date: (.*?)\. New Time: (.*?)\. New Token: (.*?)\./);
       if (match) {
-        return t('patientDashboard.reassigned_notice', { newDoctor: match[1], date: match[2], time: match[3], token: match[4] });
+        return (
+          <Trans
+            i18nKey="patientDashboard.reassigned_notice"
+            values={{ newDoctor: getDoctorName(match[1]), date: match[2], time: match[3], token: match[4] }}
+            components={{ bold: <strong className="font-extrabold text-blue-900 bg-blue-100 px-1.5 py-0.5 rounded shadow-sm mx-1" /> }}
+          />
+        );
       }
     }
-    return msg;
+    return <span>{msg}</span>;
   };
 
   const handleCheckIn = async (appointmentId: string) => {
@@ -191,14 +217,14 @@ export default function PatientDashboard() {
                 <div key={apt.id} className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="font-semibold text-slate-900">{getDoctorName(apt.doctor?.name)} - {apt.department?.name}</p>
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} {t('patientDashboard.at')} {apt.slotStart?.substring(0,5)} @ {apt.hospital?.name || t('patientDashboard.main_hospital')}</p>
                         <p className="text-xs text-slate-400 mt-1">{t('patientDashboard.id')} {apt.appointmentId}</p>
                         {apt.status === 'REASSIGNED' && apt.originalDoctor && (
                             <p className="text-xs text-orange-600 font-medium mt-1 flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" />
                                 {apt.originalDoctor.id !== apt.doctor?.id
-                                    ? `t('patientDashboard.reassigned_originally', { name: apt.originalDoctor.name })`
+                                    ? `t('patientDashboard.reassigned_originally', { name: getDoctorName(apt.originalDoctor.name) })`
                                     : t('patientDashboard.rescheduled_new_time')}
                             </p>
                         )}
@@ -241,7 +267,7 @@ export default function PatientDashboard() {
                 <div key={apt.id} className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="font-semibold text-slate-900">{getDoctorName(apt.doctor?.name)} - {apt.department?.name}</p>
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || t('patientDashboard.main_hospital')}</p>
                         <p className="text-xs text-slate-400 mt-1">{t('patientDashboard.id')} {apt.appointmentId}</p>
                     </div>
@@ -264,7 +290,7 @@ export default function PatientDashboard() {
                 <div key={apt.id} className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                        <p className="font-semibold text-slate-900">{apt.doctor?.name} - {apt.department?.name}</p>
+                        <p className="font-semibold text-slate-900">{getDoctorName(apt.doctor?.name)} - {apt.department?.name}</p>
                         <p className="text-sm text-slate-500 mt-1">{apt.appointmentDate} @ {apt.hospital?.name || t('patientDashboard.main_hospital')}</p>
                         <p className="text-xs text-slate-400 mt-1">{t('patientDashboard.id')} {apt.appointmentId}</p>
                     </div>
