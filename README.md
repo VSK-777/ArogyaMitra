@@ -2,6 +2,8 @@
 
 **AI-Powered Hospital Appointment, Pre-Consultation & Documentation System**
 
+🚀 **Live Demo:** [https://sih-hospital-management.vercel.app](https://sih-hospital-management.vercel.app)
+
 ## 1. Project Overview
 This project is a complete full-stack application designed to streamline hospital workflows. It manages everything from patient authentication and appointment booking to AI-driven pre-consultations, doctor queue management, and final clinical documentation.
 
@@ -345,3 +347,4 @@ The system utilizes a split-workload Hybrid AI architecture to maximize performa
 2. **Python FastAPI Microservice (google/pegasus-pubmed)**
    - **Role:** Heavy NLP Document Analysis
    - **Responsibilities:** Summarizes dense clinical records and uploaded medical documents. By running a Hugging Face model natively fine-tuned on PubMed medical abstracts, it achieves superior clinical abstraction while keeping the main Spring Boot transactional backend lightweight.
+
