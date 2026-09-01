@@ -1,4 +1,4 @@
-# SIH Hackathon Demo Credentials
+# ArogyaMitra Hackathon Demo Credentials
 
 All passwords have been updated to `patient123`, `doctor123`, `receptionist123`, or `admin123` (minimum 8 characters) to comply with the secure access portal validation.
 

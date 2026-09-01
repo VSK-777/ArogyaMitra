@@ -60,7 +60,7 @@ export default function Layout() {
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-800 cursor-pointer" onClick={() => navigate('/')}>
           <Stethoscope className="h-8 w-8 text-blue-400" />
-          <span className="ml-3 text-lg font-bold tracking-wide">SIH Health</span>
+          <span className="ml-3 text-lg font-bold tracking-wide">ArogyaMitra</span>
         </div>
         
         <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">

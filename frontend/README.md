@@ -1,8 +1,8 @@
-# SIH Hospital Management - Frontend Dashboard
+# ArogyaMitra Management - Frontend Dashboard
 
 🚀 **Live Demo:** [https://sih-hospital-management.vercel.app](https://sih-hospital-management.vercel.app)
 
-This directory contains the professional frontend UI prototype for the SIH Hospital Management System. It is built using modern web technologies to provide a lightning-fast, responsive, and intuitive interface for Patients, Doctors, and Administrators.
+This directory contains the professional frontend UI prototype for the ArogyaMitra Management System. It is built using modern web technologies to provide a lightning-fast, responsive, and intuitive interface for Patients, Doctors, and Administrators.
 
 ## 🛠️ Technology Stack
 - **Framework**: React 18

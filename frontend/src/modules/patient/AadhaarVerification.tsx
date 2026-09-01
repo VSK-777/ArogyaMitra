@@ -163,7 +163,7 @@ export default function AadhaarVerification({ patientData }: { patientData: any 
                 <div className="bg-blue-50 p-5 rounded-lg border border-blue-200 mb-6 text-center">
                     <h4 className="font-semibold text-blue-900 text-lg mb-2">Consent Required</h4>
                     <p className="text-sm text-blue-800 mb-6 max-w-lg mx-auto">
-                        SIH Health will open the official Aadhaar App. You will authenticate and approve the information you choose to share. 
+                        ArogyaMitra will open the official Aadhaar App. You will authenticate and approve the information you choose to share. 
                         We require this to verify your hospital registration.
                     </p>
                     <div className="flex justify-center gap-4">

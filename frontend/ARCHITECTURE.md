@@ -1,4 +1,4 @@
-# Frontend Architecture: SIH Hospital Management
+# Frontend Architecture: ArogyaMitra Management
 
 This document outlines the architectural decisions, folder structures, and data flows specific to the React frontend of the MediFlow application.
 

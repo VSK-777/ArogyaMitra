@@ -23,7 +23,7 @@ export default function LandingPage() {
               <div className="bg-blue-700 p-2 rounded-md flex items-center justify-center">
                 <Hospital className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-xl tracking-tight text-slate-900">SIH Health</span>
+              <span className="font-bold text-xl tracking-tight text-slate-900">ArogyaMitra</span>
             </div>
 
             {/* Desktop Nav */}
@@ -339,7 +339,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
               <Hospital className="h-5 w-5 text-slate-400" />
-              <span className="font-bold text-lg text-slate-900">SIH Health</span>
+              <span className="font-bold text-lg text-slate-900">ArogyaMitra</span>
             </div>
             <div className="flex gap-6 text-sm text-slate-600">
               <a href="#platform" className="hover:text-slate-900 transition-colors">Platform</a>
@@ -347,7 +347,7 @@ export default function LandingPage() {
               <button onClick={() => navigate('/auth')} className="hover:text-slate-900 transition-colors">Sign In</button>
             </div>
             <div className="text-sm text-slate-500">
-              &copy; 2026 SIH Health Innovation.
+              &copy; 2026 ArogyaMitra Innovation.
             </div>
           </div>
         </div>

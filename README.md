@@ -1,4 +1,4 @@
-# SIH Hospital Management System
+# ArogyaMitra Management System
 
 **AI-Powered Hospital Appointment, Pre-Consultation & Documentation System**
 

@@ -16,7 +16,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info().title("Hospital Management API")
                         .version("1.0")
-                        .description("SIH AI-Powered Hospital Appointment, Pre-Consultation & Documentation System"))
+                        .description("ArogyaMitra AI-Powered Hospital Appointment, Pre-Consultation & Documentation System"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",

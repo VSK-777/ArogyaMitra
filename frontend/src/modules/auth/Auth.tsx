@@ -119,7 +119,7 @@ export default function Auth() {
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
-          SIH Hospital System
+          ArogyaMitra
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
           Secure Access Portal
