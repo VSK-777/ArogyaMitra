@@ -2,12 +2,14 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Stethoscope, Activity, LogOut, Menu, ClipboardList, Settings, Search, PlusCircle, Users, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, name } = useAuth();
+  const { t, i18n } = useTranslation();
   
   const role = location.pathname.includes('/doctor') ? 'Doctor' 
     : location.pathname.includes('/admin') ? 'Admin' 
@@ -24,28 +26,28 @@ export default function Layout() {
     switch (role) {
       case 'Doctor':
         return [
-          { name: 'My Queue', path: '/doctor/dashboard', icon: Users },
-          { name: 'Upcoming Appointments', path: '/doctor/upcoming', icon: Calendar },
-          { name: 'Past Consultations', path: '/doctor/consultations', icon: ClipboardList },
-          { name: 'Settings', path: '/doctor/settings', icon: Settings },
+          { name: t('layout.my_queue'), path: '/doctor/dashboard', icon: Users },
+          { name: t('layout.upcoming_appointments'), path: '/doctor/upcoming', icon: Calendar },
+          { name: t('layout.past_consultations'), path: '/doctor/consultations', icon: ClipboardList },
+          { name: t('layout.settings'), path: '/doctor/settings', icon: Settings },
         ];
       case 'Admin':
         return [
-          { name: 'Hospital Management', path: '/admin/dashboard', icon: Activity },
-          { name: 'Staff Management', path: '#', icon: Users },
-          { name: 'Doctor Reassignments', path: '/admin/reassignments', icon: ClipboardList },
-          { name: 'System Logs', path: '#', icon: Search },
+          { name: t('layout.hospital_management'), path: '/admin/dashboard', icon: Activity },
+          { name: t('layout.staff_management'), path: '#', icon: Users },
+          { name: t('layout.doctor_reassignments'), path: '/admin/reassignments', icon: ClipboardList },
+          { name: t('layout.system_logs'), path: '#', icon: Search },
         ];
       case 'Receptionist':
         return [
-          { name: 'Patient Search', path: '/receptionist/dashboard', icon: Search },
-          { name: 'Doctor Reassignments', path: '/admin/reassignments', icon: ClipboardList },
+          { name: t('layout.patient_search'), path: '/receptionist/dashboard', icon: Search },
+          { name: t('layout.doctor_reassignments'), path: '/admin/reassignments', icon: ClipboardList },
         ];
       default: // Patient
         return [
-          { name: 'My Dashboard', path: '/patient/dashboard', icon: Activity },
-          { name: 'Book Appointment', path: '/patient/book', icon: PlusCircle },
-          { name: 'Medical Documents', path: '/patient/documents', icon: ClipboardList }
+          { name: t('layout.my_dashboard'), path: '/patient/dashboard', icon: Activity },
+          { name: t('layout.book_appointment'), path: '/patient/book', icon: PlusCircle },
+          { name: t('layout.medical_documents'), path: '/patient/documents', icon: ClipboardList }
         ];
     }
   };
@@ -82,7 +84,7 @@ export default function Layout() {
         <div className="p-4 border-t border-slate-800">
           <button onClick={handleLogout} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
             <LogOut className="h-5 w-5 shrink-0" />
-            Logout
+            {t('layout.logout')}
           </button>
         </div>
       </aside>
@@ -93,7 +95,15 @@ export default function Layout() {
             <Menu className="h-6 w-6" />
           </button>
           <div className="ml-auto flex items-center gap-4">
-            <div className="flex flex-col items-end">
+            <button 
+              onClick={() => i18n.changeLanguage(i18n.language.startsWith('en') ? 'te' : 'en')}
+              className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors shadow-sm"
+              title="Change Language"
+            >
+              <span className="text-lg">🌐</span>
+              {i18n.language.startsWith('en') ? 'తెలుగు' : 'English'}
+            </button>
+            <div className="flex flex-col items-end border-l border-slate-200 pl-4">
               <span className="text-sm font-medium text-slate-900">{name || `${role} Account`}</span>
               <span className="text-xs text-slate-500">{role}</span>
             </div>

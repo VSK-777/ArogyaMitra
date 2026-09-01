@@ -1,0 +1,17 @@
+{
+  "layout": {
+    "my_queue": "నా క్యూ",
+    "upcoming_appointments": "రాబోయే అపాయింట్‌మెంట్‌లు",
+    "past_consultations": "గత కన్సల్టేషన్స్",
+    "settings": "సెట్టింగ్‌లు",
+    "hospital_management": "హాస్పిటల్ మేనేజ్‌మెంట్",
+    "staff_management": "సిబ్బంది నిర్వహణ",
+    "doctor_reassignments": "డాక్టర్ రీఅసైన్‌మెంట్‌లు",
+    "system_logs": "సిస్టమ్ లాగ్స్",
+    "patient_search": "రోగి శోధన",
+    "my_dashboard": "నా డాష్‌బోర్డ్",
+    "book_appointment": "అపాయింట్‌మెంట్ బుక్ చేయండి",
+    "medical_documents": "మెడికల్ డాక్యుమెంట్స్",
+    "logout": "లాగ్అవుట్"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "layout": {
+    "my_queue": "My Queue",
+    "upcoming_appointments": "Upcoming Appointments",
+    "past_consultations": "Past Consultations",
+    "settings": "Settings",
+    "hospital_management": "Hospital Management",
+    "staff_management": "Staff Management",
+    "doctor_reassignments": "Doctor Reassignments",
+    "system_logs": "System Logs",
+    "patient_search": "Patient Search",
+    "my_dashboard": "My Dashboard",
+    "book_appointment": "Book Appointment",
+    "medical_documents": "Medical Documents",
+    "logout": "Logout"
+  }
+}
