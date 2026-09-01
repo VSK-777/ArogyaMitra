@@ -104,7 +104,7 @@ export default function BookAppointment() {
     setError('');
     try {
         // 1. Create order (if key exists)
-        const RZP_KEY: string | undefined = ''; // Forced mock mode
+        const RZP_KEY: string | undefined = import.meta.env.VITE_RAZORPAY_KEY_ID;
         
         if (!RZP_KEY || RZP_KEY.trim() === '') {
             // DEMO MODE / NO KEY PROVIDED: Bypass payment and book directly
@@ -203,7 +203,7 @@ export default function BookAppointment() {
     } catch (e: any) {
         // Fallback generic error
         console.error("Booking error:", e);
-        setError("Unable to process booking. If you don't have Razorpay configured, please set VITE_RAZORPAY_KEY_ID or clear it to use demo mode.");
+        setError(e.response?.data?.message || e.message || "Unable to process booking. Please try again.");
         setLoading(false);
     }
   };
