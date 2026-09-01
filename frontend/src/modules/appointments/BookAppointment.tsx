@@ -375,35 +375,29 @@ export default function BookAppointment() {
                     <p className="font-semibold text-slate-900">{confirmedData.doctorName}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500">Date & Time</p>
-                    <p className="font-semibold text-slate-900">{confirmedData.appointmentDate} at {confirmedData.slotStart}</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.date_time')}</p>
+                    <p className="font-semibold text-slate-900">{confirmedData.appointmentDate} {t('bookAppointment.at')} {confirmedData.slotStart}</p>
                 </div>
                 
                 <div className="col-span-1 sm:col-span-2 border-t border-slate-200 pt-4 mt-2"></div>
                 
                 <div>
-                    <p className="text-sm text-slate-500">Appointment ID</p>
+                    <p className="text-sm text-slate-500">{t('bookAppointment.appointment_id')}</p>
                     <p className="font-bold text-slate-900">{confirmedData.appointmentId}</p>
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500 flex items-center gap-1 font-bold"><Ticket className="w-4 h-4" /> TOKEN NUMBER</p>
+                    <p className="text-sm text-slate-500 flex items-center gap-1 font-bold"><Ticket className="w-4 h-4" /> {t('bookAppointment.token_number')}</p>
                     <p className="text-2xl font-black text-blue-700">{confirmedData.tokenId}</p>
                 </div>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <button onClick={() => navigate('/patient/pre-consultation')} className="flex-1 bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-bold shadow-sm text-center">
-                Start AI Pre-Consultation
-              </button>
-              <button onClick={() => navigate('/patient/documents')} className="flex-1 bg-white text-blue-700 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-50 font-bold shadow-sm text-center">
-                Upload Medical Reports
-              </button>
+              <button onClick={() => navigate('/patient/pre-consultation')} className="flex-1 bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-bold shadow-sm text-center">{t('bookAppointment.start_ai')}</button>
+              <button onClick={() => navigate('/patient/documents')} className="flex-1 bg-white text-blue-700 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-50 font-bold shadow-sm text-center">{t('bookAppointment.upload_reports')}</button>
             </div>
             
             <div className="text-center mt-4">
-              <button onClick={() => navigate('/patient/dashboard')} className="text-slate-500 hover:text-slate-700 text-sm font-medium underline">
-                Return to Dashboard
-              </button>
+              <button onClick={() => navigate('/patient/dashboard')} className="text-slate-500 hover:text-slate-700 text-sm font-medium underline">{t('bookAppointment.return_dashboard')}</button>
             </div>
           </div>
         )}

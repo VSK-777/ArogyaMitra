@@ -102,7 +102,13 @@
     "apt_confirmed": "Appointment Confirmed ✓",
     "apt_scheduled": "Your appointment has been successfully scheduled.",
     "patient": "Patient",
-    "at": "at"
+    "at": "at",
+    "date_time": "Date & Time",
+    "appointment_id": "Appointment ID",
+    "token_number": "TOKEN NUMBER",
+    "start_ai": "Start AI Pre-Consultation",
+    "upload_reports": "Upload Medical Reports",
+    "return_dashboard": "Return to Dashboard"
   },
   "documentsPage": {
     "title": "Medical Documents",
