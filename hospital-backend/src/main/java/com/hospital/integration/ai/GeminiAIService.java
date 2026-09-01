@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class GeminiAIService implements AiProvider {
@@ -19,14 +21,12 @@ public class GeminiAIService implements AiProvider {
     private static final Logger logger = LoggerFactory.getLogger(GeminiAIService.class);
     private static final String GEMINI_MODEL = "gemini-2.5-flash";
 
-    @Value("${gemini.api-key}")
-    private String geminiApiKey;
+    @Value("${gemini.api-key:}")
+    private String geminiApiKeysStr;
 
     private final RestTemplate restTemplate;
-
-    public GeminiAIService() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final List<String> apiKeys = new ArrayList<>();
+    private final AtomicInteger currentKeyIndex = new AtomicInteger(0);
 
     public GeminiAIService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -34,9 +34,27 @@ public class GeminiAIService implements AiProvider {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        boolean hasKey = (geminiApiKey != null && !geminiApiKey.trim().isEmpty());
-        logger.info("Gemini API key present: {}", hasKey);
+        if (geminiApiKeysStr != null) {
+            for (String key : geminiApiKeysStr.split(",")) {
+                if (!key.trim().isEmpty() && !key.contains("YOUR_GEMINI_API_KEY")) {
+                    apiKeys.add(key.trim());
+                }
+            }
+        }
+        
+        if (apiKeys.isEmpty()) {
+            logger.warn("NO VALID GEMINI API KEYS FOUND IN ENVIRONMENT VARIABLES!");
+        } else {
+            logger.info("Initialized Gemini AI Service with {} API keys for round-robin.", apiKeys.size());
+        }
     }
+
+    private String getNextApiKey() {
+        if (apiKeys.isEmpty()) return "";
+        int index = Math.abs(currentKeyIndex.getAndIncrement() % apiKeys.size());
+        return apiKeys.get(index);
+    }
+
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
@@ -129,7 +147,7 @@ public class GeminiAIService implements AiProvider {
     }
 
     private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + geminiApiKey;
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + getNextApiKey();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
