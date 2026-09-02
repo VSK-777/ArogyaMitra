@@ -182,13 +182,9 @@ public class GeminiAIService implements AiProvider {
             } catch (org.springframework.web.client.RestClientResponseException e) {
                 logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
                 lastException = e;
-                if (e.getStatusCode().value() == 429) {
-                    if (i < maxRetries - 1) {
-                        logger.warn("Rate limit hit, retrying with next API key...");
-                        continue;
-                    }
-                } else {
-                    return "I'm having trouble connecting to my knowledge base right now, but please continue or finish the consultation.";
+                if (i < maxRetries - 1) {
+                    logger.warn("API Error hit, retrying with next API key...");
+                    continue;
                 }
             } catch (Exception e) {
                 logger.error("Gemini API Error: {}", e.getMessage(), e);
@@ -196,8 +192,12 @@ public class GeminiAIService implements AiProvider {
             }
         }
         
-        if (lastException != null && lastException.getStatusCode().value() == 429) {
-            return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
+        if (lastException != null) {
+            if (lastException.getStatusCode().value() == 429) {
+                return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
+            }
+            // Temporarily appending the status code to the error message so the user can debug if it persists!
+            return "I'm having trouble connecting to my knowledge base right now (Error " + lastException.getStatusCode().value() + "), but please continue or finish the consultation.";
         }
 
         return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
