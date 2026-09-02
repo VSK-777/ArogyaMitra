@@ -134,6 +134,17 @@ The application strictly follows the Authoritative System Architecture diagram.
 └── service/              # Core Business Logic (AppointmentService, AuditService, etc.)
 ```
 
+### AI Microservice (`python-ai/`)
+```text
+├── Medical_Sumzr/               # Core AI Application Directory
+│   └── medical_summarizer/      # Python Package
+│       ├── app.py               # FastAPI Server and Endpoints
+│       ├── requirements.txt     # Python Dependencies
+│       └── utils/               # AI Utility functions and logic
+├── main.py                      # Application Entrypoint
+└── Dockerfile                   # Docker container configuration
+```
+
 ## 7. Demo Mode Credentials
 The `DataSeeder` automatically populates the database if it is empty.
 - **Patient:** Mobile: `9999999999` | Password: `patient123`

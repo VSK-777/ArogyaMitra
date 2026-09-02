@@ -1,10 +1,10 @@
 package com.hospital.integration.ai;
 
 import com.hospital.entity.PreConsultationResponse;
-import com.hospital.exception.AiIntegrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,36 +16,38 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class GeminiAIService implements AiProvider {
+@Primary
+public class GroqAIService implements AiProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeminiAIService.class);
-    private static final String GEMINI_MODEL = "gemini-2.5-flash";
+    private static final Logger logger = LoggerFactory.getLogger(GroqAIService.class);
+    private static final String GROQ_MODEL = "llama-3.1-70b-versatile";
+    private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-    @Value("${gemini.api-key:}")
-    private String geminiApiKeysStr;
+    @Value("${groq.api-key:}")
+    private String groqApiKeysStr;
 
     private final RestTemplate restTemplate;
     private final List<String> apiKeys = new ArrayList<>();
     private final AtomicInteger currentKeyIndex = new AtomicInteger(0);
 
-    public GeminiAIService(RestTemplate restTemplate) {
+    public GroqAIService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    @jakarta.annotation.PostConstruct
+    @PostConstruct
     public void init() {
-        if (geminiApiKeysStr != null) {
-            for (String key : geminiApiKeysStr.split(",")) {
-                if (!key.trim().isEmpty() && !key.contains("YOUR_GEMINI_API_KEY")) {
+        if (groqApiKeysStr != null) {
+            for (String key : groqApiKeysStr.split(",")) {
+                if (!key.trim().isEmpty() && !key.contains("YOUR_GROQ_API_KEY")) {
                     apiKeys.add(key.trim());
                 }
             }
         }
         
         if (apiKeys.isEmpty()) {
-            logger.warn("NO VALID GEMINI API KEYS FOUND IN ENVIRONMENT VARIABLES!");
+            logger.warn("NO VALID GROQ API KEYS FOUND IN ENVIRONMENT VARIABLES!");
         } else {
-            logger.info("Initialized Gemini AI Service with {} API keys for round-robin.", apiKeys.size());
+            logger.info("Initialized Groq AI Service with {} API keys for round-robin.", apiKeys.size());
         }
     }
 
@@ -54,7 +56,6 @@ public class GeminiAIService implements AiProvider {
         int index = Math.abs(currentKeyIndex.getAndIncrement() % apiKeys.size());
         return apiKeys.get(index);
     }
-
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
@@ -67,22 +68,23 @@ public class GeminiAIService implements AiProvider {
                 "Avoid claiming a definitive diagnosis. Avoid prescribing medication. " +
                 "Escalate appropriately when a potentially serious symptom is mentioned.";
 
-        List<Map<String, Object>> contents = new ArrayList<>();
+        List<Map<String, Object>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content", systemInstruction));
         
         for (PreConsultationResponse r : previousResponses) {
             if (r.getAnswerText() != null && !r.getAnswerText().trim().isEmpty()) {
-                contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", r.getAnswerText()))));
+                messages.add(Map.of("role", "user", "content", r.getAnswerText()));
             }
             if (r.getQuestion() != null && !r.getQuestion().trim().isEmpty()) {
-                contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", r.getQuestion()))));
+                messages.add(Map.of("role", "assistant", "content", r.getQuestion()));
             }
         }
         
         if (patientInput != null && !patientInput.trim().isEmpty()) {
-            contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", patientInput))));
+            messages.add(Map.of("role", "user", "content", patientInput));
         }
 
-        return callGeminiChatApi(systemInstruction, contents);
+        return callGroqChatApi(messages);
     }
 
     @Value("${python.ai.url:https://discolor-palpitate-lard.ngrok-free.dev}")
@@ -101,16 +103,16 @@ public class GeminiAIService implements AiProvider {
                     + "• Medications: [Any medications mentioned, else 'Not specified']\n"
                     + "• Lab Values: [Any lab values or vitals mentioned, else 'Not specified']";
 
-            List<Map<String, Object>> contents = new ArrayList<>();
-            contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", "Here is the consultation data:\n\n" + fullConversation))));
+            List<Map<String, Object>> messages = new ArrayList<>();
+            messages.add(Map.of("role", "system", "content", systemInstruction));
+            messages.add(Map.of("role", "user", "content", "Here is the consultation data:\n\n" + fullConversation));
 
-            String aiResponse = callGeminiChatApi(systemInstruction, contents);
+            String aiResponse = callGroqChatApi(messages);
             
-            // Format the response slightly if needed to match the frontend expectations
             return "AI-generated clinical summary:\n\n" + aiResponse;
 
         } catch (Exception e) {
-            logger.error("Error generating Gemini summary: {}", e.getMessage(), e);
+            logger.error("Error generating Groq summary: {}", e.getMessage(), e);
             return "Could not generate summary due to an error. Please refer to the raw chat logs.";
         }
     }
@@ -118,10 +120,11 @@ public class GeminiAIService implements AiProvider {
     @Override
     public String draftClinicalDocumentation(String doctorNotes) {
         String systemInstruction = "You are a clinical AI assistant.";
-        List<Map<String, Object>> contents = List.of(
-                Map.of("role", "user", "parts", List.of(Map.of("text", "Expand these brief doctor notes into a professional clinical assessment draft: " + doctorNotes)))
+        List<Map<String, Object>> messages = List.of(
+                Map.of("role", "system", "content", systemInstruction),
+                Map.of("role", "user", "content", "Expand these brief doctor notes into a professional clinical assessment draft: " + doctorNotes)
         );
-        return callGeminiChatApi(systemInstruction, contents);
+        return callGroqChatApi(messages);
     }
 
     @Override
@@ -146,48 +149,46 @@ public class GeminiAIService implements AiProvider {
         }
     }
 
-    private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> requestBody = Map.of(
-                "system_instruction", Map.of("parts", List.of(Map.of("text", systemInstruction))),
-                "contents", contents
-        );
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
+    private String callGroqChatApi(List<Map<String, Object>> messages) {
         int maxRetries = Math.max(1, apiKeys.size());
         org.springframework.web.client.RestClientResponseException lastException = null;
 
         for (int i = 0; i < maxRetries; i++) {
-            String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + getNextApiKey();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(getNextApiKey());
+
+            Map<String, Object> requestBody = Map.of(
+                    "model", GROQ_MODEL,
+                    "messages", messages,
+                    "temperature", 0.3
+            );
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
             try {
-                ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, request, Map.class);
+                ResponseEntity<Map> response = restTemplate.postForEntity(GROQ_API_URL, request, Map.class);
                 Map<String, Object> body = response.getBody();
-                if (body != null && body.containsKey("candidates")) {
-                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-                    if (!candidates.isEmpty()) {
-                        Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-                        if (content != null && content.containsKey("parts")) {
-                            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-                            if (!parts.isEmpty()) {
-                                return (String) parts.get(0).get("text");
-                            }
+                if (body != null && body.containsKey("choices")) {
+                    List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+                    if (!choices.isEmpty()) {
+                        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                        if (message != null && message.containsKey("content")) {
+                            return (String) message.get("content");
                         }
                     }
                 }
-                logger.error("Invalid or empty response from Gemini API.");
+                logger.error("Invalid or empty response from Groq API.");
                 return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
             } catch (org.springframework.web.client.RestClientResponseException e) {
-                logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+                logger.error("Groq API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
                 lastException = e;
                 if (i < maxRetries - 1) {
                     logger.warn("API Error hit, retrying with next API key...");
                     continue;
                 }
             } catch (Exception e) {
-                logger.error("Gemini API Error: {}", e.getMessage(), e);
+                logger.error("Groq API Error: {}", e.getMessage(), e);
                 return "Thank you for the information. Is there anything else you'd like to add before we finish?";
             }
         }
@@ -196,12 +197,9 @@ public class GeminiAIService implements AiProvider {
             if (lastException.getStatusCode().value() == 429) {
                 return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
             }
-            // Temporarily appending the status code to the error message so the user can debug if it persists!
             return "I'm having trouble connecting to my knowledge base right now (Error " + lastException.getStatusCode().value() + "), but please continue or finish the consultation.";
         }
 
         return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
     }
 }
-
-

@@ -33,7 +33,21 @@ Providers (`AiProvider`, `SpeechToTextProvider`) abstract third-party API calls,
 - **Token ID** (e.g. `TOKEN-1-2026-08-25-17`): Doctor + Date scoped queue position identifier.
 - **Mobile Number**: Primary auth mechanism.
 
-## 6. Configuration & Environment Variables
+## 6. Folder Structure
+
+```text
+src/main/java/com/hospital/
+├── config/       # Beans, CorsConfig, DataSeeder
+├── controller/   # Spring MVC REST Controllers for each domain
+├── dto/          # Data Transfer Objects & Response wrappers
+├── entity/       # JPA Entities (Appointment, QueueToken, etc.)
+├── integration/  # Integrations (AI, Speech, Storage)
+├── repository/   # Spring Data JPA Repositories
+├── security/     # JWT authentication and authorization rules
+└── service/      # Core business logic implementation
+```
+
+## 7. Configuration & Environment Variables
 Instead of hardcoding secrets in `application.properties`, this project uses a `.env` file (loaded via `spring-dotenv`).
 
 Ensure a `.env` file exists in the root directory:
