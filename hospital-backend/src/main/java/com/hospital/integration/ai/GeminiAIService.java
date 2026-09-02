@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GeminiAIService implements AiProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiAIService.class);
-    private static final String GEMINI_MODEL = "gemini-1.5-flash-latest";
+    private static final String GEMINI_MODEL = "gemini-2.5-flash";
 
     @Value("${gemini.api-key:}")
     private String geminiApiKeysStr;
