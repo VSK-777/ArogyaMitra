@@ -20,7 +20,7 @@ import jakarta.annotation.PostConstruct;
 public class GroqAIService implements AiProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GroqAIService.class);
-    private static final String GROQ_MODEL = "llama-3.1-70b-versatile";
+    private static final String GROQ_MODEL = "llama-3.3-70b-versatile";
     private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     @Value("${groq.api-key:}")
