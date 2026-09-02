@@ -147,8 +147,6 @@ public class GeminiAIService implements AiProvider {
     }
 
     private String callGeminiChatApi(String systemInstruction, List<Map<String, Object>> contents) {
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + getNextApiKey();
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -159,33 +157,50 @@ public class GeminiAIService implements AiProvider {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, request, Map.class);
-            Map<String, Object> body = response.getBody();
-            if (body != null && body.containsKey("candidates")) {
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-                if (!candidates.isEmpty()) {
-                    Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-                    if (content != null && content.containsKey("parts")) {
-                        List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-                        if (!parts.isEmpty()) {
-                            return (String) parts.get(0).get("text");
+        int maxRetries = Math.max(1, apiKeys.size());
+        org.springframework.web.client.RestClientResponseException lastException = null;
+
+        for (int i = 0; i < maxRetries; i++) {
+            String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + getNextApiKey();
+            try {
+                ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, request, Map.class);
+                Map<String, Object> body = response.getBody();
+                if (body != null && body.containsKey("candidates")) {
+                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
+                    if (!candidates.isEmpty()) {
+                        Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+                        if (content != null && content.containsKey("parts")) {
+                            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+                            if (!parts.isEmpty()) {
+                                return (String) parts.get(0).get("text");
+                            }
                         }
                     }
                 }
+                logger.error("Invalid or empty response from Gemini API.");
+                return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
+            } catch (org.springframework.web.client.RestClientResponseException e) {
+                logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
+                lastException = e;
+                if (e.getStatusCode().value() == 429) {
+                    if (i < maxRetries - 1) {
+                        logger.warn("Rate limit hit, retrying with next API key...");
+                        continue;
+                    }
+                } else {
+                    return "I'm having trouble connecting to my knowledge base right now, but please continue or finish the consultation.";
+                }
+            } catch (Exception e) {
+                logger.error("Gemini API Error: {}", e.getMessage(), e);
+                return "Thank you for the information. Is there anything else you'd like to add before we finish?";
             }
-            logger.error("Invalid or empty response from Gemini API.");
-            return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
-        } catch (org.springframework.web.client.RestClientResponseException e) {
-            logger.error("Gemini API Error - Status: {}, Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            if (e.getStatusCode().value() == 429) {
-                return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
-            }
-            return "I'm having trouble connecting to my knowledge base right now, but please continue or finish the consultation.";
-        } catch (Exception e) {
-            logger.error("Gemini API Error: {}", e.getMessage(), e);
-            return "Thank you for the information. Is there anything else you'd like to add before we finish?";
         }
+        
+        if (lastException != null && lastException.getStatusCode().value() == 429) {
+            return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
+        }
+
+        return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
     }
 }
 
