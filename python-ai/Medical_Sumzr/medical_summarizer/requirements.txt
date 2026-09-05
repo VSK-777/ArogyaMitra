@@ -1,0 +1,10 @@
+streamlit
+pdfplumber
+PyMuPDF
+transformers
+torch
+python-dotenv
+sentencepiece
+protobuf
+fastapi
+uvicorn
