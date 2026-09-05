@@ -213,7 +213,7 @@ The application reads `server.port=${PORT:8080}`. Locally it defaults to `8080`.
 ### Render Deployment
 1. Push this repository to GitHub.
 2. Create a new **Web Service** on [Render](https://render.com).
-3. Connect to `VSK-777/sih-hospital-management`.
+3. Connect to `VSK-777/ArogyaMitra`.
 4. Set **Root Directory** to `hospital-backend`.
 5. Set **Environment** to `Docker`.
 6. Add all required environment variables in the Render dashboard.
