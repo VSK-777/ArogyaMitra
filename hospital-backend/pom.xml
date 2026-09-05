@@ -11,8 +11,8 @@
 	<groupId>com.hospital</groupId>
 	<artifactId>hospital-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>hospital-backend</name>
-	<description>AI-Powered Hospital Appointment System</description>
+	<name>arogyamitra-backend</name>
+	<description>ArogyaMitra - AI-Powered Hospital Appointment System</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

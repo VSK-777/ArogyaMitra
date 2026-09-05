@@ -1,4 +1,4 @@
-# MediFlow AI: System Architecture & Functionalities Overview
+# ArogyaMitra: System Architecture & Functionalities Overview
 
 This document provides a comprehensive breakdown of the entire **AI-Powered Hospital Appointment, Pre-Consultation & Documentation System** that has been built. 
 
