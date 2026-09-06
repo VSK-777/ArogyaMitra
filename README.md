@@ -2,7 +2,7 @@
 
 **AI-Powered Hospital Appointment, Pre-Consultation & Documentation System**
 
-🚀 **Live Demo:** [https://sih-hospital-management.vercel.app](https://sih-hospital-management.vercel.app/)
+🚀 **Live Demo:** [https://sih-arogya-mitra.vercel.app](https://sih-arogya-mitra.vercel.app)
 
 ## 1. Project Overview
 This project is a complete full-stack application designed to streamline hospital workflows. It manages everything from patient authentication and appointment booking to AI-driven pre-consultations, doctor queue management, and final clinical documentation.

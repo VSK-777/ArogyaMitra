@@ -1,6 +1,6 @@
 # ArogyaMitra Management - Frontend Dashboard
 
-🚀 **Live Demo:** [https://sih-hospital-management.vercel.app](https://sih-hospital-management.vercel.app)
+🚀 **Live Demo:** [https://sih-arogya-mitra.vercel.app](https://sih-arogya-mitra.vercel.app)
 
 This directory contains the professional frontend UI prototype for the ArogyaMitra Management System. It is built using modern web technologies to provide a lightning-fast, responsive, and intuitive interface for Patients, Doctors, and Administrators.
 
