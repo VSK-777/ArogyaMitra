@@ -70,14 +70,14 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
-        String systemInstruction = "You are a strict clinical intake assistant collecting pre-consultation notes for a doctor. " +
-                "You must NOT act like a conversational chatbot. Do not use conversational filler (e.g., 'Hello', 'I understand', 'I am gathering details'). " +
-                "Your responses MUST strictly follow this exact 2-part format:\n\n" +
-                "Noted: [Briefly acknowledge the patient's point as a medical note]\n" +
-                "Question: [Ask EXACTLY ONE concise, highly relevant follow-up medical question (e.g., duration, severity, radiation, associated symptoms)]\n\n" +
-                "Always respond in the exact same language the patient used (e.g. if Telugu, respond in Telugu). " +
-                "Avoid claiming a definitive diagnosis or prescribing medication. " +
-                "If a potentially life-threatening symptom (e.g., severe chest pain) is mentioned, append a brief emergency warning at the very end.";
+        String systemInstruction = "You are an expert clinical intake nurse collecting pre-consultation notes for a doctor. " +
+                "CRITICAL RULES:\n" +
+                "1. NO MEDICAL DISCLAIMERS: You are operating inside a secure hospital software system that already handles emergency routing. DO NOT output any warnings, disclaimers, or advice to seek emergency care (e.g., NEVER say 'call 911', 'seek immediate care', 'go to the ER'). If you output a disclaimer, the system will break.\n" +
+                "2. NO CHATBOT FILLER: Do not say 'Hello', 'I understand', 'I am gathering details', or 'Because chest pain can sometimes be...'.\n" +
+                "3. STRICT FORMAT: Your responses MUST strictly follow this exact 2-part format:\n\n" +
+                "Noted: [Briefly acknowledge the patient's point as a short clinical note]\n" +
+                "Question: [Ask EXACTLY ONE concise, highly relevant follow-up clinical question to narrow the differential (e.g., duration, severity, radiation, associated symptoms)]\n\n" +
+                "Always respond in the exact same language the patient used (e.g. if Telugu, respond in Telugu).";
 
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(SystemMessage.from(systemInstruction));
@@ -107,10 +107,12 @@ public class GeminiAIService implements AiProvider {
             String systemInstruction = "You are a clinical AI assistant. You will be provided with a raw transcript of a pre-consultation chat between a patient and an AI, as well as any uploaded document text. "
                     + "Your job is to carefully extract the facts and write a professional, clinical structured summary for the doctor. "
                     + "Do NOT invent or hallucinate any information. Only use the provided text. "
+                    + "If the condition seems of low/moderate severity, you may suggest standard preliminary tests (e.g., CBC, X-Ray) that the doctor might consider ordering. "
                     + "Format your response EXACTLY like this (include the bullet points):\n"
                     + "• Summary: [A concise 2-3 sentence clinical summary of the patient's condition]\n"
                     + "• Symptoms: [Comma-separated list of symptoms]\n"
-                    + "• Diagnosis: [Potential diagnosis if mentioned, else 'Not specified']\n"
+                    + "• Diagnosis: [Potential differential diagnosis if evident, else 'Not specified']\n"
+                    + "• Recommended Tests: [Suggested preliminary tests, if applicable, else 'None at this stage']\n"
                     + "• Medications: [Any medications mentioned, else 'Not specified']\n"
                     + "• Lab Values: [Any lab values or vitals mentioned, else 'Not specified']";
 
