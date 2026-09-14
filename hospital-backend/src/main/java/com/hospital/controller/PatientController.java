@@ -83,8 +83,12 @@ public class PatientController {
         data.put("visitedAppointments", visited);
         data.put("notVisitedAppointments", notVisited);
 
-        // Fetch notifications
-        List<com.hospital.entity.Notification> notifications = notificationRepository.findByPatient_IdOrderByCreatedAtDesc(patient.getId());
+        // Fetch notifications (only show recent ones to avoid cluttering)
+        java.time.LocalDateTime twoDaysAgo = java.time.LocalDateTime.now().minusDays(2);
+        List<com.hospital.entity.Notification> notifications = notificationRepository.findByPatient_IdOrderByCreatedAtDesc(patient.getId())
+                .stream()
+                .filter(n -> n.getCreatedAt() != null && n.getCreatedAt().isAfter(twoDaysAgo))
+                .collect(java.util.stream.Collectors.toList());
         data.put("notifications", notifications);
 
         return ResponseEntity.ok(ApiResponse.success("Dashboard data fetched successfully", data));
