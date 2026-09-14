@@ -13,11 +13,11 @@ export default function DocumentsPage() {
 
     useEffect(() => {
         patientApi.getDashboard().then(res => {
-            if(res.success && res.data.patientInfo?.id) {
+            if(res.success && res.data.patient?.id) {
+                setPatientId(res.data.patient.id);
+            } else if(res.success && res.data.patientInfo?.id) {
                 setPatientId(res.data.patientInfo.id);
-            }
-            // fallback: check if patient details are elsewhere in response
-            else if (res.success && res.data.id) {
+            } else if (res.success && res.data.id) {
                 setPatientId(res.data.id);
             }
             setLoading(false);
