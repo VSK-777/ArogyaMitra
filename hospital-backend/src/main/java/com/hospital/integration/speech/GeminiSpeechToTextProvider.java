@@ -20,7 +20,7 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
     @Value("${gemini.api-key}")
     private String geminiApiKey;
 
-    private static final String GEMINI_MODEL = "gemini-2.5-flash";
+    private static final String GEMINI_MODEL = "gemini-3.6-flash";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -40,8 +40,8 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
                     "contents", List.of(
                             Map.of("parts", List.of(
                                     Map.of("text", "Please carefully transcribe this audio in its original language. If the user speaks in Telugu, return the transcription in Telugu script. If English, return English. Return ONLY the transcribed text with no extra commentary."),
-                                    Map.of("inline_data", Map.of(
-                                            "mime_type", mimeType,
+                                    Map.of("inlineData", Map.of(
+                                            "mimeType", mimeType,
                                             "data", base64Audio
                                     ))
                             ))
