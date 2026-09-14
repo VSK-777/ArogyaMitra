@@ -69,6 +69,15 @@ public class DoctorController {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByMobile(mobile).orElseThrow();
         List<Appointment> upcoming = doctorService.getUpcomingAppointments(user.getId().toString());
+        
+        for (Appointment a : upcoming) {
+            preConsultationRepository.findByAppointment_Id(a.getId()).ifPresent(pc -> {
+                if ("COMPLETED".equals(pc.getStatus())) {
+                    a.setPreConsultationCompleted(true);
+                }
+            });
+        }
+        
         return ResponseEntity.ok(ApiResponse.success("Upcoming appointments fetched", upcoming));
     }
 

@@ -131,11 +131,12 @@ export default function DoctorUpcomingAppointments() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded text-sm font-medium ${
+                                            apt.preConsultationCompleted ? 'bg-purple-50 text-purple-700' :
                                             apt.status === 'BOOKED' ? 'bg-green-50 text-green-700' :
                                             apt.status === 'REASSIGNMENT_PENDING' ? 'bg-orange-50 text-orange-700' :
                                             'bg-gray-50 text-gray-700'
                                         }`}>
-                                            {apt.status}
+                                            {apt.preConsultationCompleted ? 'Pre-Consultation Completed' : apt.status}
                                         </span>
                                     </td>
                                 </tr>

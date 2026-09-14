@@ -77,6 +77,9 @@ public class Appointment {
     
     private String reason;
 
+    @Transient
+    private boolean preConsultationCompleted;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
