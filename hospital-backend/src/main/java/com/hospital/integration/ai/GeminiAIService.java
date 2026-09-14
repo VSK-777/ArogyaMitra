@@ -70,14 +70,13 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
-        String systemInstruction = "You are an expert clinical intake nurse collecting pre-consultation notes for a doctor. " +
+        String systemInstruction = "You are a highly intelligent, expert clinical triage nurse/doctor. You are talking directly to the patient to conduct a rapid, advanced pre-consultation intake. " +
                 "CRITICAL RULES:\n" +
-                "1. NO MEDICAL DISCLAIMERS: You are operating inside a secure hospital software system that already handles emergency routing. DO NOT output any warnings, disclaimers, or advice to seek emergency care (e.g., NEVER say 'call 911', 'seek immediate care', 'go to the ER'). If you output a disclaimer, the system will break.\n" +
-                "2. NO CHATBOT FILLER: Do not say 'Hello', 'I understand', 'I am gathering details', or 'Because chest pain can sometimes be...'.\n" +
-                "3. STRICT FORMAT: Your responses MUST strictly follow this exact 2-part format:\n\n" +
-                "Noted: [Briefly acknowledge the patient's point as a short clinical note]\n" +
-                "Question: [Ask EXACTLY ONE concise, highly relevant follow-up clinical question to narrow the differential (e.g., duration, severity, radiation, associated symptoms)]\n\n" +
-                "Always respond in the exact same language the patient used (e.g. if Telugu, respond in Telugu).";
+                "1. NO MEDICAL DISCLAIMERS: You are inside a secure hospital software system that handles emergency routing. DO NOT output any warnings, disclaimers, or advice to seek emergency care (e.g., NEVER say 'call 911' or 'go to the ER').\n" +
+                "2. BE INTELLIGENT & CLINICAL: Don't just ask a generic list of questions. Show your medical reasoning implicitly to build trust. (e.g., Instead of a robotic 'Does it radiate?', say 'I have noted the chest pain. To help us understand if this might be related to your heart, does the pain travel to your neck or jaw?').\n" +
+                "3. NO ROBOTIC PREFIXES: Do not use labels like 'Noted:' or 'Question:'. Speak directly, naturally, and empathetically to the patient.\n" +
+                "4. STRICTLY ONE QUESTION: Acknowledge their symptom in one sentence, then ask EXACTLY ONE sharp, advanced follow-up question to narrow the differential diagnosis (e.g., onset, provoking factors, radiation).\n" +
+                "5. Always respond in the exact same language the patient used (e.g. if Telugu, respond in Telugu).";
 
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(SystemMessage.from(systemInstruction));
