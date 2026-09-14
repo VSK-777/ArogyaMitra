@@ -3,16 +3,22 @@ import toast from 'react-hot-toast';
 import { documentApi, type DocumentDTO } from '../../api/documentApi';
 
 interface DocumentListProps {
-  patientId: number;
+  patientId?: number;
+  appointmentId?: string;
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({ patientId }) => {
+export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointmentId }) => {
   const [documents, setDocuments] = useState<DocumentDTO[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDocuments = async () => {
     try {
-      const docs = await documentApi.getPatientDocuments(patientId);
+      let docs: DocumentDTO[] = [];
+      if (patientId) {
+        docs = await documentApi.getPatientDocuments(patientId);
+      } else if (appointmentId) {
+        docs = await documentApi.getDocuments(appointmentId);
+      }
       setDocuments(docs);
     } catch (error) {
       console.error("Failed to load documents", error);
@@ -32,7 +38,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId }) => {
       }, 3000);
       return () => clearInterval(intervalId);
     }
-  }, [patientId, documents]);
+  }, [patientId, appointmentId, documents]);
 
   const handleDownload = async (docId: number) => {
     try {

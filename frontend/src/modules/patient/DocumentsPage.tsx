@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DocumentList } from '../../components/documents/DocumentList';
@@ -6,7 +5,6 @@ import { DocumentUploader } from '../../components/documents/DocumentUploader';
 import { patientApi } from '../../api/patientApi';
 
 export default function DocumentsPage() {
-  const { t } = useTranslation();
     const navigate = useNavigate();
 
     const [patientId, setPatientId] = useState<number | null>(null);
