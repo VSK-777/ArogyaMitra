@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, '');
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -11,6 +12,16 @@ export const apiClient = axios.create({
 
 // Interceptor to add JWT token
 apiClient.interceptors.request.use((config) => {
+    // Diagnostic logging requested by user
+    if (config.url && config.url.includes('/login')) {
+        console.log("=== LOGIN REQUEST DIAGNOSTICS ===");
+        console.log("Base URL:", config.baseURL);
+        console.log("Endpoint:", config.url);
+        console.log("Final URL:", (config.baseURL || "") + config.url);
+        console.log("Method:", config.method?.toUpperCase());
+        console.log("=================================");
+    }
+
     const token = localStorage.getItem('jwt_token');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;

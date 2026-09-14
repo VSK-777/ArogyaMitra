@@ -21,7 +21,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${frontend.url:http://localhost:5173,https://sih-hospital-management.vercel.app,https://www.sih-hospital-management.vercel.app}")
+    @Value("${frontend.url:http://localhost:5173,https://sih-hospital-management.vercel.app,https://www.sih-hospital-management.vercel.app,https://sih-arogya-mitra.vercel.app,https://www.sih-arogya-mitra.vercel.app}")
     private String[] frontendUrls;
 
     

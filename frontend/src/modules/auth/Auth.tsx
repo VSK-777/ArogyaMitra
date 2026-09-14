@@ -90,11 +90,15 @@ export default function Auth() {
         }
       }
     } catch (err: any) {
-       console.error(err);
-       if (err.response && err.response.data && err.response.data.message) {
+       console.error("Login Error:", err);
+       if (err.message === "Network Error") {
+           setApiError("Network Error: The backend server is unreachable. Please verify your internet connection or check if the backend is running.");
+       } else if (err.response && err.response.data && err.response.data.message) {
            setApiError(err.response.data.message);
+       } else if (err.response && err.response.status === 403) {
+           setApiError("Access Forbidden. CORS or Security Policy may be blocking the request.");
        } else {
-           setApiError("An unexpected error occurred. Please try again.");
+           setApiError(`An unexpected error occurred: ${err.message || 'Unknown error'}`);
        }
     } finally {
        setIsLoading(false);
