@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { documentApi, type DocumentDTO } from '../../api/documentApi';
@@ -10,6 +11,7 @@ interface DocumentListProps {
 export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointmentId }) => {
   const [documents, setDocuments] = useState<DocumentDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   const fetchDocuments = async () => {
     try {
@@ -86,7 +88,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
           
           {doc.aiSummary && (
             <div className="p-4 bg-white">
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">AI Medical Summary</h4>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('documentsPage.ai_summary')}</h4>
               <div className="text-sm text-gray-600 space-y-2">
                 {/* Dynamically render JSON keys that are not empty */}
                 {Object.entries(doc.aiSummary as Record<string, any>).map(([key, value]) => {
@@ -103,7 +105,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
           )}
           {doc.processingError && (
              <div className="p-3 bg-red-50 text-red-700 text-xs border-t border-red-100">
-                Failed to process: {doc.processingError}
+                {t('documentsPage.error_failed')}: {doc.processingError}
              </div>
           )}
         </div>
