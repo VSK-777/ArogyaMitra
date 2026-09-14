@@ -156,4 +156,23 @@ public class SupabaseStorageService implements StorageService {
             throw new StorageException("Failed to generate presigned URL", e);
         }
     }
+
+    @Override
+    public java.util.List<String> list(String prefix) {
+        if (s3Client == null) return java.util.Collections.emptyList();
+        try {
+            ListObjectsV2Request listReq = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix(prefix)
+                    .build();
+            
+            ListObjectsV2Response listRes = s3Client.listObjectsV2(listReq);
+            return listRes.contents().stream()
+                    .map(S3Object::key)
+                    .toList();
+        } catch (Exception e) {
+            log.error("Failed to list objects in Supabase with prefix: {}", prefix, e);
+            throw new StorageException("Failed to list objects", e);
+        }
+    }
 }

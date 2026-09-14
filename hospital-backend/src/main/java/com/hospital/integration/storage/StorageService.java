@@ -8,4 +8,5 @@ public interface StorageService {
     void delete(String objectKey);
     boolean exists(String objectKey);
     String generatePresignedUrl(String objectKey);
+    java.util.List<String> list(String prefix);
 }

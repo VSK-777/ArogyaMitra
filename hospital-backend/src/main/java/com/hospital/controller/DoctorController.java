@@ -24,6 +24,19 @@ public class DoctorController {
     private final PreConsultationRepository preConsultationRepository;
     private final AuditService auditService;
     private final com.hospital.integration.ai.AiProvider aiProvider;
+    private final com.hospital.service.PatientSummaryService patientSummaryService;
+
+    @GetMapping("/appointments/{appointmentId}/patient-summary")
+    public ResponseEntity<ApiResponse<String>> getFinalPatientSummary(@PathVariable String appointmentId) {
+        try {
+            Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)
+                    .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            String summary = patientSummaryService.getFinalConsolidatedSummary(apt.getId(), apt.getPatient().getId());
+            return ResponseEntity.ok(ApiResponse.success("Final summary generated", summary));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.error("Failed to generate summary: " + e.getMessage(), "SUMMARY_ERROR"));
+        }
+    }
 
     @PostMapping("/summarize-clinical-record")
     public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> summarizeClinicalRecord(@RequestBody java.util.Map<String, String> request) {

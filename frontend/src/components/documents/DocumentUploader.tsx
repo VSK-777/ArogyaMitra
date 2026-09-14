@@ -3,11 +3,11 @@ import { documentApi } from '../../api/documentApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 
 interface DocumentUploaderProps {
-  appointmentId: string;
+  patientId: number;
   onUploadSuccess: () => void;
 }
 
-export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ appointmentId, onUploadSuccess }) => {
+export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ patientId, onUploadSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState('LAB_REPORT');
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({ appointmentI
     setError('');
     
     try {
-      await documentApi.uploadDocument(file, appointmentId, docType);
+      await documentApi.uploadPatientDocument(file, patientId, docType);
       setFile(null);
       onUploadSuccess(); // Refresh the list
     } catch (err: any) {

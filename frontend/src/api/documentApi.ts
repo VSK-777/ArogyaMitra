@@ -13,6 +13,9 @@ export interface DocumentDTO {
   uploadedBy: string;
   uploadedAt: string;
   downloadUrl?: string;
+  processingStatus?: string;
+  aiSummary?: any;
+  processingError?: string;
 }
 
 export const documentApi = {
@@ -38,9 +41,38 @@ export const documentApi = {
     return response.data.data as DocumentDTO[];
   },
 
+  getPatientDocuments: async (patientId: number) => {
+    const response = await axios.get(`${API_URL}/api/documents/patient/${patientId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('jwt_token')}` },
+    });
+    return response.data.data as DocumentDTO[];
+  },
+
   getDownloadUrl: async (documentId: number) => {
     const response = await axios.get(`${API_URL}/api/documents/${documentId}/download-url`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('jwt_token')}` },
+    });
+    return response.data.data;
+  },
+
+  
+  getProcessingResult: async (documentId: number) => {
+    const response = await axios.get(`${API_URL}/api/documents/${documentId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('jwt_token')}` },
+    });
+    return response.data.data;
+  },
+
+  uploadPatientDocument: async (file: File, patientId: number, documentType: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('documentType', documentType);
+
+    const response = await axios.post(`${API_URL}/api/documents/upload/${patientId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response.data.data;
   },

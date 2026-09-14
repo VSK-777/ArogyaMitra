@@ -12,4 +12,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByAppointmentIdAndStatus(Long appointmentId, String status);
     List<Document> findByPatientIdAndStatus(Long patientId, String status);
     Optional<Document> findByIdAndStatus(Long id, String status);
+    boolean existsByStoragePath(String storagePath);
+    Optional<Document> findByStoragePath(String storagePath);
 }

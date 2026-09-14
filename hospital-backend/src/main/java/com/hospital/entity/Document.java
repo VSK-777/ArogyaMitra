@@ -33,10 +33,27 @@ public class Document {
     private String uploadedBy; // Role of uploader
     private LocalDateTime uploadedAt;
     private String status; // ACTIVE, DELETED
+
+    private String processingStatus; // UPLOADED, EXTRACTING, SUMMARIZING, COMPLETED, FAILED
+    
+    @Column(columnDefinition = "TEXT")
+    private String extractedText;
+    
+    @Column(columnDefinition = "TEXT")
+    private String aiSummary;
+    
+    private String aiModel;
+    private String aiProvider;
+    private String contentHash;
+    private LocalDateTime aiProcessingTimestamp;
+    
+    @Column(columnDefinition = "TEXT")
+    private String processingError;
     
     @PrePersist
     protected void onCreate() {
         uploadedAt = LocalDateTime.now();
         if (status == null) status = "ACTIVE";
+        if (processingStatus == null) processingStatus = "UPLOADED";
     }
 }

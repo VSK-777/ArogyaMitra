@@ -14,4 +14,8 @@ public class DocumentDTO {
     private String uploadedBy;
     private LocalDateTime uploadedAt;
     private String downloadUrl; // For presigned URL
+
+    private String processingStatus;
+    private Object aiSummary; // Can map JSON string to Object
+    private String processingError;
 }
