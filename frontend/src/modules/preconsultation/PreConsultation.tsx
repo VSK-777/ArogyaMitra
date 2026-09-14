@@ -187,7 +187,29 @@ export default function PreConsultation() {
     }
   };
 
+
+  const renderAiMessage = (content: string) => {
+    if (content.includes("Noted:") && content.includes("Question:")) {
+      const parts = content.split("Question:");
+      const notePart = parts[0].replace("Noted:", "").trim();
+      const questionPart = parts[1].trim();
+      return (
+        <div className="flex flex-col gap-3">
+          <div className="bg-slate-100 border-l-4 border-blue-400 p-3 rounded-r-md text-sm text-slate-700 shadow-sm">
+            <span className="font-bold text-blue-800 uppercase text-[10px] tracking-wider block mb-1">📝 Clinical Note</span>
+            {notePart}
+          </div>
+          <div className="text-slate-900 font-medium leading-relaxed">
+            {questionPart}
+          </div>
+        </div>
+      );
+    }
+    return <p>{content}</p>;
+  };
+
   return (
+
     <div className="max-w-4xl mx-auto py-8">
       
       <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[600px]">
@@ -244,7 +266,7 @@ export default function PreConsultation() {
                         msg.role === 'ai' ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-none' : 
                         'bg-blue-700 text-white rounded-tr-none'
                       }`}>
-                          <p>{msg.content}</p>
+                          {msg.role === 'ai' ? renderAiMessage(msg.content) : <p>{msg.content}</p>}
                           {msg.isError && retryAction && (
                               <button 
                                 onClick={retryAction}
