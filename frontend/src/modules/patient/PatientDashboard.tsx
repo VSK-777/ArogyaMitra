@@ -179,7 +179,7 @@ export default function PatientDashboard() {
         )}
 
 
-      {upcomingAppointmentsCount > 0 && (
+      {data.requiresPreConsultation && (
         <div className="rounded-md border border-orange-200 bg-orange-50 shadow-sm overflow-hidden mb-6 p-4 flex items-start gap-4">
           <AlertCircle className="h-6 w-6 text-orange-600 mt-1" />
           <div className="flex-1">
@@ -188,7 +188,7 @@ export default function PatientDashboard() {
           </div>
           <button onClick={() => {
             if (upcomingAppointments && upcomingAppointments.length > 0) {
-              navigate(`/patient/pre-consultation?appointmentId=${upcomingAppointments[0].appointmentId}`);
+              navigate(`/patient/pre-consultation?appointmentId=${data.pendingPreConsultationAppointmentId}`);
             }
           }} className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium">
             {t('patientDashboard.start_pre_consultation')}

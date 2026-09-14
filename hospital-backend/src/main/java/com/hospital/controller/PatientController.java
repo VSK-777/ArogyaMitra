@@ -30,6 +30,7 @@ public class PatientController {
     private final ConsultationRepository consultationRepository;
     private final com.hospital.repository.NotificationRepository notificationRepository;
     private final AppointmentService appointmentService;
+    private final com.hospital.repository.PreConsultationRepository preConsultationRepository;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Patient>> getMe() {
@@ -80,6 +81,19 @@ public class PatientController {
         data.put("prescriptionCount", prescriptionCount);
         
         data.put("upcomingAppointments", upcoming);
+
+        boolean requiresPreConsultation = false;
+        String pendingPreConsultationAppointmentId = null;
+        for (Appointment a : upcoming) {
+            com.hospital.entity.PreConsultation pc = preConsultationRepository.findByAppointment_Id(a.getId()).orElse(null);
+            if (pc == null || !"COMPLETED".equals(pc.getStatus())) {
+                requiresPreConsultation = true;
+                pendingPreConsultationAppointmentId = a.getAppointmentId();
+                break;
+            }
+        }
+        data.put("requiresPreConsultation", requiresPreConsultation);
+        data.put("pendingPreConsultationAppointmentId", pendingPreConsultationAppointmentId);
         data.put("visitedAppointments", visited);
         data.put("notVisitedAppointments", notVisited);
 
