@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { DocumentList } from '../../components/documents/DocumentList';
 import { DocumentUploader } from '../../components/documents/DocumentUploader';
 import { patientApi } from '../../api/patientApi';
 
 export default function DocumentsPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const [patientId, setPatientId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
@@ -30,34 +32,34 @@ export default function DocumentsPage() {
         setRefreshKey(prev => prev + 1);
     };
 
-    if (loading) return <div className="p-8 text-center text-slate-500">Loading your profile...</div>;
+    if (loading) return <div className="p-8 text-center text-slate-500">{t('documentsPage.loading_profile')}</div>;
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-slate-900">Medical Documents</h1>
-                <button onClick={() => navigate('/patient/dashboard')} className="text-blue-700 font-medium">Back to Dashboard</button>
+                <h1 className="text-2xl font-bold text-slate-900">{t('documentsPage.title')}</h1>
+                <button onClick={() => navigate('/patient/dashboard')} className="text-blue-700 font-medium">{t('documentsPage.back_to_dashboard')}</button>
             </div>
 
             <div className="bg-white p-6 rounded-md border border-slate-200 shadow-sm">
                 <p className="text-sm text-slate-500 mb-6">
-                    View your past medical documents, radiology reports, and lab results. Our AI will automatically process them for clinical summaries.
+                    {t('documentsPage.subtitle')}
                 </p>
 
                 {patientId ? (
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h2 className="text-lg font-bold text-slate-900 mb-4">Upload New Document</h2>
+                            <h2 className="text-lg font-bold text-slate-900 mb-4">{t('documentsPage.upload_new')}</h2>
                             <DocumentUploader patientId={patientId} onUploadSuccess={handleUploadSuccess} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-slate-900 mb-4">Historical Records</h2>
+                            <h2 className="text-lg font-bold text-slate-900 mb-4">{t('documentsPage.historical_records')}</h2>
                             <DocumentList patientId={patientId} key={refreshKey} />
                         </div>
                     </div>
                 ) : (
                     <div className="p-4 text-red-600 bg-red-50 border border-red-100 rounded-md">
-                        Unable to load patient profile.
+                        {t('documentsPage.unable_to_load')}
                     </div>
                 )}
             </div>

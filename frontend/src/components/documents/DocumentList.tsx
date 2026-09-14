@@ -49,7 +49,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
     }
   };
 
-  if (loading && documents.length === 0) return <div className="text-sm text-gray-500">Loading documents...</div>;
+  if (loading && documents.length === 0) return <div className="text-sm text-gray-500">{t('documentsPage.loading_documents')}</div>;
   if (documents.length === 0) return <div className="text-sm text-gray-500 italic">No documents uploaded for this appointment.</div>;
 
   return (
