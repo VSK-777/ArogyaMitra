@@ -24,6 +24,8 @@ public class DataSeeder implements CommandLineRunner {
     private final DepartmentRepository departmentRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final QueueTokenRepository queueTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -31,9 +33,30 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         fixShortPasswords(); // Fix passwords that fail the 8-char validation
         fixDoctorNamesAndMobiles();
+        restoreMissedAppointments();
         seedData();
         seedAdditionalHospitals(); // Seed new hospitals and doctors
         seedMoreDoctors();
+    }
+
+    private void restoreMissedAppointments() {
+        // Restore NO_SHOW appointments for today back to BOOKED so the user can test check-in without re-booking
+        List<Appointment> todayAppointments = appointmentRepository.findAll().stream()
+            .filter(a -> a.getAppointmentDate() != null && a.getAppointmentDate().equals(LocalDate.now(java.time.ZoneId.of("Asia/Kolkata"))))
+            .toList();
+        for (Appointment apt : todayAppointments) {
+            if (apt.getStatus() == AppointmentStatus.NO_SHOW) {
+                apt.setStatus(AppointmentStatus.BOOKED);
+                appointmentRepository.save(apt);
+                
+                // Also restore the queue token if it exists
+                QueueToken token = queueTokenRepository.findByAppointment_Id(apt.getId()).orElse(null);
+                if (token != null && token.getStatus() == TokenStatus.NO_SHOW) {
+                    token.setStatus(TokenStatus.BOOKED);
+                    queueTokenRepository.save(token);
+                }
+            }
+        }
     }
 
     private void fixDoctorNamesAndMobiles() {

@@ -36,7 +36,7 @@ public class AppointmentService {
     @org.springframework.beans.factory.annotation.Value("${razorpay.key.secret:}")
     private String razorpaySecret;
 
-    @org.springframework.beans.factory.annotation.Value("${hospital.appointment.grace-period-minutes:15}")
+    @org.springframework.beans.factory.annotation.Value("${hospital.appointment.grace-period-minutes:120}")
     private int gracePeriodMinutes;
 
     @org.springframework.beans.factory.annotation.Value("${hospital.appointment.check-in-window-minutes:30}")
