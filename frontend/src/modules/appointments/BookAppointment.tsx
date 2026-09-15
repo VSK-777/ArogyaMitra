@@ -308,6 +308,21 @@ export default function BookAppointment() {
             {selectedDate && (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     {timeSlots.map(slot => {
+                        const hour = parseInt(slot.split(':')[0]);
+                        // Determine unique lunch hour (12 or 13) based on doctor's ID
+                        const docIdHash = selectedDoctor?.id ? String(selectedDoctor.id).charCodeAt(String(selectedDoctor.id).length - 1) : 0;
+                        const lunchHour = (docIdHash % 2 === 0) ? 12 : 13;
+                        
+                        // If this slot is the doctor's lunch break, display it uniquely
+                        if (hour === lunchHour) {
+                            return (
+                                <div key={slot} className="border rounded p-2 text-sm bg-orange-50 text-orange-600 border-orange-200 flex flex-col justify-center items-center font-medium cursor-not-allowed text-center">
+                                    <span>{slot} - {(hour + 1).toString().padStart(2, '0')}:00</span>
+                                    <span className="text-xs font-bold mt-0.5 text-orange-700">Lunch Break</span>
+                                </div>
+                            );
+                        }
+
                         const isBooked = bookedSlots.includes(slot);
                         return (
                           <button 
@@ -315,7 +330,7 @@ export default function BookAppointment() {
                             disabled={isBooked}
                             onClick={() => setSelectedSlot(slot)} 
                             className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-700 bg-blue-700 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
-                              {slot} - {(parseInt(slot.split(':')[0]) + 1).toString().padStart(2, '0')}:00 {isBooked && '(Full)'}
+                              {slot} - {(hour + 1).toString().padStart(2, '0')}:00 {isBooked && '(Full)'}
                           </button>
                         );
                     })}
