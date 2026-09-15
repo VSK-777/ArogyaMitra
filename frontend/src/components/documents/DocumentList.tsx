@@ -163,6 +163,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
               <div className="text-sm text-gray-600 space-y-3">
                 {Object.entries(doc.aiSummary as Record<string, any>).map(([key, value]) => {
                   if (key === 'sourceEvidence') return null; // Hide verbose source evidence list
+                  if (key === 'otherDetails') return null; // Hide administrative bloat from older summaries
                   if (!value || (Array.isArray(value) && value.length === 0) || (typeof value === 'object' && Object.keys(value).length === 0)) return null;
                   
                   const sectionTitle = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
