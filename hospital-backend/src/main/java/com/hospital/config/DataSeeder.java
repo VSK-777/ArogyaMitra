@@ -48,25 +48,43 @@ public class DataSeeder implements CommandLineRunner {
         Department pedia = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Pediatrics")).findFirst().orElse(null);
 
         if (cardio != null && userRepository.findByMobile("9876543220").isEmpty()) {
-            createDoctor("DOC-006", "Dr. Sanjay Gupta", cardio, hospital, "9876543220", "DM Cardiology", 8, 900, "doctor123");
-            createDoctor("DOC-007", "Dr. Anjali Mehta", cardio, hospital, "9876543221", "MD Cardiology", 12, 1100, "doctor123");
+            createDoctor("DOC-106", "Dr. Sanjay Gupta", cardio, hospital, "9876543220", "DM Cardiology", 8, 900, "doctor123");
+            createDoctor("DOC-107", "Dr. Anjali Mehta", cardio, hospital, "9876543221", "MD Cardiology", 12, 1100, "doctor123");
         }
         if (ortho != null && userRepository.findByMobile("9876543222").isEmpty()) {
-            createDoctor("DOC-008", "Dr. Vikram Singh", ortho, hospital, "9876543222", "MS Ortho, Joint Replacement", 15, 1000, "doctor123");
-            createDoctor("DOC-009", "Dr. Rohan Kapoor", ortho, hospital, "9876543223", "DNB Orthopedics", 6, 700, "doctor123");
+            createDoctor("DOC-108", "Dr. Vikram Singh", ortho, hospital, "9876543222", "MS Ortho, Joint Replacement", 15, 1000, "doctor123");
+            createDoctor("DOC-109", "Dr. Rohan Kapoor", ortho, hospital, "9876543223", "DNB Orthopedics", 6, 700, "doctor123");
         }
         if (genMed != null && userRepository.findByMobile("9876543224").isEmpty()) {
-            createDoctor("DOC-010", "Dr. Kavita Reddy", genMed, hospital, "9876543224", "MD General Medicine", 20, 600, "doctor123");
-            createDoctor("DOC-011", "Dr. Nithin Rao", genMed, hospital, "9876543225", "MBBS, MD Internal Med", 14, 550, "doctor123");
+            createDoctor("DOC-110", "Dr. Kavita Reddy", genMed, hospital, "9876543224", "MD General Medicine", 20, 600, "doctor123");
+            createDoctor("DOC-111", "Dr. Nithin Rao", genMed, hospital, "9876543225", "MBBS, MD Internal Med", 14, 550, "doctor123");
         }
         if (neuro != null && userRepository.findByMobile("9876543226").isEmpty()) {
-            createDoctor("DOC-012", "Dr. Arvind Swamy", neuro, hospital, "9876543226", "DM Neurology", 9, 1150, "doctor123");
-            createDoctor("DOC-013", "Dr. Sneha Patil", neuro, hospital, "9876543227", "MD, DM Neurology", 16, 1300, "doctor123");
+            createDoctor("DOC-112", "Dr. Arvind Swamy", neuro, hospital, "9876543226", "DM Neurology", 9, 1150, "doctor123");
+            createDoctor("DOC-113", "Dr. Sneha Patil", neuro, hospital, "9876543227", "MD, DM Neurology", 16, 1300, "doctor123");
         }
         if (pedia != null && userRepository.findByMobile("9876543228").isEmpty()) {
-            createDoctor("DOC-014", "Dr. Divya Joshi", pedia, hospital, "9876543228", "DCH, MD Pediatrics", 11, 650, "doctor123");
-            createDoctor("DOC-015", "Dr. Amit Verma", pedia, hospital, "9876543229", "MD Pediatrics", 4, 500, "doctor123");
+            createDoctor("DOC-114", "Dr. Divya Joshi", pedia, hospital, "9876543228", "DCH, MD Pediatrics", 11, 650, "doctor123");
+            createDoctor("DOC-115", "Dr. Amit Verma", pedia, hospital, "9876543229", "MD Pediatrics", 4, 500, "doctor123");
         }
+
+        // Add more doctors to Hospital 2 (Valley Care Clinic)
+        hospitalRepository.findByHospitalId("HSP-002").ifPresent(hsp2 -> {
+            Department cardioV = departmentRepository.findAll().stream().filter(d -> d.getHospital().getId().equals(hsp2.getId()) && d.getName().equals("Cardiology")).findFirst().orElse(null);
+            if (cardioV != null && userRepository.findByMobile("9111111112").isEmpty()) {
+                createDoctor("DOC-201", "Dr. Rahul Sharma", cardioV, hsp2, "9111111112", "MD Cardiology", 10, 1000, "doctor123");
+                createDoctor("DOC-202", "Dr. Neha Patel", cardioV, hsp2, "9111111113", "DM Cardiology", 6, 800, "doctor123");
+            }
+        });
+
+        // Add more doctors to Hospital 3 (Metro Life Hospital)
+        hospitalRepository.findByHospitalId("HSP-003").ifPresent(hsp3 -> {
+            Department orthoM = departmentRepository.findAll().stream().filter(d -> d.getHospital().getId().equals(hsp3.getId()) && d.getName().equals("Orthopedics")).findFirst().orElse(null);
+            if (orthoM != null && userRepository.findByMobile("9333333334").isEmpty()) {
+                createDoctor("DOC-301", "Dr. Arun Kumar", orthoM, hsp3, "9333333334", "MS Orthopedics", 12, 1200, "doctor123");
+                createDoctor("DOC-302", "Dr. Deepa Reddy", orthoM, hsp3, "9333333335", "DNB Orthopedics", 8, 900, "doctor123");
+            }
+        });
     }
 
     private void fixShortPasswords() {
