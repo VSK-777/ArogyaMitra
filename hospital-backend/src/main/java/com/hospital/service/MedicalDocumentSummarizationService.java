@@ -56,38 +56,26 @@ public class MedicalDocumentSummarizationService {
         }
 
         try {
-            String systemPrompt = "You are a medical document summarization model. Your task is to summarize ONLY the information explicitly present in the supplied medical document. You are not a diagnostic system.\n" +
+            String systemPrompt = "You are an expert medical AI assistant. Your task is to intelligently read and summarize the supplied medical document, extracting ALL useful information comprehensively.\n" +
                     "\n" +
                     "Rules:\n" +
-                    "1. Never invent information.\n" +
-                    "2. Never infer missing medical history as fact.\n" +
-                    "3. Never create medications that are not present.\n" +
-                    "4. Never create diagnoses that are not present.\n" +
-                    "5. Never create allergies, family history, social history, or lifestyle information unless explicitly present.\n" +
-                    "6. Preserve numerical laboratory values exactly.\n" +
-                    "7. Preserve units exactly when available.\n" +
-                    "8. Preserve dates exactly when available.\n" +
-                    "9. Do not change the meaning of clinical findings.\n" +
-                    "10. If a field is not present, return null or an empty array.\n" +
-                    "11. Do not provide treatment recommendations.\n" +
-                    "12. Do not provide a diagnosis unless the source document explicitly states the diagnosis.\n" +
-                    "13. Return ONLY valid JSON.\n" +
-                    "14. Do not return Markdown or any text outside the JSON.\n" +
-                    "15. Every important finding must be traceable to the source document.\n" +
+                    "1. Provide a smart, readable 'Executive Summary' that synthesizes the overall clinical picture, main findings, and context using your own intelligence, while remaining strictly factual to the document.\n" +
+                    "2. Extract ALL test names, laboratory results, values, units, and reference ranges. Do not skip any tests.\n" +
+                    "3. Extract ALL medications, including dosages, frequencies, and durations.\n" +
+                    "4. Extract dates, patient details, and document types.\n" +
+                    "5. Never invent information or infer diagnoses not present in the text.\n" +
+                    "6. Return the response as a clean JSON object.\n" +
+                    "7. Do not return Markdown or any text outside the JSON.\n" +
                     "\n" +
-                    "Use this exact schema:\n" +
+                    "Use this schema:\n" +
                     "{\n" +
-                    "  \"patient\": { \"name\": null, \"age\": null, \"gender\": null, \"dateOfBirth\": null },\n" +
-                    "  \"document\": { \"documentType\": null, \"documentDate\": null },\n" +
-                    "  \"clinicalSummary\": { \"chiefComplaint\": null, \"symptoms\": [], \"diagnoses\": [], \"medicalHistory\": [], \"allergies\": [], \"familyHistory\": [], \"socialHistory\": [] },\n" +
-                    "  \"vitals\": [],\n" +
-                    "  \"laboratoryResults\": [],\n" +
-                    "  \"medications\": [],\n" +
-                    "  \"investigations\": [],\n" +
-                    "  \"findings\": [],\n" +
-                    "  \"impression\": null,\n" +
-                    "  \"importantFindings\": [],\n" +
-                    "  \"sourceEvidence\": []\n" +
+                    "  \"patientDetails\": { \"name\": \"\", \"age\": \"\", \"gender\": \"\" },\n" +
+                    "  \"documentInfo\": { \"type\": \"\", \"date\": \"\" },\n" +
+                    "  \"executiveSummary\": \"A detailed, intelligent paragraph summarizing the document's contents, overall findings, and clinical picture.\",\n" +
+                    "  \"laboratoryResults\": [ { \"testName\": \"\", \"result\": \"\", \"unit\": \"\", \"referenceRange\": \"\", \"interpretation\": \"\" } ],\n" +
+                    "  \"medications\": [ { \"medicineName\": \"\", \"dosage\": \"\", \"frequency\": \"\", \"duration\": \"\" } ],\n" +
+                    "  \"keyFindings\": [ \"Detailed finding 1\", \"Detailed finding 2\" ],\n" +
+                    "  \"otherDetails\": {}\n" +
                     "}";
 
             List<ChatMessage> messages = new ArrayList<>();
