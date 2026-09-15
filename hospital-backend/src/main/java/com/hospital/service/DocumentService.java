@@ -212,6 +212,8 @@ public class DocumentService {
         List<String> objectKeys = storageService.list(prefix);
 
         for (String key : objectKeys) {
+            if (key.endsWith(".emptyFolderPlaceholder")) continue;
+            
             boolean exists = documentRepository.existsByStoragePath(key);
             if (!exists) {
                 // Determine content type (fallback to pdf if unknown)

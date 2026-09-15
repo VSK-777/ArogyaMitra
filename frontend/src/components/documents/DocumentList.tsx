@@ -85,6 +85,22 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
               >
                 View PDF
               </button>
+              <button 
+                onClick={async () => {
+                  if(window.confirm('Are you sure you want to delete this document?')) {
+                    try {
+                      await documentApi.deleteDocument(doc.id);
+                      toast.success('Document deleted');
+                      fetchDocuments();
+                    } catch(e) {
+                      toast.error('Failed to delete document');
+                    }
+                  }
+                }}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+              >
+                Delete
+              </button>
             </div>
           </div>
           
