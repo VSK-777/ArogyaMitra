@@ -28,6 +28,7 @@ public class PatientController {
     private final AppointmentRepository appointmentRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final ConsultationRepository consultationRepository;
+    private final com.hospital.integration.ai.AiProvider aiProvider;
     private final com.hospital.repository.NotificationRepository notificationRepository;
     private final AppointmentService appointmentService;
     private final com.hospital.repository.PreConsultationRepository preConsultationRepository;
@@ -113,5 +114,45 @@ public class PatientController {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
         appointmentService.checkIn(mobile, appointmentId);
         return ResponseEntity.ok(ApiResponse.success("Successfully checked in.", null));
+    }
+
+    @GetMapping("/me/appointments/{appointmentId}/consultation")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getConsultationDetails(@PathVariable String appointmentId) {
+        String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
+        Patient patient = patientRepository.findByUser_Mobile(mobile).orElseThrow();
+        
+        Appointment appt = appointmentRepository.findByAppointmentId(appointmentId)
+            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            
+        if (!appt.getPatient().getId().equals(patient.getId())) {
+            throw new SecurityException("Unauthorized");
+        }
+        
+        com.hospital.entity.Consultation consultation = consultationRepository.findByAppointment_Id(appt.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Consultation not found for this appointment"));
+            
+        com.hospital.entity.Prescription prescription = prescriptionRepository.findByConsultation_Id(consultation.getId()).orElse(null);
+        
+        if (consultation.getAiDraft() == null || consultation.getAiDraft().isEmpty()) {
+            String prompt = "Summarize the following doctor's consultation into a 3-4 sentence patient-friendly summary. " +
+                            "Make it empathetic, clear, and easy to understand for the patient. Strip out heavy medical jargon.\n\n" +
+                            "Diagnosis: " + consultation.getDiagnosis() + "\n" +
+                            "Observations: " + consultation.getObservations() + "\n" +
+                            "Treatment Plan: " + consultation.getTreatmentPlan();
+            try {
+                String summary = aiProvider.generateText(prompt);
+                consultation.setAiDraft(summary);
+                consultationRepository.save(consultation);
+            } catch(Exception e) {
+                // ignore
+            }
+        }
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("consultation", consultation);
+        data.put("prescription", prescription);
+        data.put("summary", consultation.getAiDraft());
+        
+        return ResponseEntity.ok(ApiResponse.success("Success", data));
     }
 }

@@ -49,6 +49,103 @@ function TokenModal({ apt, onClose }: { apt: any; onClose: () => void }) {
   );
 }
 
+function SummaryModal({ aptId, onClose }: { aptId: string; onClose: () => void }) {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    patientApi.getConsultationSummary(aptId).then(res => {
+      if(res.success) {
+        setData(res.data);
+      } else {
+        toast.error("Could not load summary");
+      }
+    }).catch(() => toast.error("Failed to load summary"))
+      .finally(() => setLoading(false));
+  }, [aptId]);
+
+  const handlePrint = () => {
+      window.print();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[60] flex flex-col items-center justify-center p-4 sm:p-6 print:p-0 print:bg-white" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col print:shadow-none print:max-w-none print:h-auto print:max-h-none print:overflow-visible" onClick={e => e.stopPropagation()}>
+        <div className="bg-blue-700 px-6 py-4 flex items-center justify-between print:hidden shrink-0">
+          <div className="flex items-center gap-3">
+            <FileText className="h-5 w-5 text-white" />
+            <h3 className="text-lg font-bold text-white">Consultation Summary</h3>
+          </div>
+          <button onClick={onClose} className="text-white/80 hover:text-white"><X className="h-5 w-5" /></button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50 print:bg-white print:p-0 print:block">
+          {loading ? (
+             <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+               <Loader2 className="h-8 w-8 animate-spin mb-4 text-blue-600" />
+               <p>Loading consultation records...</p>
+             </div>
+          ) : data && data.consultation ? (
+             <div className="print-content space-y-6">
+                <div className="hidden print:block mb-8 border-b-2 border-slate-900 pb-4">
+                   <h1 className="text-3xl font-bold text-slate-900">ArogyaMitra Clinic</h1>
+                   <p className="text-slate-600 mt-1">Patient Consultation Record</p>
+                </div>
+
+                <div className="bg-white border border-blue-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
+                   <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">AI Patient Summary</h4>
+                   <p className="text-sm text-slate-800 leading-relaxed bg-blue-50/50 p-4 rounded print:bg-transparent print:p-0">
+                     {data.summary || "No summary available."}
+                   </p>
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Clinical Details</h4>
+                   <div className="space-y-4">
+                      <div>
+                        <strong className="block text-sm text-slate-700 mb-1">Diagnosis</strong>
+                        <p className="text-sm text-slate-900">{data.consultation.diagnosis || "Not specified"}</p>
+                      </div>
+                      <div>
+                        <strong className="block text-sm text-slate-700 mb-1">Observations</strong>
+                        <p className="text-sm text-slate-900">{data.consultation.observations || "Not specified"}</p>
+                      </div>
+                      <div>
+                        <strong className="block text-sm text-slate-700 mb-1">Treatment Plan</strong>
+                        <p className="text-sm text-slate-900 whitespace-pre-wrap">{data.consultation.treatmentPlan || "Not specified"}</p>
+                      </div>
+                   </div>
+                </div>
+
+                {data.prescription && data.prescription.medicines && data.prescription.medicines.length > 0 && (
+                  <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
+                     <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Prescribed Medicines</h4>
+                     <div className="divide-y divide-slate-100 border border-slate-100 rounded">
+                        {data.prescription.medicines.map((med: any, idx: number) => (
+                           <div key={idx} className="p-3">
+                              <p className="font-semibold text-slate-900 text-sm">{med.name}</p>
+                              <p className="text-sm text-slate-600 mt-0.5">{med.dosage} — {med.frequency} for {med.duration}</p>
+                              {med.instructions && <p className="text-xs text-slate-500 mt-1 italic">Note: {med.instructions}</p>}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+                )}
+             </div>
+          ) : (
+             <div className="text-center text-slate-500 py-8">No records found.</div>
+          )}
+        </div>
+
+        <div className="bg-white px-6 py-4 border-t border-slate-200 flex justify-end gap-3 print:hidden shrink-0">
+           <button onClick={onClose} className="px-4 py-2 border border-slate-300 rounded text-slate-700 text-sm font-semibold hover:bg-slate-50">Close</button>
+           <button onClick={handlePrint} disabled={loading || !data} className="px-4 py-2 bg-blue-700 text-white rounded text-sm font-semibold hover:bg-blue-800 disabled:opacity-50">Download PDF</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PatientDashboard() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -58,6 +155,7 @@ export default function PatientDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tokenApt, setTokenApt] = useState<any>(null);
+  const [summaryAptId, setSummaryAptId] = useState<string | null>(null);
 
   useEffect(() => {
     patientApi.getDashboard()
@@ -140,6 +238,7 @@ export default function PatientDashboard() {
   return (
     <div className="space-y-6">
         {tokenApt && <TokenModal apt={tokenApt} onClose={() => setTokenApt(null)} />}
+        {summaryAptId && <SummaryModal aptId={summaryAptId} onClose={() => setSummaryAptId(null)} />}
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -272,6 +371,9 @@ export default function PatientDashboard() {
                         <p className="text-xs text-slate-400 mt-1">{t('patientDashboard.id')} {apt.appointmentId}</p>
                     </div>
                     <div className="flex items-center gap-3">
+                      <button onClick={() => setSummaryAptId(apt.appointmentId)} className="inline-flex items-center gap-1.5 text-purple-700 hover:text-purple-800 text-xs font-semibold hover:bg-purple-50 px-3 py-1.5 rounded-md transition-colors border border-purple-200">
+                        <FileText className="h-3.5 w-3.5" /> View Summary
+                      </button>
                       <button onClick={() => setTokenApt(apt)} className="inline-flex items-center gap-1.5 text-blue-700 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-3 py-1.5 rounded-md transition-colors border border-blue-200">
                         <Ticket className="h-3.5 w-3.5" /> {t('patientDashboard.view_token')}
                       </button>
