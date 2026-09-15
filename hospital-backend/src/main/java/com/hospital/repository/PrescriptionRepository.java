@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
     Optional<Prescription> findByPrescriptionId(String prescriptionId);
     Optional<Prescription> findByAppointment_Id(Long appointmentId);
+    Optional<Prescription> findByConsultation_Id(Long consultationId);
     List<Prescription> findByPatient_Id(Long patientId);
 }

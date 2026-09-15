@@ -119,7 +119,7 @@ public class PatientController {
     @GetMapping("/me/appointments/{appointmentId}/consultation")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getConsultationDetails(@PathVariable String appointmentId) {
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
-        Patient patient = patientRepository.findByUser_Mobile(mobile).orElseThrow();
+        Patient patient = patientRepository.findByMobile(mobile).orElseThrow();
         
         Appointment appt = appointmentRepository.findByAppointmentId(appointmentId)
             .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
