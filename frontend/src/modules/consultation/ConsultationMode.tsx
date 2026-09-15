@@ -59,13 +59,17 @@ export default function ConsultationMode() {
   // Prescription state
   const [medicine, setMedicine] = useState('');
   const [dosage, setDosage] = useState('');
+  const [frequency, setFrequency] = useState('Once a day');
+  const [duration, setDuration] = useState('5 days');
   const [medicinesList, setMedicinesList] = useState<any[]>([]);
 
   const addMedicine = () => {
       if (medicine && dosage) {
-          setMedicinesList([...medicinesList, { medicineName: medicine, dosage, frequency: 'Daily', duration: '5 days', instructions: '' }]);
+          setMedicinesList([...medicinesList, { medicineName: medicine, dosage, frequency, duration, instructions: '' }]);
           setMedicine('');
           setDosage('');
+          setFrequency('Once a day');
+          setDuration('5 days');
       }
   };
 
@@ -251,14 +255,47 @@ export default function ConsultationMode() {
                  <div className="max-w-4xl space-y-6">
                     <div className="bg-white border border-slate-300 shadow-sm rounded p-5">
                        <h4 className="font-bold text-slate-900 mb-4 text-sm">Add New Medication</h4>
-                       <div className="flex gap-3">
-                           <div className="flex-1">
+                       <div className="flex gap-3 flex-wrap">
+                           <div className="flex-1 min-w-[180px]">
                                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Medication Name</label>
                                <input value={medicine} onChange={e=>setMedicine(e.target.value)} placeholder="e.g. Amoxicillin 500mg" className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                            </div>
-                           <div className="w-32">
-                               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Sig (Dosage)</label>
+                           <div className="w-28">
+                               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Dosage</label>
                                <input value={dosage} onChange={e=>setDosage(e.target.value)} placeholder="e.g. 1-0-1" className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                           </div>
+                           <div className="w-40">
+                               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Frequency</label>
+                               <select value={frequency} onChange={e=>setFrequency(e.target.value)} className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
+                                   <option>Once a day</option>
+                                   <option>Twice a day</option>
+                                   <option>Thrice a day</option>
+                                   <option>Every 6 hours</option>
+                                   <option>Every 8 hours</option>
+                                   <option>Every 12 hours</option>
+                                   <option>Once a week</option>
+                                   <option>Twice a week</option>
+                                   <option>As needed (SOS)</option>
+                                   <option>Before meals</option>
+                                   <option>After meals</option>
+                                   <option>At bedtime</option>
+                               </select>
+                           </div>
+                           <div className="w-32">
+                               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Duration</label>
+                               <select value={duration} onChange={e=>setDuration(e.target.value)} className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
+                                   <option>3 days</option>
+                                   <option>5 days</option>
+                                   <option>7 days</option>
+                                   <option>10 days</option>
+                                   <option>14 days</option>
+                                   <option>21 days</option>
+                                   <option>1 month</option>
+                                   <option>2 months</option>
+                                   <option>3 months</option>
+                                   <option>6 months</option>
+                                   <option>Ongoing</option>
+                               </select>
                            </div>
                            <div className="flex items-end">
                                <button onClick={addMedicine} className="bg-slate-800 text-white px-5 py-2 text-sm font-semibold rounded shadow-sm hover:bg-slate-900 h-[38px]">Add Rx</button>
@@ -278,8 +315,9 @@ export default function ConsultationMode() {
                                <thead className="bg-slate-50 border-b border-slate-200">
                                    <tr>
                                        <th className="px-4 py-2 font-semibold text-slate-600">Medication</th>
-                                       <th className="px-4 py-2 font-semibold text-slate-600 w-32">Sig</th>
-                                       <th className="px-4 py-2 font-semibold text-slate-600 w-24">Freq</th>
+                                       <th className="px-4 py-2 font-semibold text-slate-600 w-24">Dosage</th>
+                                       <th className="px-4 py-2 font-semibold text-slate-600 w-32">Frequency</th>
+                                       <th className="px-4 py-2 font-semibold text-slate-600 w-24">Duration</th>
                                        <th className="px-4 py-2 font-semibold text-slate-600 w-24">Action</th>
                                    </tr>
                                </thead>
@@ -289,6 +327,7 @@ export default function ConsultationMode() {
                                            <td className="px-4 py-3 font-semibold text-slate-900">{m.medicineName}</td>
                                            <td className="px-4 py-3 text-slate-700">{m.dosage}</td>
                                            <td className="px-4 py-3 text-slate-700">{m.frequency}</td>
+                                           <td className="px-4 py-3 text-slate-700">{m.duration}</td>
                                            <td className="px-4 py-3">
                                                <button onClick={() => removeMedicine(idx)} className="text-red-600 hover:text-red-800 font-semibold text-xs uppercase tracking-wider">Remove</button>
                                            </td>
