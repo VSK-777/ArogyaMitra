@@ -31,7 +31,9 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
 
   useEffect(() => {
     fetchDocuments();
-    
+  }, [patientId, appointmentId]);
+
+  useEffect(() => {
     // Poll for status updates if any document is processing
     const hasProcessingDocs = documents.some(d => d.processingStatus && d.processingStatus !== 'COMPLETED' && d.processingStatus !== 'FAILED');
     if (hasProcessingDocs) {
@@ -40,7 +42,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
       }, 3000);
       return () => clearInterval(intervalId);
     }
-  }, [patientId, appointmentId, documents]);
+  }, [documents, patientId, appointmentId]);
 
   const handleDownload = async (docId: number) => {
     try {

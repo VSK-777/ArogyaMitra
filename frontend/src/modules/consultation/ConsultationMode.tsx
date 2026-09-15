@@ -31,12 +31,18 @@ export default function ConsultationMode() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [aiSummary, setAiSummary] = useState('');
+  const [patientId, setPatientId] = useState<number | undefined>();
   const [activeTab, setActiveTab] = useState('notes');
 
   useEffect(() => {
     if(id) {
       doctorApi.getPreConsultation(id).then(res => {
-        if(res.success && res.data) setAiSummary(res.data.aiSummary || '');
+        if(res.success && res.data) {
+            setAiSummary(res.data.aiSummary || '');
+            if (res.data.appointment?.patient?.id) {
+                setPatientId(res.data.appointment.patient.id);
+            }
+        }
       }).catch(e => console.error(e));
     }
   }, [id]);
@@ -110,7 +116,6 @@ export default function ConsultationMode() {
            <div className="h-8 w-px bg-slate-200"></div>
            <div className="flex gap-4 text-sm text-slate-600 hidden sm:flex">
              <div><span className="text-slate-400">Allergies:</span> <span className="font-semibold text-red-600">NKA</span></div>
-             <div><span className="text-slate-400">Code:</span> <span className="font-semibold text-emerald-600">Full Code</span></div>
            </div>
         </div>
         <div className="flex gap-3">
@@ -163,7 +168,7 @@ export default function ConsultationMode() {
                <FileText className="h-4 w-4 text-blue-700" /> Chart Documents
              </h3>
              <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                {id ? <DocumentList appointmentId={id} /> : <p className="text-sm text-slate-500">No documents found.</p>}
+                {patientId ? <DocumentList patientId={patientId} /> : <p className="text-sm text-slate-500">No documents found.</p>}
              </div>
            </div>
         </div>

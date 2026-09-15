@@ -84,8 +84,13 @@ public class DocumentController {
     public ResponseEntity<ApiResponse<List<DocumentDTO>>> getPatientDocuments(@PathVariable Long patientId) {
         try {
             String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
-            // Sync existing files from Supabase first
-            documentService.syncPatientDocuments(patientId, mobile);
+            // Sync existing files from Supabase first (fail gracefully)
+            try {
+                documentService.syncPatientDocuments(patientId, mobile);
+            } catch (Exception e) {
+                // Log and ignore to prevent blocking document retrieval
+                System.err.println("Warning: Failed to sync documents from storage: " + e.getMessage());
+            }
             List<DocumentDTO> docs = documentService.getPatientDocuments(patientId, mobile);
             return ResponseEntity.ok(ApiResponse.success("Documents retrieved", docs));
         } catch (SecurityException e) {
