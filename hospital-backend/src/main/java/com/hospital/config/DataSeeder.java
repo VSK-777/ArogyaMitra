@@ -30,9 +30,35 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         fixShortPasswords(); // Fix passwords that fail the 8-char validation
+        fixDoctorNames();
         seedData();
         seedAdditionalHospitals(); // Seed new hospitals and doctors
         seedMoreDoctors();
+    }
+
+    private void fixDoctorNames() {
+        String[] firstNames = {"Amit", "Priya", "Rahul", "Sneha", "Kiran", "Vikram", "Anjali", "Rohan", "Pooja", "Suresh", "Kavita", "Nitin", "Deepa", "Arun", "Divya", "Sanjay", "Neha", "Arvind", "Meena", "Ramesh"};
+        String[] lastNames = {"Sharma", "Verma", "Patil", "Reddy", "Singh", "Kumar", "Iyer", "Desai", "Gupta", "Mehta", "Kapoor", "Rao", "Swamy", "Joshi", "Patel", "Das", "Seth", "Menon"};
+        
+        List<Doctor> doctors = doctorRepository.findAll();
+        int counter = 0;
+        for (Doctor doc : doctors) {
+            if (doc.getName().contains("Specialist")) {
+                int firstNameIdx = (counter * 7 + 3) % firstNames.length;
+                int lastNameIdx = (counter * 5 + 7) % lastNames.length;
+                String realisticName = "Dr. " + firstNames[firstNameIdx] + " " + lastNames[lastNameIdx];
+                
+                doc.setName(realisticName);
+                doctorRepository.save(doc);
+                
+                User user = doc.getUser();
+                if (user != null) {
+                    user.setName(realisticName);
+                    userRepository.save(user);
+                }
+                counter++;
+            }
+        }
     }
 
     private void seedMoreDoctors() {
@@ -49,6 +75,9 @@ public class DataSeeder implements CommandLineRunner {
         String[] specialties = {"Cardiology", "Orthopedics", "General Medicine", "Neurology", "Pediatrics", "ENT", "Gynecology", "Dermatology"};
         String[] descriptions = {"Heart care", "Bone and joint care", "Primary care", "Brain and nervous system", "Child healthcare", "Ear, Nose, Throat", "Women's health", "Skin care"};
         String[] prefixes = {"CARD", "ORTH", "GENM", "NEUR", "PEDI", "ENT", "GYNE", "DERM"};
+        
+        String[] firstNames = {"Amit", "Priya", "Rahul", "Sneha", "Kiran", "Vikram", "Anjali", "Rohan", "Pooja", "Suresh", "Kavita", "Nitin", "Deepa", "Arun", "Divya", "Sanjay", "Neha", "Arvind", "Meena", "Ramesh"};
+        String[] lastNames = {"Sharma", "Verma", "Patil", "Reddy", "Singh", "Kumar", "Iyer", "Desai", "Gupta", "Mehta", "Kapoor", "Rao", "Swamy", "Joshi", "Patel", "Das", "Seth", "Menon"};
 
         for (int i = 0; i < specialties.length; i++) {
             String name = specialties[i];
@@ -83,8 +112,12 @@ public class DataSeeder implements CommandLineRunner {
                 if (userRepository.findByMobile(mobile).isPresent()) {
                     mobile = "900" + index + "000" + i + "1";
                 }
+                
+                int firstNameIdx = (index * 7 + i * 3) % firstNames.length;
+                int lastNameIdx = (index * 5 + i * 7) % lastNames.length;
+                String realisticName = "Dr. " + firstNames[firstNameIdx] + " " + lastNames[lastNameIdx];
 
-                createDoctor(docId, "Dr. " + name + " Specialist " + index, dept, hsp, mobile, "MD " + name, 5 + i, 500 + (i * 100), "doctor123");
+                createDoctor(docId, realisticName, dept, hsp, mobile, "MD " + name, 5 + i, 500 + (i * 100), "doctor123");
             }
         }
     }
