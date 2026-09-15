@@ -30,12 +30,14 @@ export default function ConsultationMode() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [aiSummary, setAiSummary] = useState('');
   const [patientId, setPatientId] = useState<number | undefined>();
   const [activeTab, setActiveTab] = useState('notes');
 
   useEffect(() => {
     if(id) {
+      setIsFetching(true);
       doctorApi.getPreConsultation(id).then(res => {
         if(res.success && res.data) {
             setAiSummary(res.data.aiSummary || '');
@@ -43,7 +45,10 @@ export default function ConsultationMode() {
                 setPatientId(res.data.appointment.patient.id);
             }
         }
-      }).catch(e => console.error(e));
+      }).catch(e => console.error(e))
+        .finally(() => setIsFetching(false));
+    } else {
+      setIsFetching(false);
     }
   }, [id]);
   
@@ -134,7 +139,12 @@ export default function ConsultationMode() {
              <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                <Activity className="h-4 w-4 text-blue-700" /> AI Intake Summary
              </h3>
-             {aiSummary ? (
+             {isFetching ? (
+                 <div className="bg-slate-50 border border-slate-200 rounded p-6 flex flex-col items-center justify-center text-slate-500">
+                     <Loader2 className="h-6 w-6 animate-spin text-blue-600 mb-2" />
+                     <p className="text-sm">Synthesizing AI Summary...</p>
+                 </div>
+             ) : aiSummary ? (
                 parsedAi.isParsed ? (
                     <div className="space-y-3">
                         <div className="bg-slate-50 border border-slate-200 rounded p-3">
@@ -168,7 +178,16 @@ export default function ConsultationMode() {
                <FileText className="h-4 w-4 text-blue-700" /> Chart Documents
              </h3>
              <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                {patientId ? <DocumentList patientId={patientId} /> : <p className="text-sm text-slate-500">No documents found.</p>}
+                {isFetching ? (
+                     <div className="py-4 flex flex-col items-center justify-center text-slate-500">
+                         <Loader2 className="h-5 w-5 animate-spin text-blue-600 mb-2" />
+                         <p className="text-sm">Loading documents...</p>
+                     </div>
+                ) : patientId ? (
+                    <DocumentList patientId={patientId} />
+                ) : (
+                    <p className="text-sm text-slate-500 text-center py-2">No documents found.</p>
+                )}
              </div>
            </div>
         </div>
