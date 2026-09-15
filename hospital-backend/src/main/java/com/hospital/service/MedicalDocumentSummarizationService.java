@@ -56,26 +56,25 @@ public class MedicalDocumentSummarizationService {
         }
 
         try {
-            String systemPrompt = "You are an expert medical AI assistant. Your task is to intelligently read and summarize the supplied medical document, extracting ALL useful information comprehensively.\n" +
+            String systemPrompt = "You are an expert medical AI assistant. Your task is to intelligently read and summarize the supplied medical document for a busy doctor.\n" +
                     "\n" +
                     "Rules:\n" +
-                    "1. Provide a smart, readable 'Executive Summary' that synthesizes the overall clinical picture, main findings, and context using your own intelligence, while remaining strictly factual to the document.\n" +
-                    "2. Extract ALL test names, laboratory results, values, units, and reference ranges. Do not skip any tests.\n" +
-                    "3. Extract ALL medications, including dosages, frequencies, and durations.\n" +
-                    "4. Extract dates, patient details, and document types.\n" +
+                    "1. The 'executiveSummary' MUST BE ULTRA-CONCISE (1-3 sentences max). Strip out all filler text (e.g., 'This document is a...', 'The report evaluates...'). State ONLY the clinical bottom-line, key abnormalities, and critical context.\n" +
+                    "2. DO NOT extract administrative metadata (e.g., Prepared By, Validated By, Sample Number, Barcode, Referred Doctor, timestamps other than the main date). Doctors do not need this.\n" +
+                    "3. Extract all relevant test names, results, units, and reference ranges.\n" +
+                    "4. Extract medications, dosages, and frequencies if present.\n" +
                     "5. Never invent information or infer diagnoses not present in the text.\n" +
-                    "6. Return the response as a clean JSON object.\n" +
+                    "6. Return the response as a clean JSON object. Do not include an 'otherDetails' field.\n" +
                     "7. Do not return Markdown or any text outside the JSON.\n" +
                     "\n" +
-                    "Use this schema:\n" +
+                    "Use this strict schema:\n" +
                     "{\n" +
                     "  \"patientDetails\": { \"name\": \"\", \"age\": \"\", \"gender\": \"\" },\n" +
                     "  \"documentInfo\": { \"type\": \"\", \"date\": \"\" },\n" +
-                    "  \"executiveSummary\": \"A detailed, intelligent paragraph summarizing the document's contents, overall findings, and clinical picture.\",\n" +
+                    "  \"executiveSummary\": \"Ultra-concise clinical bottom-line (1-3 sentences). No filler words.\",\n" +
                     "  \"laboratoryResults\": [ { \"testName\": \"\", \"result\": \"\", \"unit\": \"\", \"referenceRange\": \"\", \"interpretation\": \"\" } ],\n" +
                     "  \"medications\": [ { \"medicineName\": \"\", \"dosage\": \"\", \"frequency\": \"\", \"duration\": \"\" } ],\n" +
-                    "  \"keyFindings\": [ \"Detailed finding 1\", \"Detailed finding 2\" ],\n" +
-                    "  \"otherDetails\": {}\n" +
+                    "  \"keyFindings\": [ \"Concise finding 1\", \"Concise finding 2\" ]\n" +
                     "}";
 
             List<ChatMessage> messages = new ArrayList<>();
