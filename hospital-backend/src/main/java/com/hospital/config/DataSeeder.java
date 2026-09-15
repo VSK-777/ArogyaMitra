@@ -36,55 +36,57 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedMoreDoctors() {
-        Optional<Hospital> hOpt = hospitalRepository.findByHospitalId("HSP-001");
-        if (hOpt.isEmpty()) return;
-        Hospital hospital = hOpt.get();
+        Optional<Hospital> hOpt1 = hospitalRepository.findByHospitalId("HSP-001");
+        Optional<Hospital> hOpt2 = hospitalRepository.findByHospitalId("HSP-002");
+        Optional<Hospital> hOpt3 = hospitalRepository.findByHospitalId("HSP-003");
 
-        // Find departments
-        Department cardio = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Cardiology")).findFirst().orElse(null);
-        Department ortho = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Orthopedics")).findFirst().orElse(null);
-        Department genMed = departmentRepository.findAll().stream().filter(d -> d.getName().equals("General Medicine")).findFirst().orElse(null);
-        Department neuro = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Neurology")).findFirst().orElse(null);
-        Department pedia = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Pediatrics")).findFirst().orElse(null);
+        if (hOpt1.isPresent()) ensureHospitalHasAllSpecialties(hOpt1.get(), 1);
+        if (hOpt2.isPresent()) ensureHospitalHasAllSpecialties(hOpt2.get(), 2);
+        if (hOpt3.isPresent()) ensureHospitalHasAllSpecialties(hOpt3.get(), 3);
+    }
 
-        if (cardio != null && userRepository.findByMobile("9876543220").isEmpty()) {
-            createDoctor("DOC-106", "Dr. Sanjay Gupta", cardio, hospital, "9876543220", "DM Cardiology", 8, 900, "doctor123");
-            createDoctor("DOC-107", "Dr. Anjali Mehta", cardio, hospital, "9876543221", "MD Cardiology", 12, 1100, "doctor123");
-        }
-        if (ortho != null && userRepository.findByMobile("9876543222").isEmpty()) {
-            createDoctor("DOC-108", "Dr. Vikram Singh", ortho, hospital, "9876543222", "MS Ortho, Joint Replacement", 15, 1000, "doctor123");
-            createDoctor("DOC-109", "Dr. Rohan Kapoor", ortho, hospital, "9876543223", "DNB Orthopedics", 6, 700, "doctor123");
-        }
-        if (genMed != null && userRepository.findByMobile("9876543224").isEmpty()) {
-            createDoctor("DOC-110", "Dr. Kavita Reddy", genMed, hospital, "9876543224", "MD General Medicine", 20, 600, "doctor123");
-            createDoctor("DOC-111", "Dr. Nithin Rao", genMed, hospital, "9876543225", "MBBS, MD Internal Med", 14, 550, "doctor123");
-        }
-        if (neuro != null && userRepository.findByMobile("9876543226").isEmpty()) {
-            createDoctor("DOC-112", "Dr. Arvind Swamy", neuro, hospital, "9876543226", "DM Neurology", 9, 1150, "doctor123");
-            createDoctor("DOC-113", "Dr. Sneha Patil", neuro, hospital, "9876543227", "MD, DM Neurology", 16, 1300, "doctor123");
-        }
-        if (pedia != null && userRepository.findByMobile("9876543228").isEmpty()) {
-            createDoctor("DOC-114", "Dr. Divya Joshi", pedia, hospital, "9876543228", "DCH, MD Pediatrics", 11, 650, "doctor123");
-            createDoctor("DOC-115", "Dr. Amit Verma", pedia, hospital, "9876543229", "MD Pediatrics", 4, 500, "doctor123");
-        }
+    private void ensureHospitalHasAllSpecialties(Hospital hsp, int index) {
+        String[] specialties = {"Cardiology", "Orthopedics", "General Medicine", "Neurology", "Pediatrics", "ENT", "Gynecology", "Dermatology"};
+        String[] descriptions = {"Heart care", "Bone and joint care", "Primary care", "Brain and nervous system", "Child healthcare", "Ear, Nose, Throat", "Women's health", "Skin care"};
+        String[] prefixes = {"CARD", "ORTH", "GENM", "NEUR", "PEDI", "ENT", "GYNE", "DERM"};
 
-        // Add more doctors to Hospital 2 (Valley Care Clinic)
-        hospitalRepository.findByHospitalId("HSP-002").ifPresent(hsp2 -> {
-            Department cardioV = departmentRepository.findAll().stream().filter(d -> d.getHospital().getId().equals(hsp2.getId()) && d.getName().equals("Cardiology")).findFirst().orElse(null);
-            if (cardioV != null && userRepository.findByMobile("9111111112").isEmpty()) {
-                createDoctor("DOC-201", "Dr. Rahul Sharma", cardioV, hsp2, "9111111112", "MD Cardiology", 10, 1000, "doctor123");
-                createDoctor("DOC-202", "Dr. Neha Patel", cardioV, hsp2, "9111111113", "DM Cardiology", 6, 800, "doctor123");
+        for (int i = 0; i < specialties.length; i++) {
+            String name = specialties[i];
+            String desc = descriptions[i];
+            String deptId = "DEPT-" + prefixes[i] + "-H" + index;
+
+            // Find or create department
+            Department dept = departmentRepository.findAll().stream()
+                .filter(d -> d.getHospital().getId().equals(hsp.getId()) && d.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+
+            if (dept == null) {
+                dept = departmentRepository.save(Department.builder()
+                    .departmentId(deptId)
+                    .hospital(hsp)
+                    .name(name)
+                    .description(desc)
+                    .build());
             }
-        });
 
-        // Add more doctors to Hospital 3 (Metro Life Hospital)
-        hospitalRepository.findByHospitalId("HSP-003").ifPresent(hsp3 -> {
-            Department orthoM = departmentRepository.findAll().stream().filter(d -> d.getHospital().getId().equals(hsp3.getId()) && d.getName().equals("Orthopedics")).findFirst().orElse(null);
-            if (orthoM != null && userRepository.findByMobile("9333333334").isEmpty()) {
-                createDoctor("DOC-301", "Dr. Arun Kumar", orthoM, hsp3, "9333333334", "MS Orthopedics", 12, 1200, "doctor123");
-                createDoctor("DOC-302", "Dr. Deepa Reddy", orthoM, hsp3, "9333333335", "DNB Orthopedics", 8, 900, "doctor123");
+            // Ensure at least one doctor exists
+            Department finalDept = dept;
+            List<Doctor> docs = doctorRepository.findAll().stream()
+                .filter(d -> d.getDepartment().getId().equals(finalDept.getId()))
+                .toList();
+
+            if (docs.isEmpty()) {
+                String docId = "DOC-9" + index + i;
+                String mobile = "900" + index + "000" + i + "0";
+                
+                if (userRepository.findByMobile(mobile).isPresent()) {
+                    mobile = "900" + index + "000" + i + "1";
+                }
+
+                createDoctor(docId, "Dr. " + name + " Specialist " + index, dept, hsp, mobile, "MD " + name, 5 + i, 500 + (i * 100), "doctor123");
             }
-        });
+        }
     }
 
     private void fixShortPasswords() {
