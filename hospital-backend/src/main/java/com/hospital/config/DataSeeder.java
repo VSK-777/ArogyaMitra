@@ -30,13 +30,13 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         fixShortPasswords(); // Fix passwords that fail the 8-char validation
-        fixDoctorNames();
+        fixDoctorNamesAndMobiles();
         seedData();
         seedAdditionalHospitals(); // Seed new hospitals and doctors
         seedMoreDoctors();
     }
 
-    private void fixDoctorNames() {
+    private void fixDoctorNamesAndMobiles() {
         String[] firstNames = {"Amit", "Priya", "Rahul", "Sneha", "Kiran", "Vikram", "Anjali", "Rohan", "Pooja", "Suresh", "Kavita", "Nitin", "Deepa", "Arun", "Divya", "Sanjay", "Neha", "Arvind", "Meena", "Ramesh"};
         String[] lastNames = {"Sharma", "Verma", "Patil", "Reddy", "Singh", "Kumar", "Iyer", "Desai", "Gupta", "Mehta", "Kapoor", "Rao", "Swamy", "Joshi", "Patel", "Das", "Seth", "Menon"};
         
@@ -57,6 +57,17 @@ public class DataSeeder implements CommandLineRunner {
                     userRepository.save(user);
                 }
                 counter++;
+            }
+        }
+
+        // Fix invalid 9-digit mobile numbers generated previously
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getMobile() != null && user.getMobile().length() == 9 && user.getMobile().startsWith("900")) {
+                String oldMobile = user.getMobile(); // e.g. 900200030
+                String newMobile = oldMobile.substring(0, 3) + "0" + oldMobile.substring(3); // 9000200030
+                user.setMobile(newMobile);
+                userRepository.save(user);
             }
         }
     }
@@ -107,10 +118,10 @@ public class DataSeeder implements CommandLineRunner {
 
             if (docs.isEmpty()) {
                 String docId = "DOC-9" + index + i;
-                String mobile = "900" + index + "000" + i + "0";
+                String mobile = "9000" + index + "000" + i + "0"; // 10 digits
                 
                 if (userRepository.findByMobile(mobile).isPresent()) {
-                    mobile = "900" + index + "000" + i + "1";
+                    mobile = "9000" + index + "000" + i + "1";
                 }
                 
                 int firstNameIdx = (index * 7 + i * 3) % firstNames.length;
