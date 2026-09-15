@@ -37,6 +37,7 @@ public class DocumentService {
     private final AuditService auditService;
     private final PdfTextExtractionService pdfTextExtractionService;
     private final MedicalDocumentSummarizationService summarizationService;
+    private final PatientSummaryService patientSummaryService;
     private final ObjectMapper objectMapper;
 
     // Allowed mime types
@@ -44,6 +45,17 @@ public class DocumentService {
             "application/pdf", "image/jpeg", "image/png", "image/webp"
     );
     private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+    private String calculateFileHash(MultipartFile file) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(file.getBytes());
+            return String.format("%064x", new java.math.BigInteger(1, hash));
+        } catch (Exception e) {
+            log.warn("Could not calculate file hash", e);
+            return null;
+        }
+    }
 
     @Transactional
     public DocumentDTO uploadDocument(MultipartFile file, String appointmentId, String documentType, String uploaderMobile) {
@@ -71,6 +83,15 @@ public class DocumentService {
             }
         }
 
+        String fileHash = calculateFileHash(file);
+        if (fileHash != null) {
+            java.util.Optional<Document> existing = documentRepository.findByPatientIdAndContentHash(appointment.getPatient().getId(), fileHash);
+            if (existing.isPresent()) {
+                log.info("Duplicate document detected for appointment {}, returning existing doc {}", appointmentId, existing.get().getId());
+                return mapToDTO(existing.get());
+            }
+        }
+
         String ext = getExtension(file.getOriginalFilename());
         String objectKey = String.format("patients/%d/appointments/%s/documents/%s%s",
                 appointment.getPatient().getId(),
@@ -95,6 +116,7 @@ public class DocumentService {
         doc.setDocumentType(documentType);
         doc.setUploadedBy(uploader.getRole().name());
         doc.setProcessingStatus("UPLOADED");
+        doc.setContentHash(fileHash);
         
         try {
             doc = documentRepository.save(doc);
@@ -132,6 +154,15 @@ public class DocumentService {
             }
         }
         
+        String fileHash = calculateFileHash(file);
+        if (fileHash != null) {
+            java.util.Optional<Document> existing = documentRepository.findByPatientIdAndContentHash(patientId, fileHash);
+            if (existing.isPresent()) {
+                log.info("Duplicate document detected for patient {}, returning existing doc {}", patientId, existing.get().getId());
+                return mapToDTO(existing.get());
+            }
+        }
+
         String ext = getExtension(file.getOriginalFilename());
         String objectKey = String.format("patients/%d/documents/%s%s",
                 patient.getId(),
@@ -153,11 +184,12 @@ public class DocumentService {
         doc.setDocumentType(documentType);
         doc.setUploadedBy(uploader.getRole().name());
         doc.setProcessingStatus("UPLOADED");
+        doc.setContentHash(fileHash);
         
         Document savedDoc = documentRepository.save(doc);
         
         // Start async processing
-        CompletableFuture.runAsync(() -> processDocumentAsync(savedDoc.getId(), file));
+        CompletableFuture.runAsync(() -> processDocumentAsync(savedDoc.getId(), null));
 
         return mapToDTO(savedDoc);
     }

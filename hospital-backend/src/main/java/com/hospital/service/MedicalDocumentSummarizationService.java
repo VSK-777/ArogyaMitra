@@ -29,7 +29,7 @@ public class MedicalDocumentSummarizationService {
     @Value("${GEMINI_API_KEY:}")
     private String geminiApiKey;
 
-    @Value("${GEMINI_MODEL:gemini-2.5-flash}")
+    @Value("${GEMINI_MODEL:gemini-3.6-flash}")
     private String geminiModel;
 
     public MedicalDocumentSummarizationService(ObjectMapper objectMapper) {
