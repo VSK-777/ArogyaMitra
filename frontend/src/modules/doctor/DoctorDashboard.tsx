@@ -19,7 +19,7 @@ export default function DoctorDashboard() {
     };
 
     const handleNoShow = async (appointmentId: string) => {
-        if (!confirm('Mark this appointment as No Show?')) return;
+        if (!confirm('Mark this patient as Absent?')) return;
         setLoading(true);
         try {
             const res = await doctorApi.markNoShow(appointmentId);
@@ -198,10 +198,10 @@ export default function DoctorDashboard() {
                             {q.status === 'WAITING' && <span className="bg-green-100 text-green-700 px-3 py-1 rounded text-sm font-semibold">✓ Checked In (Waiting)</span>}
                             {q.status === 'IN_CONSULTATION' && <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm font-semibold">In Consultation</span>}
                             {q.status === 'COMPLETED' && <span className="bg-slate-100 text-slate-500 px-3 py-1 rounded text-sm font-semibold">Completed</span>}
-                            {q.status === 'NO_SHOW' && <span className="bg-red-100 text-red-700 px-3 py-1 rounded text-sm font-semibold">No Show</span>}
+                            {q.status === 'NO_SHOW' && <span className="bg-red-100 text-red-700 px-3 py-1 rounded text-sm font-semibold">Absent</span>}
                             
                             {q.status === 'BOOKED' && (
-                              <button onClick={() => handleNoShow(q.appointment?.appointmentId)} className="bg-orange-100 text-orange-700 px-3 py-1 rounded text-sm font-semibold hover:bg-orange-200">Mark No Show</button>
+                              <button onClick={() => handleNoShow(q.appointment?.appointmentId)} className="bg-orange-100 text-orange-700 px-3 py-1 rounded text-sm font-semibold hover:bg-orange-200">Mark as Absent</button>
                             )}
                         </div>
                     </div>
