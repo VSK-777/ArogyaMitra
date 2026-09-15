@@ -100,7 +100,15 @@ public class DoctorController {
         }
         Optional<PreConsultation> pc = preConsultationRepository.findByAppointment_Id(apt.getId());
         if (pc.isPresent()) {
-            return ResponseEntity.ok(ApiResponse.success("Pre-consultation found", pc.get()));
+            PreConsultation preConsultation = pc.get();
+            try {
+                String consolidated = patientSummaryService.getFinalConsolidatedSummary(apt.getId(), apt.getPatient().getId());
+                preConsultation.setAiSummary(consolidated);
+            } catch (Exception e) {
+                // Ignore AI error and just return what we have
+                System.err.println("Failed to get consolidated summary: " + e.getMessage());
+            }
+            return ResponseEntity.ok(ApiResponse.success("Pre-consultation found", preConsultation));
         }
         return ResponseEntity.status(404).body(ApiResponse.error("No pre-consultation found", "NOT_FOUND"));
     }

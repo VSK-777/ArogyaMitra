@@ -6,7 +6,7 @@ import { patientApi } from '../../api/patientApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, Trans } from 'react-i18next';
-
+import { DocumentList } from '../../components/documents/DocumentList';
 
 function TokenModal({ apt, onClose }: { apt: any; onClose: () => void }) {
   const { t } = useTranslation();
@@ -307,9 +307,19 @@ export default function PatientDashboard() {
           )}
         </div>
       </div>
+
+      <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden mt-6">
+        <div className="border-b border-slate-200 px-6 py-4 flex gap-4 bg-slate-50">
+          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <FileText className="h-5 w-5 text-purple-700" /> {t('patientDashboard.my_documents', 'My Documents')}
+          </h2>
+        </div>
+        <div className="p-6">
+          {patient?.id ? <DocumentList patientId={patient.id} /> : <p className="text-sm text-slate-500">{t('patientDashboard.loading_documents', 'Loading documents...')}</p>}
+        </div>
+      </div>
     </div>
   );
+
+
 }
-
-
-

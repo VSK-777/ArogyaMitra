@@ -14,4 +14,5 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findByIdAndStatus(Long id, String status);
     boolean existsByStoragePath(String storagePath);
     Optional<Document> findByStoragePath(String storagePath);
+    Optional<Document> findByPatientIdAndContentHash(Long patientId, String contentHash);
 }

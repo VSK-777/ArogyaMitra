@@ -69,15 +69,12 @@ public class PatientSummaryService {
 
     private String consolidateSummaries(String preConsultationSummary, String medicalDocumentsSummary) {
         String prompt = "You are a clinical assistant. Consolidate the following two summaries into one clear, structured doctor-facing summary.\n" +
-                "Do not duplicate information. Organize by:\n" +
-                "- Patient background\n" +
-                "- Existing medical conditions\n" +
-                "- Current symptoms (from pre-consultation)\n" +
-                "- Important laboratory findings (from medical documents)\n" +
-                "- Current medications\n" +
-                "- Relevant medical history\n" +
-                "- Patient-reported concerns\n" +
-                "- Information requiring physician attention\n\n" +
+                "Do not duplicate information. You MUST format your response exactly using these bullet points:\n" +
+                "• Summary: [Patient background, relevant history, and main concerns]\n" +
+                "• Symptoms: [Current symptoms from pre-consultation]\n" +
+                "• Potential Diagnosis/Impression: [Existing medical conditions and possible diagnosis]\n" +
+                "• Current Medications: [List of current medications]\n" +
+                "• Lab Values Mentioned: [Important laboratory findings from medical documents]\n\n" +
                 "--- PRE-CONSULTATION SUMMARY ---\n" + preConsultationSummary + "\n\n" +
                 "--- MEDICAL DOCUMENTS SUMMARY ---\n" + medicalDocumentsSummary;
 
