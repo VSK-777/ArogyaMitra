@@ -189,7 +189,7 @@ public class DoctorController {
                             "Observations: " + consultation.getObservations() + "\n" +
                             "Treatment Plan: " + consultation.getTreatmentPlan();
             try {
-                String summary = aiProvider.generateText(prompt);
+                String summary = aiProvider.generateStructuredSummary(prompt);
                 consultation.setAiDraft(summary);
                 consultationRepository.save(consultation);
             } catch(Exception e) {
