@@ -58,6 +58,7 @@ public class DocumentService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "patient_summaries", allEntries = true)
     public DocumentDTO uploadDocument(MultipartFile file, String appointmentId, String documentType, String uploaderMobile) {
         // Validation
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");
@@ -134,6 +135,7 @@ public class DocumentService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "patient_summaries", allEntries = true)
     public DocumentDTO uploadAndProcessPatientDocument(MultipartFile file, Long patientId, String documentType, String uploaderMobile) {
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");
         if (file.getSize() > MAX_FILE_SIZE) throw new IllegalArgumentException("File exceeds 50MB limit");

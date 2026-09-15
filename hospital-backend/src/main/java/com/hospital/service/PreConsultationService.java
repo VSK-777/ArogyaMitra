@@ -111,6 +111,7 @@ public class PreConsultationService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "patient_summaries", allEntries = true)
     public PreConsultation completePreConsultation(String appointmentId) {
         PreConsultation preConsultation = getByAppointmentId(appointmentId);
         
