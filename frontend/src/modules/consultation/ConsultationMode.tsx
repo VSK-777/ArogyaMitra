@@ -118,10 +118,6 @@ export default function ConsultationMode() {
                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">ID: {id?.substring(0,8)}</p>
              </div>
            </div>
-           <div className="h-8 w-px bg-slate-200"></div>
-           <div className="flex gap-4 text-sm text-slate-600 hidden sm:flex">
-             <div><span className="text-slate-400">Allergies:</span> <span className="font-semibold text-red-600">NKA</span></div>
-           </div>
         </div>
         <div className="flex gap-3">
            <button onClick={() => navigate('/doctor/dashboard')} className="px-4 py-2 text-sm font-semibold text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 shadow-sm transition-colors">Save Draft</button>
