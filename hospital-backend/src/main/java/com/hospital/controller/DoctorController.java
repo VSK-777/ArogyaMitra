@@ -90,7 +90,7 @@ public class DoctorController {
     }
 
     @GetMapping("/appointments/{appointmentId}/preconsultation")
-    public ResponseEntity<ApiResponse<PreConsultation>> getPreConsultationSummary(@PathVariable String appointmentId) {
+    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> getPreConsultationSummary(@PathVariable String appointmentId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Appointment apt = appointmentRepository.findByAppointmentId(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
@@ -98,19 +98,34 @@ public class DoctorController {
         if (apt.getDoctor() != null && apt.getDoctor().getUser() != null && !apt.getDoctor().getUser().getMobile().equals(username)) {
              throw new org.springframework.security.access.AccessDeniedException("Unauthorized to view this patient's data");
         }
+
+        java.util.Map<String, Object> responseData = new java.util.HashMap<>();
+        java.util.Map<String, Object> patientMap = new java.util.HashMap<>();
+        patientMap.put("id", apt.getPatient().getId());
+        java.util.Map<String, Object> aptMap = new java.util.HashMap<>();
+        aptMap.put("patient", patientMap);
+        responseData.put("appointment", aptMap);
+
+        String consolidated = null;
+        try {
+            consolidated = patientSummaryService.getFinalConsolidatedSummary(apt.getId(), apt.getPatient().getId());
+        } catch (Exception e) {
+            System.err.println("Failed to get consolidated summary: " + e.getMessage());
+        }
+
         Optional<PreConsultation> pc = preConsultationRepository.findByAppointment_Id(apt.getId());
         if (pc.isPresent()) {
             PreConsultation preConsultation = pc.get();
-            try {
-                String consolidated = patientSummaryService.getFinalConsolidatedSummary(apt.getId(), apt.getPatient().getId());
+            if (consolidated != null) {
                 preConsultation.setAiSummary(consolidated);
-            } catch (Exception e) {
-                // Ignore AI error and just return what we have
-                System.err.println("Failed to get consolidated summary: " + e.getMessage());
             }
-            return ResponseEntity.ok(ApiResponse.success("Pre-consultation found", preConsultation));
+            responseData.put("preConsultation", preConsultation);
+            responseData.put("aiSummary", preConsultation.getAiSummary());
+        } else {
+            responseData.put("aiSummary", consolidated); // Fallback to doc-only summary if no pre-consultation
         }
-        return ResponseEntity.status(404).body(ApiResponse.error("No pre-consultation found", "NOT_FOUND"));
+
+        return ResponseEntity.ok(ApiResponse.success("Consultation data fetched", responseData));
     }
 
     @PostMapping("/appointments/{appointmentId}/no-show")
