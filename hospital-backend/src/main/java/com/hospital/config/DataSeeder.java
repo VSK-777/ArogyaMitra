@@ -32,6 +32,41 @@ public class DataSeeder implements CommandLineRunner {
         fixShortPasswords(); // Fix passwords that fail the 8-char validation
         seedData();
         seedAdditionalHospitals(); // Seed new hospitals and doctors
+        seedMoreDoctors();
+    }
+
+    private void seedMoreDoctors() {
+        Optional<Hospital> hOpt = hospitalRepository.findByHospitalId("HSP-001");
+        if (hOpt.isEmpty()) return;
+        Hospital hospital = hOpt.get();
+
+        // Find departments
+        Department cardio = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Cardiology")).findFirst().orElse(null);
+        Department ortho = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Orthopedics")).findFirst().orElse(null);
+        Department genMed = departmentRepository.findAll().stream().filter(d -> d.getName().equals("General Medicine")).findFirst().orElse(null);
+        Department neuro = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Neurology")).findFirst().orElse(null);
+        Department pedia = departmentRepository.findAll().stream().filter(d -> d.getName().equals("Pediatrics")).findFirst().orElse(null);
+
+        if (cardio != null && doctorRepository.findByMobile("9876543220").isEmpty()) {
+            createDoctor("DOC-006", "Dr. Sanjay Gupta", cardio, hospital, "9876543220", "DM Cardiology", 8, 900, "doctor123");
+            createDoctor("DOC-007", "Dr. Anjali Mehta", cardio, hospital, "9876543221", "MD Cardiology", 12, 1100, "doctor123");
+        }
+        if (ortho != null && doctorRepository.findByMobile("9876543222").isEmpty()) {
+            createDoctor("DOC-008", "Dr. Vikram Singh", ortho, hospital, "9876543222", "MS Ortho, Joint Replacement", 15, 1000, "doctor123");
+            createDoctor("DOC-009", "Dr. Rohan Kapoor", ortho, hospital, "9876543223", "DNB Orthopedics", 6, 700, "doctor123");
+        }
+        if (genMed != null && doctorRepository.findByMobile("9876543224").isEmpty()) {
+            createDoctor("DOC-010", "Dr. Kavita Reddy", genMed, hospital, "9876543224", "MD General Medicine", 20, 600, "doctor123");
+            createDoctor("DOC-011", "Dr. Nithin Rao", genMed, hospital, "9876543225", "MBBS, MD Internal Med", 14, 550, "doctor123");
+        }
+        if (neuro != null && doctorRepository.findByMobile("9876543226").isEmpty()) {
+            createDoctor("DOC-012", "Dr. Arvind Swamy", neuro, hospital, "9876543226", "DM Neurology", 9, 1150, "doctor123");
+            createDoctor("DOC-013", "Dr. Sneha Patil", neuro, hospital, "9876543227", "MD, DM Neurology", 16, 1300, "doctor123");
+        }
+        if (pedia != null && doctorRepository.findByMobile("9876543228").isEmpty()) {
+            createDoctor("DOC-014", "Dr. Divya Joshi", pedia, hospital, "9876543228", "DCH, MD Pediatrics", 11, 650, "doctor123");
+            createDoctor("DOC-015", "Dr. Amit Verma", pedia, hospital, "9876543229", "MD Pediatrics", 4, 500, "doctor123");
+        }
     }
 
     private void fixShortPasswords() {
@@ -81,11 +116,30 @@ public class DataSeeder implements CommandLineRunner {
                 .name("Pediatrics").description("Child healthcare").build());
 
         // =================== DOCTORS ===================
+        // Cardiology
         createDoctor("DOC-001", "Dr. Ramesh Sharma", cardio, hospital, "9876543210", "MD, DM Cardiology", 15, 1000, "doctor123");
+        createDoctor("DOC-006", "Dr. Sanjay Gupta", cardio, hospital, "9876543220", "DM Cardiology", 8, 900, "doctor123");
+        createDoctor("DOC-007", "Dr. Anjali Mehta", cardio, hospital, "9876543221", "MD Cardiology", 12, 1100, "doctor123");
+        
+        // Orthopedics
         createDoctor("DOC-002", "Dr. Priya Desai", ortho, hospital, "9876543211", "MS Orthopedics", 10, 800, "doctor123");
+        createDoctor("DOC-008", "Dr. Vikram Singh", ortho, hospital, "9876543222", "MS Ortho, Joint Replacement", 15, 1000, "doctor123");
+        createDoctor("DOC-009", "Dr. Rohan Kapoor", ortho, hospital, "9876543223", "DNB Orthopedics", 6, 700, "doctor123");
+
+        // General Medicine
         createDoctor("DOC-003", "Dr. Anil Kumar", genMed, hospital, "9876543212", "MD General Medicine", 5, 500, "doctor123");
+        createDoctor("DOC-010", "Dr. Kavita Reddy", genMed, hospital, "9876543224", "MD General Medicine", 20, 600, "doctor123");
+        createDoctor("DOC-011", "Dr. Nithin Rao", genMed, hospital, "9876543225", "MBBS, MD Internal Med", 14, 550, "doctor123");
+
+        // Neurology
         createDoctor("DOC-004", "Dr. Meena Iyer", neuro, hospital, "9876543213", "DM Neurology", 12, 1200, "doctor123");
+        createDoctor("DOC-012", "Dr. Arvind Swamy", neuro, hospital, "9876543226", "DM Neurology", 9, 1150, "doctor123");
+        createDoctor("DOC-013", "Dr. Sneha Patil", neuro, hospital, "9876543227", "MD, DM Neurology", 16, 1300, "doctor123");
+
+        // Pediatrics
         createDoctor("DOC-005", "Dr. Suresh Patel", pedia, hospital, "9876543214", "MD Pediatrics", 8, 600, "doctor123");
+        createDoctor("DOC-014", "Dr. Divya Joshi", pedia, hospital, "9876543228", "DCH, MD Pediatrics", 11, 650, "doctor123");
+        createDoctor("DOC-015", "Dr. Amit Verma", pedia, hospital, "9876543229", "MD Pediatrics", 4, 500, "doctor123");
 
         // =================== DEMO PATIENT ===================
         User pUser = userRepository.save(User.builder()

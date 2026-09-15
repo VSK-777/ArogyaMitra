@@ -19,7 +19,7 @@ export default function BookAppointment() {
   const [isLoadingHospitals, setIsLoadingHospitals] = useState(true);
   const [hospitalSearchQuery, setHospitalSearchQuery] = useState("");
   const [departments, setDepartments] = useState<any[]>([]);
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [availableDoctors, setAvailableDoctors] = useState<any[]>([]);
   
   // Selections
   const [selectedHospital, setSelectedHospital] = useState<any>(null);
@@ -28,23 +28,11 @@ export default function BookAppointment() {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedSlot, setSelectedSlot] = useState<string>('');
   const [confirmedData, setConfirmedData] = useState<any>(null);
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
 
   useEffect(() => {
-    if (selectedDoctor && selectedDate) {
-      setLoading(true);
-      patientApi.getBookedSlots(selectedDoctor.id, selectedDate)
-        .then(res => {
-          if(res.success) setBookedSlots(res.data || []);
-          generateTimeSlots();
-        })
-        .catch(() => generateTimeSlots())
-        .finally(() => setLoading(false));
-    } else {
-        generateTimeSlots();
-    }
-  }, [selectedDate, selectedDoctor]);
+    generateTimeSlots();
+  }, [selectedDate]);
 
   useEffect(() => {
     patientApi.getHospitals()
@@ -58,8 +46,6 @@ export default function BookAppointment() {
   const generateTimeSlots = () => {
     const slots = [];
     const now = new Date();
-    // In Javascript Date, local time is used.
-    // Ensure we handle timezones correctly to compare today
     const tzOffset = (new Date()).getTimezoneOffset() * 60000;
     const localISOTime = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
     const isToday = selectedDate === localISOTime || selectedDate === now.toISOString().split('T')[0];
@@ -88,32 +74,56 @@ export default function BookAppointment() {
       });
   };
 
-  const fetchDoctors = (e: any) => {
+  const handleDepartmentSelect = (e: any) => {
     const deptId = e.target.value;
+    if (!deptId) return;
     const dept = departments.find(d => d.id == deptId);
     setSelectedDepartment(dept);
+    handleNext(); // Move to Date & Time step
+  };
+
+  const fetchAvailableDoctors = async () => {
     setLoading(true);
     setError('');
-    patientApi.getDoctors(deptId)
-      .then(res => {
-        setDoctors(res.data || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(getUserFriendlyMessage(err));
-        setLoading(false);
-      });
+    try {
+      // 1. Get all doctors in dept
+      const docsRes = await patientApi.getDoctors(selectedDepartment.id);
+      const deptDoctors = docsRes.data || [];
+      
+      // 2. Filter them
+      const available = [];
+      const hour = parseInt(selectedSlot.split(':')[0]);
+      
+      for (const doc of deptDoctors) {
+        // Check lunch break mapping
+        const docIdHash = doc.id ? String(doc.id).charCodeAt(String(doc.id).length - 1) : 0;
+        const lunchHour = (docIdHash % 2 === 0) ? 12 : 13;
+        if (hour === lunchHour) continue; // Doctor is on lunch
+        
+        // Check booked slots
+        const slotsRes = await patientApi.getBookedSlots(doc.id, selectedDate);
+        const booked = slotsRes.data || [];
+        if (!booked.includes(selectedSlot)) {
+            available.push(doc);
+        }
+      }
+      
+      setAvailableDoctors(available);
+      handleNext();
+    } catch (err) {
+      setError(getUserFriendlyMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFinish = async () => {
     setLoading(true);
     setError('');
     try {
-        // 1. Create order (if key exists)
         const RZP_KEY: string | undefined = import.meta.env.VITE_RAZORPAY_KEY_ID;
         
         if (!RZP_KEY || RZP_KEY.trim() === '') {
-            // DEMO MODE / NO KEY PROVIDED: Bypass payment and book directly
             const payload = {
                 hospitalId: selectedHospital.id,
                 departmentId: selectedDepartment.id,
@@ -127,7 +137,7 @@ export default function BookAppointment() {
             const res = await patientApi.bookAppointment(payload);
             if(res.success) {
                 setConfirmedData(res.data);
-                setStep(5);
+                setStep(6);
             } else {
                 setError(res.message || 'Unable to book the appointment.');
             }
@@ -152,7 +162,6 @@ export default function BookAppointment() {
             order_id: orderRes.data.order_id,
             handler: async function (response: any) {
                 try {
-                    // 2. Verify Payment
                     const verifyRes = await paymentApi.verifyPayment({
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_order_id: response.razorpay_order_id,
@@ -160,7 +169,6 @@ export default function BookAppointment() {
                     });
 
                     if (verifyRes.success) {
-                        // 3. Book Appointment
                         const payload = {
                             hospitalId: selectedHospital.id,
                             departmentId: selectedDepartment.id,
@@ -174,7 +182,7 @@ export default function BookAppointment() {
                         const res = await patientApi.bookAppointment(payload);
                         if(res.success) {
                             setConfirmedData(res.data);
-                            setStep(5);
+                            setStep(6);
                         } else {
                             setError(res.message || 'Unable to book the appointment after payment.');
                         }
@@ -207,14 +215,12 @@ export default function BookAppointment() {
         });
         rzp.open();
     } catch (e: any) {
-        // Fallback generic error
         console.error("Booking error:", e);
         setError(e.response?.data?.message || e.message || "Unable to process booking. Please try again.");
         setLoading(false);
     }
   };
 
-  // Get today's date as minimum selectable date
   const getMinDate = () => {
     const tzOffset = (new Date()).getTimezoneOffset() * 60000;
     return (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
@@ -222,7 +228,7 @@ export default function BookAppointment() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      {step < 5 && (
+      {step < 6 && (
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{t('bookAppointment.title')}</h1>
           <p className="text-slate-500 mt-1">{t('bookAppointment.subtitle')}</p>
@@ -231,12 +237,12 @@ export default function BookAppointment() {
 
       {error && <div className="bg-red-50 text-red-600 p-3 rounded-md">{error}</div>}
 
-      {step < 5 && (
+      {step < 6 && (
         <div className="flex items-center justify-between mb-8">
-          {[1, 2, 3, 4].map((s) => (
+          {[1, 2, 3, 4, 5].map((s) => (
             <div key={s} className="flex items-center flex-1 last:flex-none">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= s ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-500'}`}>{s}</div>
-              {s !== 4 && <div className={`h-1 flex-1 mx-2 rounded-full ${step > s ? 'bg-blue-700' : 'bg-slate-200'}`} />}
+              {s !== 5 && <div className={`h-1 flex-1 mx-2 rounded-full ${step > s ? 'bg-blue-700' : 'bg-slate-200'}`} />}
             </div>
           ))}
         </div>
@@ -273,26 +279,14 @@ export default function BookAppointment() {
 
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-lg font-semibold">{t('bookAppointment.select_dept_doctor')}</h2>
+            <h2 className="text-lg font-semibold">{t('bookAppointment.select_department')}</h2>
             
-            <select onChange={fetchDoctors} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 bg-white focus:ring-blue-500 focus:border-blue-500">
+            <select onChange={handleDepartmentSelect} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 bg-white focus:ring-blue-500 focus:border-blue-500">
               <option value="">{t('bookAppointment.select_department')}</option>
               {departments.map(d => (
                   <option key={d.id} value={d.id}>{d.name}</option>
               ))}
             </select>
-            
-            {loading ? <Loader2 className="animate-spin h-6 w-6 text-blue-700" /> : (
-                <div className="grid grid-cols-1 gap-4">
-                    {doctors.map(doc => (
-                        <div key={doc.id} onClick={() => { setSelectedDoctor(doc); handleNext(); }} className="border border-slate-200 hover:border-blue-700 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
-                            <h3 className="font-bold text-slate-900">{doc.name}</h3>
-                            <p className="text-sm text-slate-500 mt-1">{doc.specialization} • {doc.qualification}</p>
-                        </div>
-                    ))}
-                    {selectedDepartment && doctors.length === 0 && <p className="text-slate-500">{t('bookAppointment.no_doctors')}</p>}
-                </div>
-            )}
             
             <div className="flex gap-4 mt-6">
               <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.back')}</button>
@@ -303,34 +297,18 @@ export default function BookAppointment() {
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
             <h2 className="text-lg font-semibold">{t('bookAppointment.select_date_time')}</h2>
-            <input type="date" min={getMinDate()} value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 focus:ring-blue-500 focus:border-blue-500" />
+            <input type="date" min={getMinDate()} value={selectedDate} onChange={(e) => { setSelectedDate(e.target.value); setSelectedSlot(''); }} className="w-full border-gray-300 rounded-md shadow-sm border p-2 mb-4 focus:ring-blue-500 focus:border-blue-500" />
             
             {selectedDate && (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     {timeSlots.map(slot => {
                         const hour = parseInt(slot.split(':')[0]);
-                        // Determine unique lunch hour (12 or 13) based on doctor's ID
-                        const docIdHash = selectedDoctor?.id ? String(selectedDoctor.id).charCodeAt(String(selectedDoctor.id).length - 1) : 0;
-                        const lunchHour = (docIdHash % 2 === 0) ? 12 : 13;
-                        
-                        // If this slot is the doctor's lunch break, display it uniquely
-                        if (hour === lunchHour) {
-                            return (
-                                <div key={slot} className="border rounded p-2 text-sm bg-orange-50 text-orange-600 border-orange-200 flex flex-col justify-center items-center font-medium cursor-not-allowed text-center">
-                                    <span>{slot} - {(hour + 1).toString().padStart(2, '0')}:00</span>
-                                    <span className="text-xs font-bold mt-0.5 text-orange-700">Lunch Break</span>
-                                </div>
-                            );
-                        }
-
-                        const isBooked = bookedSlots.includes(slot);
                         return (
                           <button 
                             key={slot} 
-                            disabled={isBooked}
                             onClick={() => setSelectedSlot(slot)} 
-                            className={`border rounded p-2 text-sm ${isBooked ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200' : selectedSlot === slot ? 'border-blue-700 bg-blue-700 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
-                              {slot} - {(hour + 1).toString().padStart(2, '0')}:00 {isBooked && '(Full)'}
+                            className={`border rounded p-2 text-sm ${selectedSlot === slot ? 'border-blue-700 bg-blue-700 text-white font-bold' : 'border-slate-300 hover:bg-blue-50 hover:border-blue-300 text-slate-700'}`}>
+                              {slot} - {(hour + 1).toString().padStart(2, '0')}:00
                           </button>
                         );
                     })}
@@ -339,12 +317,38 @@ export default function BookAppointment() {
             
             <div className="flex gap-4 mt-6">
               <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.back')}</button>
-              <button disabled={!selectedSlot} onClick={handleNext} className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 disabled:opacity-50">Next Step</button>
+              <button disabled={!selectedSlot || loading} onClick={fetchAvailableDoctors} className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 disabled:opacity-50 flex items-center gap-2">
+                  {loading && <Loader2 className="animate-spin h-4 w-4" />}
+                  Find Doctors
+              </button>
             </div>
           </div>
         )}
 
         {step === 4 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+            <h2 className="text-lg font-semibold">Available Doctors at {selectedSlot}</h2>
+            <div className="grid grid-cols-1 gap-4">
+                {availableDoctors.map(doc => (
+                    <div key={doc.id} onClick={() => { setSelectedDoctor(doc); handleNext(); }} className="border border-slate-200 hover:border-blue-700 hover:bg-blue-50 rounded-lg p-4 cursor-pointer">
+                        <h3 className="font-bold text-slate-900">{doc.name}</h3>
+                        <p className="text-sm text-slate-500 mt-1">{doc.specialization} • {doc.qualification}</p>
+                    </div>
+                ))}
+                {availableDoctors.length === 0 && (
+                    <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-sm">
+                        No doctors are available at {selectedSlot}. They might be on a lunch break, fully booked, or off-shift. Please go back and select a different time slot.
+                    </div>
+                )}
+            </div>
+            
+            <div className="flex gap-4 mt-6">
+              <button onClick={() => setStep(step - 1)} className="bg-slate-100 text-slate-700 px-6 py-2 rounded-md hover:bg-slate-200">{t('bookAppointment.back')}</button>
+            </div>
+          </div>
+        )}
+
+        {step === 5 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 text-center">
             <h2 className="text-xl font-bold text-green-600 mb-2">{t('bookAppointment.confirm_pay')}</h2>
             <p className="text-slate-600"><Trans
@@ -369,7 +373,7 @@ export default function BookAppointment() {
           </div>
         )}
 
-        {step === 5 && confirmedData && (
+        {step === 6 && confirmedData && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
             <div className="text-center">
               <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -425,7 +429,3 @@ export default function BookAppointment() {
     </div>
   );
 }
-
-
-
-
