@@ -58,10 +58,14 @@ export default function BookAppointment() {
   const generateTimeSlots = () => {
     const slots = [];
     const now = new Date();
-    const isToday = selectedDate === now.toISOString().split('T')[0];
+    // In Javascript Date, local time is used.
+    // Ensure we handle timezones correctly to compare today
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
+    const isToday = selectedDate === localISOTime || selectedDate === now.toISOString().split('T')[0];
     const currentHour = now.getHours();
 
-    for (let i = 9; i <= 17; i++) {
+    for (let i = 0; i <= 23; i++) {
       if (isToday && i <= currentHour) continue;
       slots.push(`${i.toString().padStart(2, '0')}:00`);
     }
@@ -212,7 +216,8 @@ export default function BookAppointment() {
 
   // Get today's date as minimum selectable date
   const getMinDate = () => {
-    return new Date().toISOString().split('T')[0];
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
   };
 
   return (
