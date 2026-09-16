@@ -59,9 +59,16 @@ function SummaryModal({ aptId, onClose }: { aptId: string; onClose: () => void }
                           Time: {(() => {
                              const t = data.consultation.appointment?.slotStart;
                              if (!t) return 'N/A';
-                             if (Array.isArray(t)) return t.slice(0,2).map(n => String(n).padStart(2, '0')).join(':');
-                             if (typeof t === 'string') return t.substring(0, 5);
-                             return 'N/A';
+                             let h = 0, m = 0;
+                             if (Array.isArray(t)) { h = t[0]; m = t[1]; }
+                             else if (typeof t === 'string') {
+                                const parts = t.split(':');
+                                h = parseInt(parts[0], 10); m = parseInt(parts[1], 10);
+                             } else return 'N/A';
+                             
+                             if (isNaN(h) || isNaN(m)) return 'N/A';
+                             const ampm = h >= 12 ? 'PM' : 'AM';
+                             return `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
                           })()}
                         </p>
                      </div>
