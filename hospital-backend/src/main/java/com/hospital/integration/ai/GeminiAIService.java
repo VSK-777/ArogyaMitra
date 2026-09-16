@@ -187,9 +187,9 @@ public class GeminiAIService implements AiProvider {
         if (lastException != null) {
             String msg = lastException.getMessage() != null ? lastException.getMessage().toLowerCase() : "";
             if (msg.contains("429") || msg.contains("quota") || msg.contains("rate limit")) {
-                return "I've noted your response. (Note: The AI rate limit was reached, but your data is saved). Do you have any other symptoms, or are you ready to finish?";
+                return "Noted: Your response has been recorded.\nQuestion: The system is currently busy. Do you have any other symptoms to share, or would you like to finish the consultation?";
             }
-            return "I'm having trouble connecting to my knowledge base right now (LangChain Error), but please continue or finish the consultation.";
+            return "Noted: Your response has been recorded.\nQuestion: I'm experiencing a brief connection issue. Please continue sharing your symptoms, or click 'Finish Consultation' to proceed.";
         }
 
         return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
