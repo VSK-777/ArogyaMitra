@@ -40,7 +40,7 @@ The application strictly follows the Authoritative System Architecture diagram.
                   DATA LAYER (Spring Data JPA)
                       │
                       ▼
-        DATABASES / DOCUMENT STORAGE (MySQL / PostgreSQL, AWS SDK v2)
+        DATABASES / DOCUMENT STORAGE (PostgreSQL, AWS SDK v2)
 ```
 
 ### 2.1 Identity vs Queue Order
@@ -59,10 +59,8 @@ The application strictly follows the Authoritative System Architecture diagram.
 - Java 21 LTS, Spring Boot 3.3
 - Spring Security + JWT Authentication
 - Spring Data JPA + Hibernate
-- Database: MySQL (or Neon PostgreSQL in cloud deployment)
-- AI Text: Gemini API
-- Local AI Summarization: Python, FastAPI, PyTorch, HuggingFace Transformers
-- AI Speech: Gemini Speech-to-Text (Speech-to-Text)
+- Database: PostgreSQL (Neon in cloud deployment)
+- AI Integration: LangChain4j + Google Gemini 1.5 Flash (Native Java)
 
 ## 4. Role-Based Workflows
 ### Patient Workflow (Mobile-First Web App)
@@ -157,22 +155,21 @@ The `DataSeeder` automatically populates the database if it is empty.
 The project natively supports both **Cloud Deployment (Vercel + Render)** and local containerization via **Docker Compose**.
 
 ### 8.1 Local Docker Compose (One-Click Start)
-Run the entire Hybrid Architecture (React + Java Spring Boot + Python FastAPI) locally using Docker:
+Run the entire architecture locally using Docker:
 ```bash
 docker-compose up --build
 ```
 - Frontend available at: `http://localhost:5173`
 - Java Backend at: `http://localhost:8080`
-- Python AI Microservice at: `http://localhost:8000`
 
-### 8.2 Cloud Deployment (Vercel + Render)
-1. **Frontend (Vercel):** Deploy the `frontend` directory. Set `VITE_API_BASE_URL` to your Java backend URL.
-2. **Java Backend (Render):** Deploy `hospital-backend` as a Java Web Service (`mvn clean package -DskipTests`). Set `PYTHON_AI_URL` to your Python service URL, along with your DB credentials and `GEMINI_API_KEY`.
-3. **Python AI (Render):** Deploy `python-ai` as a Python Web Service. Use `pip install -r Medical_Sumzr/medical_summarizer/requirements.txt` and start with `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+### 8.2 Deployment (Render)
+
+1. **Frontend (Vercel):** Connect your GitHub repo. Set `VITE_API_BASE_URL` to your backend URL.
+2. **Java Backend (Render):** Deploy `hospital-backend` as a Java Web Service (`mvn clean package -DskipTests`). Set your DB credentials and `GEMINI_API_KEY`.
 
 ## 9. Supabase Storage Document Storage Architecture
 
-Medical documents (Reports, Prescriptions, Scans) are **not stored as BLOBs in MySQL**. Instead, we use Supabase Storage as our S3-compatible object storage layer.
+Medical documents (Reports, Prescriptions, Scans) are **not stored as BLOBs in PostgreSQL**. Instead, we use Supabase Storage as our S3-compatible object storage layer.
 
 ### 9.1 Storage Flow
 ```text
@@ -180,7 +177,7 @@ Patient/Doctor -> React -> Spring Boot REST API -> Authorization -> DocumentServ
 ```
 
 ### 9.2 Data Storage Separation
-- **MySQL Database:** Stores the lightweight `Document` entity (metadata).
+- **PostgreSQL Database:** Stores the lightweight `Document` entity (metadata).
 - **Supabase Storage Bucket:** Stores the actual PDF/JPG/PNG files.
 
 ### 9.3 Secure Supabase Storage Object Keys
@@ -211,7 +208,7 @@ supabase.storage.bucket=${SUPABASE_STORAGE_BUCKET:hospital-medical-documents}
 - Generates a short-lived **Pre-signed URL** to access the file securely directly from Supabase Storage without making the bucket public.
 
 **DELETE /api/documents/{documentId}**
-- Logically deletes metadata in MySQL and physically removes the object from Supabase Storage.
+- Logically deletes metadata in PostgreSQL and physically removes the object from Supabase Storage.
 
 ### Supabase Storage Architecture
 
@@ -347,15 +344,11 @@ The system handles sudden doctor unavailabilities robustly without indiscriminat
 - **Database Architecture:** A Postgres \DatabaseConstraintFixer\ runs on startup to ensure enum transitions on legacy database check constraints don't crash the reassignment engine.
 
 
-## 12. Hybrid AI Architecture
+## 12. Unified AI Architecture
 
-The system utilizes a split-workload Hybrid AI architecture to maximize performance and minimize hallucinations:
+The system utilizes a unified AI architecture natively in Java to maximize performance and minimize infrastructure overhead:
 
-1. **Gemini 2.5 Flash API (Native Java Integration)**
-   - **Role:** Conversational AI & Rapid Inference
-   - **Responsibilities:** Powers the Pre-Consultation patient chat, asks contextual follow-up questions, extracts structured summaries from the chat, and expands brief doctor notes into full clinical assessments.
-
-2. **Python FastAPI Microservice (google/pegasus-pubmed)**
-   - **Role:** Heavy NLP Document Analysis
-   - **Responsibilities:** Summarizes dense clinical records and uploaded medical documents. By running a Hugging Face model natively fine-tuned on PubMed medical abstracts, it achieves superior clinical abstraction while keeping the main Spring Boot transactional backend lightweight.
+1. **Gemini 1.5 Flash API (Native Java Integration via LangChain4j)**
+   - **Role:** Conversational AI, Rapid Inference, and NLP Document Analysis
+   - **Responsibilities:** Powers the Pre-Consultation patient chat, asks contextual follow-up questions, extracts structured summaries from the chat, expands brief doctor notes into full clinical assessments, and summarizes dense clinical records and uploaded medical documents natively in the Spring Boot backend without needing external Python microservices.
 

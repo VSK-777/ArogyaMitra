@@ -56,7 +56,7 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 *   **AI Pre-Consultation:** 
     *   Patients can use their **microphone** to speak their symptoms.
     *   The frontend uses `MediaRecorder` to capture audio and sends a `multipart/form-data` payload to the backend.
-    *   The backend pipes this to **Gemini Speech-to-Text** for transcription, asks follow-up questions via **Gemini AI**, and generates a structured clinical summary by delegating to our dedicated **Python AI Microservice (FastAPI + PyTorch/HuggingFace)**.
+    *   The backend pipes this to **Gemini Speech-to-Text** for transcription, asks follow-up questions via **Gemini AI**, and generates a structured clinical summary natively in Java using LangChain4j.
 
 ### 2.2 Receptionist Portal
 *   **Patient Search:** Can search the database via mobile number, patient ID, or name.
@@ -83,12 +83,11 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 The backend (Java Spring Boot 3.3) is engineered for production-readiness, not just as a hackathon prototype.
 
-1.  **Hybrid AI Integration (Spring Boot + Python FastAPI):** 
-    *   **Gemini 2.5 Flash API (Native Java):** Handles the Conversational AI for patient pre-consultation chat, extracting structured symptom/diagnosis bullet points seamlessly without hallucination. It also powers the Doctor Notes expansion feature.
-    *   **Python FastAPI Microservice (`google/pegasus-pubmed`):** Handles the heavy NLP task of Clinical Record and Document Summarization. By utilizing a model specifically fine-tuned on PubMed medical abstracts, we offload dense document analysis from the main transactional backend.
-    *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription.
+1.  **Unified AI Integration (Spring Boot + LangChain4j):** 
+    *   **Gemini 1.5 Flash API (Native Java):** Handles the Conversational AI for patient pre-consultation chat, extracting structured symptom/diagnosis bullet points seamlessly without hallucination. It also powers the Doctor Notes expansion and Medical Document Summarization natively through LangChain4j, eliminating the need for external Python NLP microservices.
+    *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription natively.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
-2.  **MinIO (S3) Document Storage:** 
+2.  **Supabase (S3) Document Storage:** 
     *   `DocumentStorageService` is implemented to handle medical files, lab reports, and prescriptions. It generates secure Pre-signed URLs for frontend viewing without exposing the raw storage buckets.
 3.  **WebSockets:** 
     *   STOMP endpoints (`/ws-hospital`) and brokers (`/topic`, `/queue`) are configured so that when a receptionist assigns a token, the Doctor's screen and Patient's app can update without HTTP polling.
@@ -111,11 +110,12 @@ The frontend is built with React + Vite, designed for speed and modularity.
 ---
 
 ## 5. Security & Privacy Summary
-*   **Aadhaar Number Integration:** Captures the patient's Aadhaar number securely at registration and seamlessly displays it as a formatted, physical-card-style element across Patient, Doctor, and Receptionist dashboards, providing a quick visual reference without persisting heavy KYC documents.
-*   **Offline e-KYC Support:** The registration flow provides built-in navigation and support for patients who cannot use the Aadhaar app, directing them to Offline e-KYC options.
+*   **Aadhaar Number Capture:** Captures the patient's Aadhaar number securely at registration and seamlessly displays it as a formatted, physical-card-style element across Patient, Doctor, and Receptionist dashboards, providing a quick visual reference.
+*   **Data Consistency:** We have implemented a unified Spring Boot Caffeine Cache Manager configuration mapping `hospitals`, `departments`, and `patient_summaries` effectively.
 *   **No Mock Data:** There is zero hardcoded mock data in the UI. If you see an appointment, it exists in the database.
-*   **Passwords:** Encrypted via `BCryptPasswordEncoder`.
+*   **Passwords:** Encrypted via `BCryptPasswordEncoder`. Additionally, the frontend features modern password visibility toggles (`Eye/EyeOff`) across authentication flows for improved UX.
 *   **APIs:** Secured via `SecurityFilterChain`. Only `/api/auth`, `/api/hospitals`, and `/api/departments` are open to the public. All other endpoints require a valid JWT.
+*   **Localized Formatting:** Date and 12-hour AM/PM time configurations have been standardized across patient booking tools and finalized PDFs to reduce confusion.
 
 
 
