@@ -166,19 +166,27 @@ public class DoctorController {
 
     @GetMapping("/appointments/{appointmentId}/consultation")
     public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> getConsultationDetails(@PathVariable String appointmentId) {
+        System.out.println("Fetching consultation details for appointmentId: " + appointmentId);
         String mobile = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByMobile(mobile).orElseThrow();
         Doctor doctor = doctorRepository.findByUser_Id(user.getId()).orElseThrow();
         
         Appointment appt = appointmentRepository.findByAppointmentId(appointmentId)
-            .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+            .orElseThrow(() -> {
+                System.out.println("Appointment not found: " + appointmentId);
+                return new IllegalArgumentException("Appointment not found");
+            });
             
         if (!appt.getDoctor().getId().equals(doctor.getId())) {
+            System.out.println("Doctor mismatch. appt doctor: " + appt.getDoctor().getId() + " user doctor: " + doctor.getId());
             throw new SecurityException("Unauthorized");
         }
         
         Consultation consultation = consultationRepository.findByAppointment_Id(appt.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Consultation not found for this appointment"));
+            .orElseThrow(() -> {
+                System.out.println("Consultation not found for internal ID: " + appt.getId());
+                return new IllegalArgumentException("Consultation not found for this appointment");
+            });
             
         com.hospital.entity.Prescription prescription = prescriptionRepository.findByConsultation_Id(consultation.getId()).orElse(null);
         

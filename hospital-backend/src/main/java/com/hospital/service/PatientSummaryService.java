@@ -45,23 +45,20 @@ public class PatientSummaryService {
             preConsultationSummary = pc.getAiSummary();
         }
 
-        // 2. Fetch recent patient documents and summarize them using the custom model
+        // 2. Fetch recent patient documents and combine their existing AI summaries
         List<Document> patientDocuments = documentRepository.findByPatientIdAndStatus(patientId, "ACTIVE");
         StringBuilder documentsCombinedText = new StringBuilder();
         
         for (Document doc : patientDocuments) {
-            // Ideally, you would extract text from the file (PDF/Image) using OCR here.
-            // For example, calling AWS Textract or Tesseract OCR on doc.getStoragePath()
-            String extractedText = "[Simulated OCR text from " + doc.getFileName() + " (" + doc.getDocumentType() + ")]";
-            documentsCombinedText.append("Document: ").append(doc.getFileName()).append("\n");
-            documentsCombinedText.append(extractedText).append("\n\n");
+            documentsCombinedText.append("Document: ").append(doc.getFileName()).append(" (").append(doc.getDocumentType()).append(")\n");
+            if (doc.getAiSummary() != null && !doc.getAiSummary().isEmpty()) {
+                documentsCombinedText.append(doc.getAiSummary()).append("\n\n");
+            } else {
+                documentsCombinedText.append("No summary available for this document.\n\n");
+            }
         }
 
-        String medicalDocumentsSummary = "No medical documents available.";
-        if (documentsCombinedText.length() > 0) {
-            // Call the custom fine-tuned model for document summarization
-            medicalDocumentsSummary = documentSummarizationService.summarizeDocument(documentsCombinedText.toString());
-        }
+        String medicalDocumentsSummary = documentsCombinedText.length() > 0 ? documentsCombinedText.toString() : "No medical documents available.";
 
         // 3. Consolidate both summaries using the General AI to organize them into the final structured format
         return consolidateSummaries(preConsultationSummary, medicalDocumentsSummary);
