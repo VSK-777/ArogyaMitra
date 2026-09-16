@@ -19,6 +19,7 @@ public class PrescriptionMedicine {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prescription_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Prescription prescription;
 
     private String name;
