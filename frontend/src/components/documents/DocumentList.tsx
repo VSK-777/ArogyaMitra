@@ -51,9 +51,10 @@ const CleanSummaryRenderer = ({ data }: { data: any }) => {
 interface DocumentListProps {
   patientId?: number;
   appointmentId?: string;
+  onViewSummary?: (appointmentId: string) => void;
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointmentId }) => {
+export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointmentId, onViewSummary }) => {
   const [documents, setDocuments] = useState<DocumentDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -89,7 +90,16 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
     }
   }, [documents, patientId, appointmentId]);
 
-  const handleDownload = async (docId: number) => {
+  const handleDownload = async (docId: number, doc: DocumentDTO) => {
+    if (doc.documentType === 'CONSULTATION_SUMMARY') {
+        if (onViewSummary && doc.appointmentId) {
+            onViewSummary(doc.appointmentId);
+        } else {
+            toast.error("Please view this summary from the dashboard.");
+        }
+        return;
+    }
+    
     try {
       const url = await documentApi.getDownloadUrl(docId);
       window.open(url, '_blank');
@@ -128,7 +138,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
                 </span>
               )}
               <button 
-                onClick={() => handleDownload(doc.id)}
+                onClick={() => handleDownload(doc.id, doc)}
                 className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
               >
                 View PDF

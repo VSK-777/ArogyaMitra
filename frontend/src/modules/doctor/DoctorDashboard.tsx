@@ -42,13 +42,24 @@ function SummaryModal({ aptId, onClose }: { aptId: string; onClose: () => void }
                <p>Loading consultation records...</p>
              </div>
           ) : data && data.consultation ? (
-             <div className="print-content space-y-6">
-                <div className="hidden print:block mb-8 border-b-2 border-slate-900 pb-4">
-                   <h1 className="text-3xl font-bold text-slate-900">ArogyaMitra Clinic</h1>
-                   <p className="text-slate-600 mt-1">Patient Consultation Record</p>
-                </div>
+                <div className="print-content space-y-6">
+                  <div className="hidden print:block mb-8 border-b-2 border-slate-900 pb-4">
+                     <h1 className="text-3xl font-bold text-slate-900">ArogyaMitra Clinic</h1>
+                     <p className="text-slate-600 mt-1">Patient Consultation Record</p>
+                  </div>
 
-                <div className="bg-white border border-blue-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
+                  <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0 flex justify-between items-start">
+                     <div>
+                        <h4 className="font-bold text-slate-900 text-lg">{data.consultation.doctor?.name || "Doctor"}</h4>
+                        <p className="text-sm text-slate-600">{data.consultation.doctor?.specialization || "Specialist"}</p>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-sm font-medium text-slate-900">Date: {data.consultation.appointment?.appointmentDate}</p>
+                        <p className="text-sm text-slate-600">Time: {data.consultation.appointment?.appointmentTime}</p>
+                     </div>
+                  </div>
+
+                  <div className="bg-white border border-blue-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
                    <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">AI Patient Summary</h4>
                    <p className="text-sm text-slate-800 leading-relaxed bg-blue-50/50 p-4 rounded print:bg-transparent print:p-0">
                      {data.summary || "No summary available."}

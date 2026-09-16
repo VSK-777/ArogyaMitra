@@ -92,6 +92,17 @@ function SummaryModal({ aptId, onClose }: { aptId: string; onClose: () => void }
                    <p className="text-slate-600 mt-1">Patient Consultation Record</p>
                 </div>
 
+                <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0 flex justify-between items-start">
+                   <div>
+                      <h4 className="font-bold text-slate-900 text-lg">{data.consultation.doctor?.name || "Doctor"}</h4>
+                      <p className="text-sm text-slate-600">{data.consultation.doctor?.specialization || "Specialist"}</p>
+                   </div>
+                   <div className="text-right">
+                      <p className="text-sm font-medium text-slate-900">Date: {data.consultation.appointment?.appointmentDate}</p>
+                      <p className="text-sm text-slate-600">Time: {data.consultation.appointment?.appointmentTime}</p>
+                   </div>
+                </div>
+
                 <div className="bg-white border border-blue-200 rounded-lg p-5 shadow-sm print:border-none print:shadow-none print:p-0">
                    <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">AI Patient Summary</h4>
                    <p className="text-sm text-slate-800 leading-relaxed bg-blue-50/50 p-4 rounded print:bg-transparent print:p-0">
@@ -417,7 +428,7 @@ export default function PatientDashboard() {
           </h2>
         </div>
         <div className="p-6">
-          {patient?.id ? <DocumentList patientId={patient.id} /> : <p className="text-sm text-slate-500">{t('patientDashboard.loading_documents', 'Loading documents...')}</p>}
+          {patient?.id ? <DocumentList patientId={patient.id} onViewSummary={setSummaryAptId} /> : <p className="text-sm text-slate-500">{t('patientDashboard.loading_documents', 'Loading documents...')}</p>}
         </div>
       </div>
     </div>

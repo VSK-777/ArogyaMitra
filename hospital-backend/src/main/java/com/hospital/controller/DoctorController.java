@@ -191,11 +191,22 @@ public class DoctorController {
         com.hospital.entity.Prescription prescription = prescriptionRepository.findByConsultation_Id(consultation.getId()).orElse(null);
         
         if (consultation.getAiDraft() == null || consultation.getAiDraft().isEmpty()) {
-            String prompt = "Summarize the following doctor's consultation into a 3-4 sentence patient-friendly summary. " +
-                            "Make it clear and professional.\n\n" +
-                            "Diagnosis: " + consultation.getDiagnosis() + "\n" +
-                            "Observations: " + consultation.getObservations() + "\n" +
-                            "Treatment Plan: " + consultation.getTreatmentPlan();
+            StringBuilder promptBuilder = new StringBuilder("Summarize the following doctor's consultation into a 3-4 sentence patient-friendly summary. ");
+            promptBuilder.append("Make it clear and professional. Explicitly explain the prescribed medications if any.\n\n");
+            promptBuilder.append("Diagnosis: ").append(consultation.getDiagnosis()).append("\n");
+            promptBuilder.append("Observations: ").append(consultation.getObservations()).append("\n");
+            promptBuilder.append("Treatment Plan: ").append(consultation.getTreatmentPlan()).append("\n");
+            
+            if (prescription != null && prescription.getMedicines() != null && !prescription.getMedicines().isEmpty()) {
+                promptBuilder.append("Prescribed Medicines:\n");
+                for (com.hospital.entity.PrescriptionMedicine pm : prescription.getMedicines()) {
+                    promptBuilder.append("- ").append(pm.getName())
+                                 .append(" (").append(pm.getDosage()).append(", ")
+                                 .append(pm.getFrequency()).append(" for ")
+                                 .append(pm.getDuration()).append(")\n");
+                }
+            }
+            String prompt = promptBuilder.toString();
             try {
                 String summary = aiProvider.generateStructuredSummary(prompt);
                 consultation.setAiDraft(summary);

@@ -65,11 +65,11 @@ export default function ConsultationMode() {
 
   const addMedicine = () => {
       if (medicine && dosage) {
-          setMedicinesList([...medicinesList, { medicineName: medicine, dosage, frequency, duration, instructions: '' }]);
+          setMedicinesList([...medicinesList, { name: medicine, dosage, frequency, duration, instructions: '' }]);
           setMedicine('');
           setDosage('');
           setFrequency('Once a day');
-          setDuration('5 days');
+          setDuration('');
       }
   };
 
@@ -80,22 +80,21 @@ export default function ConsultationMode() {
   const handleComplete = async () => {
     setLoading(true);
     try {
-        const conRes = await doctorApi.completeConsultation({
-            appointmentId: id,
-            observations,
-            diagnosis,
-            treatmentPlan: plan,
-            assessment: '',
-            doctorNotes: '',
-            generalInstructions: "Follow up as needed.",
-            medicines: medicinesList
-        });
+      const payload = {
+        appointmentId: id,
+        diagnosis: diagnosis || 'Not specified',
+        observations: observations || 'Not specified',
+        assessment: 'N/A',
+        treatmentPlan: plan || 'Not specified',
+        medicines: medicinesList
+      };
+      const conRes = await doctorApi.completeConsultation(payload);
 
-        if (!conRes.success) {
-            toast.error(conRes.message || "Error completing consultation");
-            setLoading(false);
-            return;
-        }
+      if (!conRes.success) {
+          toast.error(conRes.message || "Error completing consultation");
+          setLoading(false);
+          return;
+      }
         
         toast.success('Consultation Completed & Signed!');
         navigate('/doctor/dashboard');
@@ -283,19 +282,7 @@ export default function ConsultationMode() {
                            </div>
                            <div className="w-32">
                                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Duration</label>
-                               <select value={duration} onChange={e=>setDuration(e.target.value)} className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white">
-                                   <option>3 days</option>
-                                   <option>5 days</option>
-                                   <option>7 days</option>
-                                   <option>10 days</option>
-                                   <option>14 days</option>
-                                   <option>21 days</option>
-                                   <option>1 month</option>
-                                   <option>2 months</option>
-                                   <option>3 months</option>
-                                   <option>6 months</option>
-                                   <option>Ongoing</option>
-                               </select>
+                               <input type="text" value={duration} onChange={e=>setDuration(e.target.value)} placeholder="e.g. 1 month" className="w-full border border-slate-300 p-2 text-sm rounded shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white" />
                            </div>
                            <div className="flex items-end">
                                <button onClick={addMedicine} className="bg-slate-800 text-white px-5 py-2 text-sm font-semibold rounded shadow-sm hover:bg-slate-900 h-[38px]">Add Rx</button>
@@ -324,7 +311,7 @@ export default function ConsultationMode() {
                                <tbody className="divide-y divide-slate-100">
                                    {medicinesList.map((m, idx) => (
                                        <tr key={idx} className="hover:bg-slate-50">
-                                           <td className="px-4 py-3 font-semibold text-slate-900">{m.medicineName}</td>
+                                           <td className="px-4 py-3 font-semibold text-slate-900">{m.name}</td>
                                            <td className="px-4 py-3 text-slate-700">{m.dosage}</td>
                                            <td className="px-4 py-3 text-slate-700">{m.frequency}</td>
                                            <td className="px-4 py-3 text-slate-700">{m.duration}</td>

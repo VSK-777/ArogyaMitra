@@ -23,6 +23,7 @@ public class DoctorService {
     private final ConsultationRepository consultationRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final AppointmentRepository appointmentRepository;
+    private final DocumentRepository documentRepository;
 
     public List<Appointment> getUpcomingAppointments(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
@@ -201,6 +202,21 @@ public class DoctorService {
             queueTokenRepository.save(token);
         });
         
+        // 5. Create Virtual Document for Prescription
+        com.hospital.entity.Document doc = new com.hospital.entity.Document();
+        doc.setPatient(appt.getPatient());
+        doc.setAppointment(appt);
+        doc.setFileName("Prescription_" + appt.getAppointmentId() + ".pdf");
+        doc.setContentType("application/pdf");
+        doc.setFileSize(0L);
+        doc.setStoragePath("virtual://" + appt.getAppointmentId());
+        doc.setDocumentType("CONSULTATION_SUMMARY");
+        doc.setUploadedBy("DOCTOR");
+        doc.setUploadedAt(LocalDateTime.now());
+        doc.setStatus("ACTIVE");
+        doc.setProcessingStatus("COMPLETED");
+        documentRepository.save(doc);
+
         return consultation;
     }
 }
