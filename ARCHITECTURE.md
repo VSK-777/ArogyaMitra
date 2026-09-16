@@ -24,13 +24,12 @@ graph TD
     F --> H
     G --> H
     
-    H --> I[("MySQL / PostgreSQL")]
+    H --> I[("PostgreSQL")]
     
     H -.->|Real-time Queue| J["WebSockets / STOMP"]
-    H -.->|Speech-to-Text| K["Gemini Speech-to-Text AI"]
-    H -.->|Clinical Summaries| L["Python AI Microservice (FastAPI + HuggingFace)"]
-    L -.-> N[("Local ML Models")]
-    H -.->|File Storage| M["MinIO / S3 Storage"]
+    H -.->|Speech-to-Text| K["Gemini AI (Speech-to-Text)"]
+    H -.->|Clinical Summaries| L["Native Java AI (LangChain4j + Gemini)"]
+    H -.->|File Storage| M["Supabase / S3 Storage"]
 ```
 
 ### 1.2 The "Appointment ID" vs "Token" Paradigm
