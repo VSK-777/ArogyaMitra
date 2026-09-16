@@ -64,3 +64,13 @@ DbCheck.java
 /Additional Projects/
 medical_summarizer_data/
 python-ai/
+
+# Dead Code
+frontend/src/modules/patient/AadhaarVerification.tsx
+hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java
+hospital-backend/src/main/java/com/hospital/service/AadhaarAppToAppService.java
+hospital-backend/src/main/java/com/hospital/service/AadhaarVerificationService.java
+hospital-backend/src/main/java/com/hospital/service/OfflineAadhaarVerificationService.java
+hospital-backend/src/main/java/com/hospital/entity/AadhaarVerificationTransaction.java
+hospital-backend/src/main/java/com/hospital/repository/AadhaarVerificationTransactionRepository.java
+hospital-backend/src/main/java/com/hospital/dto/ConsultationRequest.java
