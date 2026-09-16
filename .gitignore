@@ -1,42 +1,64 @@
-# Java/Spring Boot
+# Java / Spring Boot
 hospital-backend/target/
 hospital-backend/*.jar
 hospital-backend/*.war
 hospital-backend/.mvn/wrapper/maven-wrapper.jar
 hospital-backend/logs/
 
-# Frontend/Node
+# Frontend / Node
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 frontend/*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Env files
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+.env.python
+*.ipynb_checkpoints/
+
+# Env files (excluding .env.example)
 .env
-*.env
 .env.*
+!.env.example
+*.env
 
-# IDEs
+# IDEs and Editors
 .idea/
 .vscode/
 *.swp
 *.iml
 .metadata/
+.cursor/
 
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-#other files
+# Scratch and Temporary files
+scratch_*
+scratch.patch
+*.log
+*.tmp
+*.temp
+
+# Other
 *.pdf
-
 doctor-info.md
 DbCheck.java
-
-#other folders
-.agents
-.claude
-.vscode 
-.agent
-.cursor
-
-/Additional Projects
-
-/medical_summarizer_data *.ipynb
+.agents/
+.claude/
+.agent/
+/Additional Projects/
