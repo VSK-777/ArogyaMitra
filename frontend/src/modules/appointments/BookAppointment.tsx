@@ -6,6 +6,22 @@ import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, Trans } from 'react-i18next';
 
+const formatDisplayDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+const formatDisplayTime = (timeStr: string) => {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':');
+  let hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+  return `${hour.toString().padStart(2, '0')}:${m} ${ampm}`;
+};
+
 export default function BookAppointment() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -353,7 +369,7 @@ export default function BookAppointment() {
             <h2 className="text-xl font-bold text-green-600 mb-2">{t('bookAppointment.confirm_pay')}</h2>
             <p className="text-slate-600"><Trans
                 i18nKey="bookAppointment.about_to_book"
-                values={{ doctor: selectedDoctor?.name, hospital: selectedHospital?.name, date: selectedDate, time: selectedSlot }}
+                values={{ doctor: selectedDoctor?.name, hospital: selectedHospital?.name, date: formatDisplayDate(selectedDate), time: formatDisplayTime(selectedSlot) }}
                 components={{ bold: <strong /> }}
               /></p>
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-4 max-w-sm mx-auto text-left">
@@ -400,7 +416,7 @@ export default function BookAppointment() {
                 </div>
                 <div>
                     <p className="text-sm text-slate-500">{t('bookAppointment.date_time')}</p>
-                    <p className="font-semibold text-slate-900">{confirmedData.appointmentDate} {t('bookAppointment.at')} {confirmedData.slotStart}</p>
+                    <p className="font-semibold text-slate-900">{formatDisplayDate(confirmedData.appointmentDate)} {t('bookAppointment.at')} {formatDisplayTime(confirmedData.slotStart)}</p>
                 </div>
                 
                 <div className="col-span-1 sm:col-span-2 border-t border-slate-200 pt-4 mt-2"></div>
