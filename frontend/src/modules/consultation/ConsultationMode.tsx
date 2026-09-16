@@ -60,7 +60,7 @@ export default function ConsultationMode() {
   const [medicine, setMedicine] = useState('');
   const [dosage, setDosage] = useState('');
   const [frequency, setFrequency] = useState('Once a day');
-  const [duration, setDuration] = useState('5 days');
+  const [duration, setDuration] = useState('');
   const [medicinesList, setMedicinesList] = useState<any[]>([]);
 
   const addMedicine = () => {

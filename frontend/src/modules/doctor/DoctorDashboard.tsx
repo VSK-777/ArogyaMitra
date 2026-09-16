@@ -55,7 +55,15 @@ function SummaryModal({ aptId, onClose }: { aptId: string; onClose: () => void }
                      </div>
                      <div className="text-right">
                         <p className="text-sm font-medium text-slate-900">Date: {data.consultation.appointment?.appointmentDate}</p>
-                        <p className="text-sm text-slate-600">Time: {data.consultation.appointment?.appointmentTime}</p>
+                        <p className="text-sm text-slate-600">
+                          Time: {(() => {
+                             const t = data.consultation.appointment?.slotStart;
+                             if (!t) return 'N/A';
+                             if (Array.isArray(t)) return t.slice(0,2).map(n => String(n).padStart(2, '0')).join(':');
+                             if (typeof t === 'string') return t.substring(0, 5);
+                             return 'N/A';
+                          })()}
+                        </p>
                      </div>
                   </div>
 
