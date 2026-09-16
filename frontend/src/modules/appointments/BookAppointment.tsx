@@ -369,7 +369,7 @@ export default function BookAppointment() {
             <h2 className="text-xl font-bold text-green-600 mb-2">{t('bookAppointment.confirm_pay')}</h2>
             <p className="text-slate-600"><Trans
                 i18nKey="bookAppointment.about_to_book"
-                values={{ doctor: selectedDoctor?.name, hospital: selectedHospital?.name, date: formatDisplayDate(selectedDate), time: formatDisplayTime(selectedSlot) }}
+                values={{ doctor: `${selectedDoctor?.name} (${selectedDoctor?.specialization})`, hospital: selectedHospital?.name, date: formatDisplayDate(selectedDate), time: formatDisplayTime(selectedSlot) }}
                 components={{ bold: <strong /> }}
               /></p>
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-4 max-w-sm mx-auto text-left">
@@ -413,6 +413,7 @@ export default function BookAppointment() {
                 <div>
                     <p className="text-sm text-slate-500">{t('bookAppointment.doctor')}</p>
                     <p className="font-semibold text-slate-900">{confirmedData.doctorName}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{selectedDoctor?.specialization} • {selectedDoctor?.qualification}</p>
                 </div>
                 <div>
                     <p className="text-sm text-slate-500">{t('bookAppointment.date_time')}</p>
