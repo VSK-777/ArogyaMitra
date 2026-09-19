@@ -1,43 +1,3 @@
-# Java / Spring Boot
-hospital-backend/target/
-hospital-backend/*.jar
-hospital-backend/*.war
-hospital-backend/.mvn/wrapper/maven-wrapper.jar
-hospital-backend/logs/
-
-# Frontend / Node
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/*.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-venv/
-env/
-.venv/
-.env.python
-*.ipynb_checkpoints/
-
-# Env files (excluding .env.example)
-.env
-.env.*
-!.env.example
-*.env
-
-# IDEs and Editors
-.idea/
-.vscode/
-*.swp
-*.iml
-.metadata/
-.cursor/
-
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -46,31 +6,28 @@ env/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Scratch and Temporary files
-scratch_*
-scratch.patch
-*.log
+# IDEs and Editors
+.idea/
+.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Temporary & Log files
+*.bak
 *.tmp
-*.temp
-
-# Other
-*.pdf
-doctor-info.md
-DbCheck.java
-.agents/
-.claude/
-.agent/
-/Additional Projects/
-medical_summarizer_data/
-python-ai/
-
-# Dead Code
-frontend/src/modules/patient/AadhaarVerification.tsx
-hospital-backend/src/main/java/com/hospital/controller/AadhaarVerificationController.java
-hospital-backend/src/main/java/com/hospital/service/AadhaarAppToAppService.java
-hospital-backend/src/main/java/com/hospital/service/AadhaarVerificationService.java
-hospital-backend/src/main/java/com/hospital/service/OfflineAadhaarVerificationService.java
-hospital-backend/src/main/java/com/hospital/entity/AadhaarVerificationTransaction.java
-hospital-backend/src/main/java/com/hospital/repository/AadhaarVerificationTransactionRepository.java
-hospital-backend/src/main/java/com/hospital/dto/ConsultationRequest.java
+*.log
