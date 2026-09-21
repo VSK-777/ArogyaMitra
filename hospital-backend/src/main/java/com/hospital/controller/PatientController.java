@@ -61,7 +61,8 @@ public class PatientController {
         List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.getId());
         
         List<Appointment> upcoming = appointments.stream()
-            .filter(a -> a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED || a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING)
+            .filter(a -> (a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED || a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING))
+            .filter(a -> !a.getAppointmentDate().isBefore(java.time.LocalDate.now(java.time.ZoneId.of("Asia/Kolkata"))))
             .collect(Collectors.toList());
             
         List<Appointment> visited = appointments.stream()

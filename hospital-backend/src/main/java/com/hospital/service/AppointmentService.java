@@ -50,10 +50,9 @@ public class AppointmentService {
         boolean changed = false;
 
         for (Appointment a : appointments) {
-            if ((a.getStatus() == AppointmentStatus.BOOKED || 
+            if (a.getStatus() == AppointmentStatus.BOOKED || 
                  a.getStatus() == AppointmentStatus.REASSIGNED || 
-                 a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING) 
-                && a.getCheckInStatus() == com.hospital.entity.CheckInStatus.NOT_CHECKED_IN) {
+                 a.getStatus() == AppointmentStatus.REASSIGNMENT_PENDING) {
                 
                 boolean isPast = a.getAppointmentDate().isBefore(today) || 
                                  (a.getAppointmentDate().isEqual(today) && a.getSlotStart() != null && 
