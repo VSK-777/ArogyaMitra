@@ -218,7 +218,7 @@ export default function DoctorDashboard() {
                                 {q.appointment?.patient?.fullName}
                                 {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
                               </p>
-                              <p className="text-sm font-medium text-slate-700">Type: {q.appointment?.appointmentType} • Queue: T-{q.tokenNumber}</p>
+                              <p className="text-sm font-medium text-slate-700">Queue: T-{q.tokenNumber}</p>
                           </div>
                           <button onClick={() => navigate(`/doctor/consultation/${q.appointment?.appointmentId}`)} className="bg-blue-700 text-white px-6 py-2.5 rounded-md font-semibold hover:bg-blue-800">Resume / Complete</button>
                       </div>
@@ -316,7 +316,7 @@ export default function DoctorDashboard() {
                                   {q.appointment?.patient?.fullName}
                                   {q.appointment?.patient?.aadhaarNumber && <span className="text-sm font-normal text-slate-500 ml-2">Aadhaar: {q.appointment.patient.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</span>}
                                 </p>
-                                <p className="text-sm text-slate-500 font-medium">Time: {q.appointment?.slotStart?.substring(0,5) || 'N/A'} • Type: {q.appointment?.appointmentType}</p>
+                                <p className="text-sm text-slate-500 font-medium">Time: {q.appointment?.slotStart?.substring(0,5) || 'N/A'}</p>
                             </div>
                         </div>
                         <div className="flex gap-2 items-center">
