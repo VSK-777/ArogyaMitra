@@ -160,9 +160,16 @@ public class DataSeeder implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         for (User user : users) {
             if (user.getRole() == Role.ROLE_DOCTOR) {
-                // If it's one of the old seeded doctors, their mobile is 9876543210 etc.
-                // We just reset all doctor passwords to 'doctor123' for simplicity and length.
                 user.setPasswordHash(passwordEncoder.encode("doctor123"));
+                userRepository.save(user);
+            } else if (user.getRole() == Role.ROLE_RECEPTIONIST) {
+                user.setPasswordHash(passwordEncoder.encode("receptionist123"));
+                userRepository.save(user);
+            } else if (user.getRole() == Role.ROLE_ADMIN) {
+                user.setPasswordHash(passwordEncoder.encode("admin123"));
+                userRepository.save(user);
+            } else if (user.getRole() == Role.ROLE_PATIENT && "9999999999".equals(user.getMobile())) {
+                user.setPasswordHash(passwordEncoder.encode("patient123"));
                 userRepository.save(user);
             }
         }
