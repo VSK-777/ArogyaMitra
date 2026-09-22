@@ -53,3 +53,5 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Departments", departmentRepository.findAll()));
     }
 }
+
+
