@@ -8,17 +8,15 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, name } = useAuth();
+  const { logout, name, role: authRole } = useAuth();
   const { t, i18n } = useTranslation();
   
-  const role = location.pathname.includes('/doctor') ? 'Doctor' 
-    : location.pathname.includes('/admin') ? 'Admin' 
-    : location.pathname.includes('/receptionist') ? 'Receptionist'
-    : 'Patient';
+  let role = 'Patient';
+  if (authRole === 'ROLE_DOCTOR') role = 'Doctor';
+  else if (authRole === 'ROLE_ADMIN') role = 'Admin';
+  else if (authRole === 'ROLE_RECEPTIONIST') role = 'Receptionist';
 
   const handleLogout = () => {
-    
-    
     logout();
   };
 
@@ -34,9 +32,9 @@ export default function Layout() {
       case 'Admin':
         return [
           { name: t('layout.hospital_management'), path: '/admin/dashboard', icon: Activity },
-          { name: t('layout.staff_management'), path: '#', icon: Users },
+          { name: t('layout.staff_management'), path: '/admin/staff', icon: Users },
           { name: t('layout.doctor_reassignments'), path: '/admin/reassignments', icon: ClipboardList },
-          { name: t('layout.system_logs'), path: '#', icon: Search },
+          { name: t('layout.system_logs'), path: '/admin/logs', icon: Search },
         ];
       case 'Receptionist':
         return [
