@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/reassignment")
@@ -17,6 +18,20 @@ import java.util.Map;
 public class ReassignmentController {
     
     private final ReassignmentService reassignmentService;
+    private final com.hospital.repository.DoctorRepository doctorRepository;
+
+    @GetMapping("/doctors")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getDoctorsForReassignment() {
+        // Return doctors mapped for UI dropdowns
+        List<Map<String, Object>> docs = doctorRepository.findAll().stream().map(d -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", d.getId());
+            m.put("user", Map.of("name", d.getUser().getName()));
+            m.put("department", Map.of("name", d.getDepartment().getName()));
+            return m;
+        }).toList();
+        return ResponseEntity.ok(ApiResponse.success("Doctors retrieved", docs));
+    }
 
     @GetMapping("/affected")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAffectedAppointments(

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, UserPlus, Loader2 } from 'lucide-react';
 import { receptionistApi } from '../../api/receptionistApi';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
+import WalkInBooking from './WalkInBooking';
 
 export default function ReceptionistDashboard() {
   const [mobile, setMobile] = useState('');
@@ -85,6 +86,7 @@ export default function ReceptionistDashboard() {
                       </div>
                   </div>
               )}
+              {patient && <WalkInBooking patient={patient} />}
           </div>
           
           <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">

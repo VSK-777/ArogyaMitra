@@ -16,7 +16,7 @@ export default function ReassignmentManager() {
 
     useEffect(() => {
         // Fetch all doctors for the dropdown
-        apiClient.get("/api/admin/doctors").then((res: any) => {
+        apiClient.get("/api/reassignment/doctors").then((res: any) => {
             if (res.data.success) {
                 // Map to match the expected UI fields
                 const formatted = res.data.data.map((d: any) => ({
