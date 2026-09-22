@@ -56,24 +56,107 @@ export default function WalkInBooking({ patient }: { patient: any }) {
         setLoading(true);
         setError('');
         try {
-            const payload = {
-                hospitalId: selectedHospital,
-                departmentId: selectedDepartment,
-                doctorId: selectedDoctor,
-                appointmentDate: selectedDate,
-                slotStart: selectedSlot,
-                patientMobile: patient.mobile
-            };
-            const res = await receptionistApi.bookWalkIn(payload);
-            if (res.success) {
-                setSuccessData(res.data);
-                setStep(2);
-            } else {
-                setError(res.message || "Failed to book");
+            const RZP_KEY: string | undefined = import.meta.env.VITE_RAZORPAY_KEY_ID;
+            
+            // If no Razorpay key is configured, bypass payment and book directly
+            if (!RZP_KEY || RZP_KEY.trim() === '') {
+                const payload = {
+                    hospitalId: selectedHospital,
+                    departmentId: selectedDepartment,
+                    doctorId: selectedDoctor,
+                    appointmentDate: selectedDate,
+                    slotStart: selectedSlot,
+                    patientMobile: patient.mobile,
+                    razorpayPaymentId: "mock_payment_" + Math.random().toString(36).substring(7),
+                    razorpayOrderId: "mock_order_" + Math.random().toString(36).substring(7),
+                    razorpaySignature: "mock_signature"
+                };
+                const res = await receptionistApi.bookWalkIn(payload);
+                if (res.success) {
+                    setSuccessData(res.data);
+                    setStep(2);
+                } else {
+                    setError(res.message || "Failed to book");
+                }
+                setLoading(false);
+                return;
             }
+
+            // Razorpay Payment Flow
+            const { paymentApi } = await import('../../api/paymentApi');
+            const orderRes = await paymentApi.createOrder(50000); // 500 INR
+            if (!orderRes.success) {
+                setError('Failed to initialize payment.');
+                setLoading(false);
+                return;
+            }
+
+            const options = {
+                key: RZP_KEY,
+                amount: orderRes.data.amount,
+                currency: orderRes.data.currency,
+                name: 'Hospital Walk-In Registration',
+                description: 'Consultation Fee',
+                order_id: orderRes.data.order_id,
+                handler: async function (response: any) {
+                    try {
+                        const verifyRes = await paymentApi.verifyPayment({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        });
+
+                        if (verifyRes.success) {
+                            const payload = {
+                                hospitalId: selectedHospital,
+                                departmentId: selectedDepartment,
+                                doctorId: selectedDoctor,
+                                appointmentDate: selectedDate,
+                                slotStart: selectedSlot,
+                                patientMobile: patient.mobile,
+                                razorpayPaymentId: response.razorpay_payment_id,
+                                razorpayOrderId: response.razorpay_order_id,
+                                razorpaySignature: response.razorpay_signature
+                            };
+                            const res = await receptionistApi.bookWalkIn(payload);
+                            if(res.success) {
+                                setSuccessData(res.data);
+                                setStep(2);
+                            } else {
+                                setError(res.message || 'Unable to book the appointment after payment.');
+                            }
+                        } else {
+                            setError('Payment verification failed.');
+                        }
+                    } catch (e: any) {
+                        setError(e.response?.data?.message || e.message || 'Payment verification error.');
+                    } finally {
+                        setLoading(false);
+                    }
+                },
+                prefill: {
+                    name: patient.fullName,
+                    contact: patient.mobile
+                },
+                theme: {
+                    color: '#2563eb'
+                },
+                modal: {
+                    ondismiss: function() {
+                        setLoading(false);
+                    }
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                setError(`Payment failed: ${response.error.description}`);
+                setLoading(false);
+            });
+            rzp.open();
         } catch (e: any) {
-            setError(e.response?.data?.message || "Failed to book");
-        } finally {
+            console.error("Booking error:", e);
+            setError(e.response?.data?.message || e.message || "Failed to book");
             setLoading(false);
         }
     };
