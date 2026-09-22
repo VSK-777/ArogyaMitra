@@ -120,7 +120,8 @@ export default function ReceptionistDashboard() {
                                       <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">{apt.status}</span>
                                   </div>
                                   <p className="text-slate-600">Date: {apt.appointmentDate} at {apt.slotStart}</p>
-                                  <p className="text-slate-600">Doctor: {apt.doctor?.name || 'Assigned'} • {apt.doctor?.hospital?.name || 'Hospital'}</p>
+                                  <p className="text-slate-600">Doctor: {apt.doctor?.name || 'Assigned'}</p>
+                                  <p className="text-slate-600">Hospital: {apt.doctor?.hospital?.name || 'Hospital'}</p>
                                   {apt.status === 'CONFIRMED' && (
                                       <div className="mt-2 bg-blue-50 border border-blue-200 p-2 rounded flex justify-between items-center">
                                           <span className="font-bold text-blue-900 flex items-center gap-1 text-xs"><Ticket className="w-4 h-4"/> Token</span>
