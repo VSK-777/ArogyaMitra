@@ -45,12 +45,35 @@ export default function StaffManagement() {
                         {users.map(u => (
                             <div key={u.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
                                 <div>
-                                    <p className="font-bold text-slate-900">{u.name}</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-slate-900">{u.name}</p>
+                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase ${u.active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                                            {u.active ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
                                     <p className="text-sm text-slate-500">{u.mobile}</p>
                                 </div>
-                                <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                                    {u.role.replace('ROLE_', '')}
-                                </span>
+                                <div className="flex items-center gap-3">
+                                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                                        {u.role.replace('ROLE_', '')}
+                                    </span>
+                                    <button 
+                                        onClick={async () => {
+                                            try {
+                                                const res = u.active ? await adminApi.deactivateUser(u.id) : await adminApi.activateUser(u.id);
+                                                if (res.success) {
+                                                    toast.success(res.message);
+                                                    setUsers(users.map(user => user.id === u.id ? {...user, active: !u.active} : user));
+                                                } else toast.error(res.message);
+                                            } catch (e) {
+                                                toast.error(getUserFriendlyMessage(e));
+                                            }
+                                        }}
+                                        className={`text-xs px-2 py-1 rounded border font-medium ${u.active ? 'text-red-700 border-red-200 hover:bg-red-50' : 'text-emerald-700 border-emerald-200 hover:bg-emerald-50'}`}
+                                    >
+                                        {u.active ? 'Deactivate' : 'Activate'}
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

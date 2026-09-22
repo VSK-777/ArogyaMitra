@@ -43,6 +43,20 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Users", userRepository.findAll()));
     }
 
+    @PutMapping("/users/{id}/activate")
+    public ResponseEntity<ApiResponse<User>> activateUser(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(true);
+        return ResponseEntity.ok(ApiResponse.success("User activated", userRepository.save(user)));
+    }
+
+    @PutMapping("/users/{id}/deactivate")
+    public ResponseEntity<ApiResponse<User>> deactivateUser(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(false);
+        return ResponseEntity.ok(ApiResponse.success("User deactivated", userRepository.save(user)));
+    }
+
     @GetMapping("/doctors")
     public ResponseEntity<ApiResponse<List<Doctor>>> getAllDoctors() {
         return ResponseEntity.ok(ApiResponse.success("Doctors", doctorRepository.findAll()));
