@@ -28,7 +28,7 @@ export default function WalkInBooking({ patient }: { patient: any }) {
 
     useEffect(() => {
         if (selectedHospital) {
-            patientApi.getDepartments(selectedHospital).then(res => {
+            patientApi.getDepartments(Number(selectedHospital)).then(res => {
                 if (res.data) setDepartments(res.data);
             });
         }
@@ -36,7 +36,7 @@ export default function WalkInBooking({ patient }: { patient: any }) {
 
     useEffect(() => {
         if (selectedDepartment) {
-            patientApi.getDoctors(selectedDepartment).then(res => {
+            patientApi.getDoctors(Number(selectedDepartment)).then(res => {
                 if (res.data) setDoctors(res.data);
             });
         }
