@@ -66,18 +66,18 @@ export default function AdminDashboard() {
                   <tbody className="divide-y divide-slate-100">
                       <tr className="hover:bg-slate-50">
                           <td className="px-5 py-3 font-medium text-slate-900">Spring Boot API</td>
-                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Operational</span></td>
-                          <td className="px-5 py-3 text-slate-600">42ms</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{data?.infrastructure?.apiStatus || 'Operational'}</span></td>
+                          <td className="px-5 py-3 text-slate-600">{data?.infrastructure?.apiLatency || '...'}</td>
                       </tr>
                       <tr className="hover:bg-slate-50">
                           <td className="px-5 py-3 font-medium text-slate-900">PostgreSQL Cluster</td>
-                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Operational</span></td>
-                          <td className="px-5 py-3 text-slate-600">12ms</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{data?.infrastructure?.postgresStatus || 'Operational'}</span></td>
+                          <td className="px-5 py-3 text-slate-600">{data?.infrastructure?.postgresLatency || '...'}</td>
                       </tr>
                       <tr className="hover:bg-slate-50">
                           <td className="px-5 py-3 font-medium text-slate-900">Python AI Service</td>
-                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Connected</span></td>
-                          <td className="px-5 py-3 text-slate-600">1.2s avg inference</td>
+                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{data?.infrastructure?.aiStatus || 'Connected'}</span></td>
+                          <td className="px-5 py-3 text-slate-600">{data?.infrastructure?.aiLatency || '...'}</td>
                       </tr>
                   </tbody>
               </table>
