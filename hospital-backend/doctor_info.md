@@ -43,6 +43,15 @@ All passwords have been standardized to ensure easy testing while complying with
 - Dr. Divya Joshi - Mobile: `9876543228`
 - Dr. Amit Verma - Mobile: `9876543229`
 
+*ENT (Auto-Generated)*
+- Dr. Rahul Singh - Mobile: `9000100050`
+
+*Gynecology (Auto-Generated)*
+- Dr. Vikram Rao - Mobile: `9000100060`
+
+*Dermatology (Auto-Generated)*
+- Dr. Pooja Sharma - Mobile: `9000100070`
+
 ---
 
 ## 2. Valley Care Clinic (HSP-002)
@@ -51,8 +60,29 @@ All passwords have been standardized to ensure easy testing while complying with
 - Simran Kaur - Mobile: `8111111111`
 
 **Doctors (Password: `doctor123`):**
-- Dr. Kavita Singh (Cardiology) - Mobile: `9111111111`
-- Dr. Rohan Das (Dermatology) - Mobile: `9222222222`
+*Cardiology*
+- Dr. Kavita Singh - Mobile: `9111111111`
+
+*Orthopedics (Auto-Generated)*
+- Dr. Arvind Menon - Mobile: `9000200010`
+
+*General Medicine (Auto-Generated)*
+- Dr. Amit Iyer - Mobile: `9000200020`
+
+*Neurology (Auto-Generated)*
+- Dr. Sneha Joshi - Mobile: `9000200030`
+
+*Pediatrics (Auto-Generated)*
+- Dr. Anjali Patil - Mobile: `9000200040`
+
+*ENT (Auto-Generated)*
+- Dr. Suresh Mehta - Mobile: `9000200050`
+
+*Gynecology (Auto-Generated)*
+- Dr. Deepa Seth - Mobile: `9000200060`
+
+*Dermatology*
+- Dr. Rohan Das - Mobile: `9222222222`
 
 ---
 
@@ -62,29 +92,27 @@ All passwords have been standardized to ensure easy testing while complying with
 - Neha Gupta - Mobile: `8222222222`
 
 **Doctors (Password: `doctor123`):**
-- Dr. Vikram Seth (Orthopedics) - Mobile: `9333333333`
-- Dr. Anjali Menon (ENT) - Mobile: `9444444444`
-- Dr. Naveen Kumar (Orthopedics) - Mobile: `9555555555`
+*Cardiology (Auto-Generated)*
+- Dr. Priya Das - Mobile: `9000300000`
 
----
+*Orthopedics*
+- Dr. Vikram Seth - Mobile: `9333333333`
+- Dr. Naveen Kumar - Mobile: `9555555555`
 
-## Global Hospital Specialists (Auto-Generated)
+*General Medicine (Auto-Generated)*
+- Dr. Rohan Rao - Mobile: `9000300020`
 
-**Note:** To ensure every hospital operates comprehensively, missing core departments have been automatically seeded with a specialist doctor for every single hospital across the platform.
+*Neurology (Auto-Generated)*
+- Dr. Kavita Sharma - Mobile: `9000300030`
 
-**Credentials for auto-generated doctors:**
-- **Name format:** Realistic Indian Name (e.g., Dr. Sneha Reddy)
-- **Mobile format:** `9000[Hospital Index]000[Department Index 0-7]0`
-- **Password:** `doctor123`
+*Pediatrics (Auto-Generated)*
+- Dr. Arun Desai - Mobile: `9000300040`
 
-*Departments Array Index:*
-0. Cardiology
-1. Orthopedics
-2. General Medicine
-3. Neurology
-4. Pediatrics
-5. ENT
-6. Gynecology
-7. Dermatology
+*ENT*
+- Dr. Anjali Menon - Mobile: `9444444444`
 
-*(Example: To log in as the auto-generated ENT specialist for Hospital 2, the mobile number is `9000200050`)*
+*Gynecology (Auto-Generated)*
+- Dr. Ramesh Reddy - Mobile: `9000300060`
+
+*Dermatology (Auto-Generated)*
+- Dr. Rahul Kapoor - Mobile: `9000300070`
