@@ -19,3 +19,5 @@ export const receptionistApi = {
         return response.data;
     }
 };
+
+
