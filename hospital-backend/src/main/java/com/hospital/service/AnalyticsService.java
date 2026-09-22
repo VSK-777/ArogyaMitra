@@ -60,10 +60,6 @@ public class AnalyticsService {
         infrastructure.put("apiLatency", (dbLatency / 2 + 1) + "ms");
         infrastructure.put("apiStatus", "Operational");
         
-        // AI Service
-        infrastructure.put("aiLatency", "1.2s avg inference");
-        infrastructure.put("aiStatus", "Connected");
-        
         data.put("infrastructure", infrastructure);
         
         return data;

@@ -74,11 +74,6 @@ export default function AdminDashboard() {
                           <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{data?.infrastructure?.postgresStatus || 'Operational'}</span></td>
                           <td className="px-5 py-3 text-slate-600">{data?.infrastructure?.postgresLatency || '...'}</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                          <td className="px-5 py-3 font-medium text-slate-900">Python AI Service</td>
-                          <td className="px-5 py-3"><span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/20">{data?.infrastructure?.aiStatus || 'Connected'}</span></td>
-                          <td className="px-5 py-3 text-slate-600">{data?.infrastructure?.aiLatency || '...'}</td>
-                      </tr>
                   </tbody>
               </table>
           </div>
