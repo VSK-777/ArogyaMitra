@@ -11,12 +11,14 @@ import com.hospital.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.hospital.repository.AppointmentRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.hospital.util.MobileUtils;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/receptionist")
@@ -28,6 +30,17 @@ public class ReceptionistController {
     private final AppointmentService appointmentService;
     private final AuditService auditService;
     private final PasswordEncoder passwordEncoder;
+    private final AppointmentRepository appointmentRepository;
+
+    @GetMapping("/patients/{mobile}/appointments")
+    public ResponseEntity<ApiResponse<List<Appointment>>> getPatientAppointments(@PathVariable String mobile) {
+        Optional<Patient> patient = patientRepository.findByMobile(MobileUtils.normalizeMobile(mobile));
+        if (patient.isPresent()) {
+            List<Appointment> appointments = appointmentRepository.findByPatient_Id(patient.get().getId());
+            return ResponseEntity.ok(ApiResponse.success("Appointments found", appointments));
+        }
+        return ResponseEntity.status(404).body(ApiResponse.error("Patient not found", "NOT_FOUND"));
+    }
 
     @GetMapping("/patients/search")
     public ResponseEntity<ApiResponse<Patient>> searchPatient(
@@ -78,6 +91,7 @@ public class ReceptionistController {
                 .mobile(mobile)
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
+                .aadhaarNumber(request.getAadhaarNumber())
                 .build();
         patient = patientRepository.save(patient);
 
@@ -109,5 +123,6 @@ public class ReceptionistController {
         private String mobile;
         private java.time.LocalDate dateOfBirth;
         private String gender;
+        private String aadhaarNumber;
     }
 }

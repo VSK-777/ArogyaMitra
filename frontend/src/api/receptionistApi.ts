@@ -13,5 +13,9 @@ export const receptionistApi = {
     bookWalkIn: async (data: any): Promise<ApiResponse<any>> => {
         const response = await apiClient.post('/api/receptionist/appointments/walkin', data);
         return response.data;
+    },
+    getPatientAppointments: async (mobile: string): Promise<ApiResponse<any>> => {
+        const response = await apiClient.get(`/api/receptionist/patients/${mobile}/appointments`);
+        return response.data;
     }
 };
