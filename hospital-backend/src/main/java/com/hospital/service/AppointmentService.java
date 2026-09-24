@@ -129,20 +129,20 @@ public class AppointmentService {
                 ? request.getAppointmentType()
                 : AppointmentType.ONLINE;
 
-        // 7. Find available 15-minute slot in the requested hour
+        // 7. Find available 10-minute slot in the requested hour
         int hour = request.getSlotStart().getHour();
         java.util.List<Appointment> existingInHour = appointmentRepository.findByDoctor_IdAndAppointmentDate(doctor.getId(), request.getAppointmentDate())
             .stream()
             .filter(a -> a.getStatus() == AppointmentStatus.BOOKED && a.getSlotStart() != null && a.getSlotStart().getHour() == hour)
             .toList();
 
-        if (existingInHour.size() >= 4) {
+        if (existingInHour.size() >= 6) {
             throw new IllegalStateException("This time slot is fully booked. Please select another slot.");
         }
 
         java.time.LocalTime exactSlotStart = null;
-        for (int i = 0; i < 4; i++) {
-            java.time.LocalTime candidate = request.getSlotStart().withMinute(i * 15).withSecond(0).withNano(0);
+        for (int i = 0; i < 6; i++) {
+            java.time.LocalTime candidate = request.getSlotStart().withMinute(i * 10).withSecond(0).withNano(0);
             boolean taken = existingInHour.stream().anyMatch(a -> a.getSlotStart().equals(candidate));
             if (!taken) {
                 exactSlotStart = candidate;
@@ -154,7 +154,7 @@ public class AppointmentService {
             throw new IllegalStateException("This time slot is fully booked. Please select another slot.");
         }
 
-        java.time.LocalTime exactSlotEnd = exactSlotStart.plusMinutes(15);
+        java.time.LocalTime exactSlotEnd = exactSlotStart.plusMinutes(10);
 
         // 9. Create the appointment
         String dateStr = request.getAppointmentDate().format(DateTimeFormatter.ofPattern("yyyyMMdd"));

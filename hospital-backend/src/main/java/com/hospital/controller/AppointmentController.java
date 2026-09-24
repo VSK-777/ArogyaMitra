@@ -48,7 +48,7 @@ public class AppointmentController {
                 ));
 
         java.util.List<String> bookedSlots = hourCounts.entrySet().stream()
-                .filter(entry -> entry.getValue() >= 4)
+                .filter(entry -> entry.getValue() >= 6)
                 .map(entry -> String.format("%02d:00", entry.getKey()))
                 .toList();
 

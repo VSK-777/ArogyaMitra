@@ -202,7 +202,7 @@ public class ReassignmentService {
         // Assume working hours 9 AM to 5 PM (17:00)
         for (int hour = 9; hour < 17; hour++) {
             long count = hourCounts.getOrDefault(hour, 0L);
-            if (count < 4) { // Max 4 per hour
+            if (count < 6) { // Max 6 per hour
                 available.add(String.format("%02d:00", hour));
             }
         }
@@ -254,13 +254,13 @@ public class ReassignmentService {
             .filter(a -> a.getSlotStart() != null && a.getSlotStart().getHour() == requestedHour.getHour())
             .toList();
             
-        if (existingInHour.size() >= 4) {
+        if (existingInHour.size() >= 6) {
             throw new RuntimeException("That appointment slot is no longer available.");
         }
 
         LocalTime exactSlotStart = null;
-        for (int i = 0; i < 4; i++) {
-            LocalTime candidate = requestedHour.withMinute(i * 15).withSecond(0).withNano(0);
+        for (int i = 0; i < 6; i++) {
+            LocalTime candidate = requestedHour.withMinute(i * 10).withSecond(0).withNano(0);
             boolean taken = existingInHour.stream().anyMatch(a -> candidate.equals(a.getSlotStart()));
             if (!taken) {
                 exactSlotStart = candidate;
@@ -269,10 +269,10 @@ public class ReassignmentService {
         }
         
         if (exactSlotStart == null) {
-            throw new RuntimeException("No exact 15-minute slot found within this hour.");
+            throw new RuntimeException("No exact 10-minute slot found within this hour.");
         }
 
-        LocalTime newSlotEnd = exactSlotStart.plusMinutes(15);
+        LocalTime newSlotEnd = exactSlotStart.plusMinutes(10);
         
         // Save History
         AppointmentReassignment history = AppointmentReassignment.builder()
