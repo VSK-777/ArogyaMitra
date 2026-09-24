@@ -18,11 +18,24 @@ const parseAiSummary = (text: string) => {
             isParsed: true,
             summary: extract('Summary'),
             symptoms: extract('Symptoms'),
-            diagnosis: extract('Potential Diagnosis/Impression'),
-            medications: extract('Current Medications'),
-            labValues: extract('Lab Values Mentioned')
+            diagnosis: extract('Diagnosis'),
+            medications: extract('Medications'),
+            labValues: extract('Lab Values')
         };
     }
+    
+    // Fallback parser if the AI uses different bullet points
+    if (cleanedText.includes('--- MEDICAL DOCUMENTS SUMMARY ---')) {
+         return {
+             isParsed: true,
+             summary: cleanedText,
+             symptoms: 'Aggregated from documents',
+             diagnosis: 'N/A',
+             medications: 'See document text',
+             labValues: 'See document text'
+         }
+    }
+    
     return { isParsed: false, raw: cleanedText };
 };
 

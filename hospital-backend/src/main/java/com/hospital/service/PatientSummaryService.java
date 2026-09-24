@@ -69,9 +69,9 @@ public class PatientSummaryService {
                 "Do not duplicate information. You MUST format your response exactly using these bullet points:\n" +
                 "• Summary: [Patient background, relevant history, and main concerns]\n" +
                 "• Symptoms: [Current symptoms from pre-consultation]\n" +
-                "• Potential Diagnosis/Impression: [Existing medical conditions and possible diagnosis]\n" +
-                "• Current Medications: [List of current medications]\n" +
-                "• Lab Values Mentioned: [Important laboratory findings from medical documents]\n\n" +
+                "• Diagnosis: [Existing medical conditions and possible diagnosis]\n" +
+                "• Medications: [List of current medications]\n" +
+                "• Lab Values: [Important laboratory findings from medical documents]\n\n" +
                 "--- PRE-CONSULTATION SUMMARY ---\n" + preConsultationSummary + "\n\n" +
                 "--- MEDICAL DOCUMENTS SUMMARY ---\n" + medicalDocumentsSummary;
 

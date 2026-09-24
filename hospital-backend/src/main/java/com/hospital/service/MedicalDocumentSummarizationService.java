@@ -1,142 +1,63 @@
 package com.hospital.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.ChatMessage;
-import dev.langchain4j.data.message.SystemMessage;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class MedicalDocumentSummarizationService {
 
     private final ObjectMapper objectMapper;
-    private ChatLanguageModel chatModel;
 
-    @Value("${DEFAULT_AI_PROVIDER:gemini}")
-    private String aiProvider;
-
-    @Value("${GEMINI_API_KEY:}")
-    private String geminiApiKey;
-
-    @Value("${GEMINI_MODEL:gemini-3.6-flash}")
-    private String geminiModel;
+    @Value("${PYTHON_AI_URL:http://localhost:8000}")
+    private String pythonAiUrl;
 
     public MedicalDocumentSummarizationService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    @PostConstruct
-    public void init() {
-        if ("gemini".equalsIgnoreCase(aiProvider) && geminiApiKey != null && !geminiApiKey.isEmpty() && !geminiApiKey.contains("YOUR_GEMINI_API_KEY")) {
-            this.chatModel = GoogleAiGeminiChatModel.builder()
-                    .apiKey(geminiApiKey)
-                    .modelName(geminiModel)
-                    .temperature(0.0) // Deterministic output
-                    .build();
-            log.info("Initialized MedicalDocumentSummarizationService with Gemini model: {}", geminiModel);
-        } else {
-            log.warn("MedicalDocumentSummarizationService: No valid configuration found for AI Provider: {}. Summarization will fail.", aiProvider);
-        }
-    }
-
     public String summarizeDocument(String documentText) {
-        if (chatModel == null) {
-            throw new IllegalStateException("AI Model is not configured for medical summarization.");
-        }
-
-        String systemPrompt = "You are an expert medical AI assistant. Your task is to intelligently read and summarize the supplied medical document for a busy doctor.\n" +
-                "\n" +
-                "Rules:\n" +
-                "1. The 'executiveSummary' MUST BE ULTRA-CONCISE (1-3 sentences max). Strip out all filler text (e.g., 'This document is a...', 'The report evaluates...'). State ONLY the clinical bottom-line, key abnormalities, and critical context.\n" +
-                "2. DO NOT extract administrative metadata (e.g., Prepared By, Validated By, Sample Number, Barcode, Referred Doctor, timestamps other than the main date). Doctors do not need this.\n" +
-                "3. Extract all relevant test names, results, units, and reference ranges.\n" +
-                "4. Extract medications, dosages, and frequencies if present.\n" +
-                "5. Never invent information or infer diagnoses not present in the text.\n" +
-                "6. Return the response as a clean JSON object. Do not include an 'otherDetails' field.\n" +
-                "7. Do not return Markdown or any text outside the JSON.\n" +
-                "\n" +
-                "Use this strict schema:\n" +
-                "{\n" +
-                "  \"patientDetails\": { \"name\": \"\", \"age\": \"\", \"gender\": \"\" },\n" +
-                "  \"documentInfo\": { \"type\": \"\", \"date\": \"\" },\n" +
-                "  \"executiveSummary\": \"Ultra-concise clinical bottom-line (1-3 sentences). No filler words.\",\n" +
-                "  \"laboratoryResults\": [ { \"testName\": \"\", \"result\": \"\", \"unit\": \"\", \"referenceRange\": \"\", \"interpretation\": \"\" } ],\n" +
-                "  \"medications\": [ { \"medicineName\": \"\", \"dosage\": \"\", \"frequency\": \"\", \"duration\": \"\" } ],\n" +
-                "  \"keyFindings\": [ \"Concise finding 1\", \"Concise finding 2\" ]\n" +
-                "}";
-
-        List<ChatMessage> messages = new ArrayList<>();
-        messages.add(SystemMessage.from(systemPrompt));
-        messages.add(UserMessage.from("Summarize the following medical document:\n\n" + documentText));
-
-        int maxRetries = 3;
-        int delayMs = 2000;
-        Exception lastException = null;
-
-        for (int i = 0; i < maxRetries; i++) {
+        log.info("Delegating document summarization to Python AI microservice at {}", pythonAiUrl);
+        try {
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            Map<String, Object> request = Map.of("text", documentText);
+            
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            
+            org.springframework.http.HttpEntity<Map<String, Object>> entity = new org.springframework.http.HttpEntity<>(request, headers);
+            
+            org.springframework.http.ResponseEntity<Map> response = restTemplate.postForEntity(
+                pythonAiUrl + "/summarize", entity, Map.class);
+                
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                // Ensure it returns valid JSON string
+                return objectMapper.writeValueAsString(response.getBody());
+            } else {
+                throw new RuntimeException("Python AI returned non-200 status: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            log.error("Failed to summarize document with Python AI microservice: {}", e.getMessage());
             try {
-                String content = chatModel.generate(messages).content().text();
-
-                // Clean markdown blocks if present (e.g. ```json ... ```)
-                if (content.startsWith("```json")) {
-                    content = content.substring(7);
-                }
-                if (content.startsWith("```")) {
-                    content = content.substring(3);
-                }
-                if (content.endsWith("```")) {
-                    content = content.substring(0, content.length() - 3);
-                }
-
-                // Validate JSON
-                JsonNode jsonNode = objectMapper.readTree(content.trim());
-                return jsonNode.toString();
-
-            } catch (Exception e) {
-                lastException = e;
-                String errorMsg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
-                if (errorMsg.contains("503") || errorMsg.contains("429") || errorMsg.contains("quota") || errorMsg.contains("rate limit")) {
-                    log.warn("Gemini AI is experiencing high demand ({}). Retrying in {}ms (Attempt {} of {})...", errorMsg.contains("503") ? "503" : "429", delayMs, i + 1, maxRetries);
-                    try {
-                        Thread.sleep(delayMs);
-                        delayMs *= 2; // Exponential backoff
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                } else {
-                    // Non-retriable error
-                    break;
-                }
+                return objectMapper.writeValueAsString(Map.of(
+                    "summary", "Error analyzing document.",
+                    "error", e.getMessage()
+                ));
+            } catch (Exception ex) {
+                return "{\"summary\":\"Error analyzing document.\"}";
             }
         }
-
-        log.error("Failed to summarize document with LangChain4j after retries: {}", lastException.getMessage());
-        throw new RuntimeException("Error generating document summary: " + lastException.getMessage(), lastException);
     }
 
     public String getProviderName() {
-        return aiProvider;
+        return "Python FastAPI";
     }
 
     public String getModelName() {
-        if ("gemini".equalsIgnoreCase(aiProvider)) return geminiModel;
-        return "unknown";
-    }
-    
-    // For testing injection
-    public void setChatModel(ChatLanguageModel chatModel) {
-        this.chatModel = chatModel;
+        return "Falconsai/medical_summarization";
     }
 }
