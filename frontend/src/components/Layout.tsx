@@ -20,6 +20,9 @@ export default function Layout() {
     logout();
   };
 
+  // Detect if we're on a full-bleed consultation page
+  const isConsultation = location.pathname.includes('/consultation/');
+
   const getNavItems = () => {
     switch (role) {
       case 'Doctor':
@@ -53,9 +56,9 @@ export default function Layout() {
   const navItems = getNavItems();
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="flex h-screen bg-slate-50 font-sans text-slate-900 overflow-hidden">
       {sidebarOpen && <div className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 flex flex-col shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-800 cursor-pointer" onClick={() => navigate('/')}>
           <Stethoscope className="h-8 w-8 text-blue-400" />
           <span className="ml-3 text-lg font-bold tracking-wide">ArogyaMitra</span>
@@ -87,7 +90,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-8">
           <button className="lg:hidden p-2 text-slate-500 hover:text-slate-700" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-6 w-6" />
@@ -110,12 +113,20 @@ export default function Layout() {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-          <Outlet />
-        </main>
+        {/* 
+          For consultation pages: no padding, let the page fill the remaining space.
+          For other pages: keep the original scrollable padded main area.
+        */}
+        {isConsultation ? (
+          <div className="flex-1 overflow-hidden">
+            <Outlet />
+          </div>
+        ) : (
+          <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+            <Outlet />
+          </main>
+        )}
       </div>
     </div>
   );
 }
-
-
