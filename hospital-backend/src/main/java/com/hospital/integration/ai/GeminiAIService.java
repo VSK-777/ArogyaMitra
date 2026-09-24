@@ -10,12 +10,7 @@ import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -32,13 +27,8 @@ public class GeminiAIService implements AiProvider {
     @Value("${gemini.api-key:}")
     private String geminiApiKeysStr;
 
-    private final RestTemplate restTemplate;
     private final List<ChatLanguageModel> chatModels = new ArrayList<>();
     private final AtomicInteger currentModelIndex = new AtomicInteger(0);
-
-    public GeminiAIService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @PostConstruct
     public void init() {
@@ -96,7 +86,12 @@ public class GeminiAIService implements AiProvider {
             messages.add(UserMessage.from(patientInput));
         }
 
-        return callLangChainChatApi(messages);
+        try {
+            return callLangChainChatApi(messages);
+        } catch (RuntimeException e) {
+            logger.error("Pre-consultation AI call failed after retries: {}", e.getMessage());
+            return "Noted: Patient's response has been recorded.\nQuestion: Could you please describe any other symptoms you are experiencing, or click 'Finish Consultation' to proceed to the doctor?";
+        }
     }
 
     @Override
@@ -176,31 +171,39 @@ public class GeminiAIService implements AiProvider {
             return "I am processing your symptoms. (Error: No API keys configured).";
         }
 
-        int maxRetries = chatModels.size();
+        // Try each API key, and for retriable errors (429/503), wait and retry with backoff
+        int totalAttempts = chatModels.size() * 3; // 3 retry rounds across all keys
+        int delayMs = 2000;
         Exception lastException = null;
 
-        for (int i = 0; i < maxRetries; i++) {
+        for (int i = 0; i < totalAttempts; i++) {
             ChatLanguageModel model = getNextModel();
             try {
                 return model.generate(messages).content().text();
             } catch (Exception e) {
-                logger.error("LangChain API Error: {}", e.getMessage(), e);
                 lastException = e;
-                if (i < maxRetries - 1) {
-                    logger.warn("LangChain Error hit, retrying with next API key model...");
-                    continue;
+                String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+                boolean retriable = msg.contains("429") || msg.contains("503") || msg.contains("quota") || msg.contains("rate limit") || msg.contains("unavailable") || msg.contains("overloaded");
+                
+                if (retriable && i < totalAttempts - 1) {
+                    logger.warn("Gemini API returned retriable error (attempt {}/{}). Waiting {}ms before retry...", i + 1, totalAttempts, delayMs);
+                    try {
+                        Thread.sleep(delayMs);
+                        delayMs = Math.min(delayMs * 2, 10000); // Cap at 10 seconds
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("AI call interrupted", ie);
+                    }
+                } else if (!retriable) {
+                    // Non-retriable error, propagate immediately
+                    logger.error("Non-retriable LangChain API Error: {}", e.getMessage());
+                    throw new RuntimeException("AI service error: " + e.getMessage(), e);
                 }
             }
         }
         
-        if (lastException != null) {
-            String msg = lastException.getMessage() != null ? lastException.getMessage().toLowerCase() : "";
-            if (msg.contains("429") || msg.contains("quota") || msg.contains("rate limit")) {
-                return "Noted: Your response has been recorded.\nQuestion: The system is currently busy. Do you have any other symptoms to share, or would you like to finish the consultation?";
-            }
-            return "Noted: Your response has been recorded.\nQuestion: I'm experiencing a brief connection issue. Please continue sharing your symptoms, or click 'Finish Consultation' to proceed.";
-        }
-
-        return "I am processing your symptoms. Please provide any additional details, or click 'Finish Consultation' to proceed.";
+        // All retries exhausted — throw so caller can handle it properly
+        logger.error("All Gemini API retries exhausted. Last error: {}", lastException != null ? lastException.getMessage() : "unknown");
+        throw new RuntimeException("AI service temporarily unavailable after retries", lastException);
     }
 }

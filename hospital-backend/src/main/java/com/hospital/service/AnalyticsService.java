@@ -5,6 +5,7 @@ import com.hospital.entity.TokenStatus;
 import com.hospital.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class AnalyticsService {
     private final QueueTokenRepository queueTokenRepository;
     private final AuditLogRepository auditLogRepository;
 
+    @Transactional(readOnly = true)
     public Map<String, Object> getDashboardAnalytics() {
         Map<String, Object> data = new HashMap<>();
         

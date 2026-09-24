@@ -25,14 +25,20 @@ public class DoctorService {
     private final AppointmentRepository appointmentRepository;
     private final DocumentRepository documentRepository;
 
+    @Transactional(readOnly = true)
     public List<Appointment> getUpcomingAppointments(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
             Long.parseLong(doctorUserId)
         ).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
-        return appointmentRepository.findAll().stream() // this is inefficient for large DBs but sufficient for prototype, let's use a query if available. wait, let's just use it and filter.
-                .filter(a -> a.getDoctor() != null && a.getDoctor().getId().equals(doctor.getId()))
-                .filter(a -> a.getAppointmentDate().isAfter(LocalDate.now()) || (a.getAppointmentDate().isEqual(LocalDate.now()) && (a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)))
+        // Use parameterized query instead of loading all appointments into memory
+        List<Appointment> todayAndFuture = appointmentRepository.findByDoctor_IdAndAppointmentDateGreaterThanEqual(
+                doctor.getId(), LocalDate.now());
+        
+        return todayAndFuture.stream()
+                .filter(a -> a.getAppointmentDate().isAfter(LocalDate.now()) || 
+                        (a.getAppointmentDate().isEqual(LocalDate.now()) && 
+                         (a.getStatus() == AppointmentStatus.BOOKED || a.getStatus() == AppointmentStatus.REASSIGNED)))
                 .sorted((a, b) -> {
                     int dateCmp = a.getAppointmentDate().compareTo(b.getAppointmentDate());
                     if (dateCmp != 0) return dateCmp;
@@ -43,6 +49,7 @@ public class DoctorService {
                 .toList();
     }
 
+    @Transactional
     public List<QueueToken> getTodayQueue(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
             Long.parseLong(doctorUserId) 
@@ -51,23 +58,27 @@ public class DoctorService {
         List<QueueToken> tokens = queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now());
         
         // Self-healing: fix any tokens that are out of sync with completed appointments
-        boolean updated = false;
-        for (QueueToken token : tokens) {
-            if (token.getAppointment() != null && token.getAppointment().getStatus() == AppointmentStatus.COMPLETED) {
-                if (token.getStatus() != TokenStatus.COMPLETED) {
-                    token.setStatus(TokenStatus.COMPLETED);
-                    if (token.getCompletedAt() == null) {
-                        token.setCompletedAt(LocalDateTime.now());
-                    }
-                    queueTokenRepository.save(token);
-                    updated = true;
+        List<QueueToken> toUpdate = tokens.stream()
+                .filter(token -> token.getAppointment() != null 
+                        && token.getAppointment().getStatus() == AppointmentStatus.COMPLETED
+                        && token.getStatus() != TokenStatus.COMPLETED)
+                .toList();
+        
+        if (!toUpdate.isEmpty()) {
+            toUpdate.forEach(token -> {
+                token.setStatus(TokenStatus.COMPLETED);
+                if (token.getCompletedAt() == null) {
+                    token.setCompletedAt(LocalDateTime.now());
                 }
-            }
+            });
+            queueTokenRepository.saveAll(toUpdate); // Batch save instead of iterative
+            return queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now());
         }
         
-        return updated ? queueTokenRepository.findByDoctor_IdAndQueueDateOrderByTokenNumberAsc(doctor.getId(), LocalDate.now()) : tokens;
+        return tokens;
     }
 
+    @Transactional(readOnly = true)
     public List<Consultation> getPastConsultations(String doctorUserId) {
         Doctor doctor = doctorRepository.findByUser_Id(
             Long.parseLong(doctorUserId) 

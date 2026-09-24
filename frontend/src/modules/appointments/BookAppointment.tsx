@@ -5,6 +5,7 @@ import { Loader2, CheckCircle2, Ticket } from 'lucide-react';
 import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, Trans } from 'react-i18next';
+import { loadRazorpay } from '../../utils/loadRazorpay';
 
 const formatDisplayDate = (dateStr: string) => {
   if (!dateStr) return '';
@@ -162,6 +163,13 @@ export default function BookAppointment() {
         }
 
         const { paymentApi } = await import('../../api/paymentApi');
+        const isLoaded = await loadRazorpay();
+        if (!isLoaded) {
+            setError('Failed to load payment gateway.');
+            setLoading(false);
+            return;
+        }
+
         const orderRes = await paymentApi.createOrder(50000); // 500 INR
         if (!orderRes.success) {
             setError('Failed to initialize payment.');
