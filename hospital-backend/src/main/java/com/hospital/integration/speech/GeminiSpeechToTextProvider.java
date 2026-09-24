@@ -20,7 +20,7 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
     @Value("${GEMINI_API_KEY:}")
     private String geminiApiKey;
 
-    private static final String GEMINI_MODEL = "gemini-1.5-flash";
+    private static final String GEMINI_MODEL = "gemini-pro";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
