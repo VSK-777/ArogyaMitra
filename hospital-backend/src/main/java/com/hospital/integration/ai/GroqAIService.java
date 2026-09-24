@@ -95,7 +95,7 @@ public class GroqAIService implements AiProvider {
                     + "Do NOT invent or hallucinate any information. Only use the provided text. "
                     + "If the condition seems of low/moderate severity, you may suggest standard preliminary tests (e.g., CBC, X-Ray) that the doctor might consider ordering. "
                     + "Format your response EXACTLY like this (include the bullet points):\n"
-                    + "• Summary: [A concise 2-3 sentence clinical summary of the patient's condition]\n"
+                    + "• Summary:\n  - [Key point 1]\n  - [Key point 2]\n  - [Key point 3]\n"
                     + "• Symptoms: [Comma-separated list of symptoms]\n"
                     + "• Diagnosis: [Potential differential diagnosis if evident, else 'Not specified']\n"
                     + "• Recommended Tests: [Suggested preliminary tests, if applicable, else 'None at this stage']\n"

@@ -115,8 +115,8 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
     <div className="space-y-4">
       {documents.map((doc) => (
         <div key={doc.id} className="flex flex-col bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-slate-50 border-b border-slate-100">
-            <div className="min-w-0 flex-1 w-full">
+          <div className="flex flex-col gap-3 p-3 bg-slate-50 border-b border-slate-100">
+            <div className="min-w-0 w-full">
               <p className="text-sm font-medium text-slate-900 truncate" title={doc.fileName}>{doc.fileName}</p>
               <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
                 <span>{doc.documentType}</span>
@@ -127,7 +127,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
                 })()}</span>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center justify-between gap-2 w-full">
               {doc.processingStatus && (
                 <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${
                   doc.processingStatus === 'COMPLETED' ? 'bg-green-100 text-green-700' :
@@ -139,7 +139,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
                    doc.processingStatus}
                 </span>
               )}
-              <div className="flex items-center gap-2 ml-auto sm:ml-0">
+              <div className="flex items-center gap-2 ml-auto">
                 <button 
                   onClick={() => handleDownload(doc.id, doc)}
                   className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
