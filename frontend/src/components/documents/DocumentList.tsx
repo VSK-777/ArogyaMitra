@@ -115,19 +115,21 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
     <div className="space-y-4">
       {documents.map((doc) => (
         <div key={doc.id} className="flex flex-col bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-          <div className="flex items-center justify-between p-4 bg-slate-50 border-b border-slate-100">
-            <div className="min-w-0 flex-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-slate-50 border-b border-slate-100">
+            <div className="min-w-0 flex-1 w-full">
               <p className="text-sm font-medium text-slate-900 truncate" title={doc.fileName}>{doc.fileName}</p>
-              <p className="text-xs text-slate-500 mt-1">
-                {doc.documentType} • {(() => {
+              <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
+                <span>{doc.documentType}</span>
+                <span>•</span>
+                <span>{(() => {
                   const d = new Date(doc.uploadedAt);
                   return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
-                })()}
-              </p>
+                })()}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               {doc.processingStatus && (
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${
                   doc.processingStatus === 'COMPLETED' ? 'bg-green-100 text-green-700' :
                   doc.processingStatus === 'FAILED' ? 'bg-red-100 text-red-700' :
                   'bg-blue-100 text-blue-700'
@@ -137,12 +139,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
                    doc.processingStatus}
                 </span>
               )}
-              <button 
-                onClick={() => handleDownload(doc.id, doc)}
-                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
-              >
-                View PDF
-              </button>
+              <div className="flex items-center gap-2 ml-auto sm:ml-0">
+                <button 
+                  onClick={() => handleDownload(doc.id, doc)}
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
+                >
+                  View PDF
+                </button>
               <button 
                 onClick={async () => {
                   if(window.confirm('Are you sure you want to delete this document?')) {
@@ -155,10 +158,11 @@ export const DocumentList: React.FC<DocumentListProps> = ({ patientId, appointme
                     }
                   }
                 }}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
               >
                 Delete
               </button>
+              </div>
             </div>
           </div>
           
