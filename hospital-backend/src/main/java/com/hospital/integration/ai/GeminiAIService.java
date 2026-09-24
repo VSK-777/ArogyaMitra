@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GeminiAIService implements AiProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiAIService.class);
-    private static final String GEMINI_MODEL = "gemini-3.6-flash";
+    private static final String GEMINI_MODEL = "gemini-1.5-flash";
 
-    @Value("${gemini.api-key:}")
+    @Value("${GEMINI_API_KEY:}")
     private String geminiApiKeysStr;
 
     private final List<ChatLanguageModel> chatModels = new ArrayList<>();

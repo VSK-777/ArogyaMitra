@@ -17,10 +17,10 @@ public class GeminiSpeechToTextProvider implements SpeechToTextProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiSpeechToTextProvider.class);
 
-    @Value("${gemini.api-key}")
+    @Value("${GEMINI_API_KEY:}")
     private String geminiApiKey;
 
-    private static final String GEMINI_MODEL = "gemini-3.6-flash";
+    private static final String GEMINI_MODEL = "gemini-1.5-flash";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
