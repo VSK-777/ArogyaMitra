@@ -122,6 +122,33 @@ public class GeminiAIService implements AiProvider {
 
         } catch (Exception e) {
             logger.error("Error generating Gemini summary via LangChain: {}", e.getMessage(), e);
+            try {
+                logger.info("Attempting fallback to python-ai service...");
+                String pythonApiUrl = System.getenv().getOrDefault("PYTHON_AI_URL", "http://localhost:8000");
+                org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+                java.util.Map<String, Object> request = java.util.Map.of("text", fullConversation);
+                org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                org.springframework.http.HttpEntity<java.util.Map<String, Object>> entity = new org.springframework.http.HttpEntity<>(request, headers);
+                
+                org.springframework.http.ResponseEntity<java.util.Map> response = restTemplate.postForEntity(
+                    pythonApiUrl + "/summarize", entity, java.util.Map.class);
+                
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    java.util.Map<String, Object> body = response.getBody();
+                    if (body.containsKey("error")) {
+                        return "Error from Python AI: " + body.get("error");
+                    }
+                    
+                    if (body.containsKey("summary") && body.get("summary") != null && !body.get("summary").toString().trim().isEmpty()) {
+                        String pythonSummary = (String) body.get("summary");
+                        return "AI-generated clinical summary (via Python):\n\n" + pythonSummary;
+                    }
+                }
+            } catch (Exception pythonEx) {
+                logger.error("Python AI fallback also failed: {}", pythonEx.getMessage());
+            }
+            
             return "Could not generate summary due to an error. Please refer to the raw chat logs.";
         }
     }
