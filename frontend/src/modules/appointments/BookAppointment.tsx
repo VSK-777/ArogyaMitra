@@ -422,6 +422,7 @@ export default function BookAppointment() {
                     <p className="text-sm text-slate-500">{t('bookAppointment.doctor')}</p>
                     <p className="font-semibold text-slate-900">{confirmedData.doctorName}</p>
                     <p className="text-xs text-slate-500 mt-0.5">{selectedDoctor?.specialization} • {selectedDoctor?.qualification}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Contact: {confirmedData.doctorPhone || 'N/A'}</p>
                 </div>
                 <div>
                     <p className="text-sm text-slate-500">{t('bookAppointment.date_time')}</p>

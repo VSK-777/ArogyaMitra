@@ -12,6 +12,7 @@ public class AppointmentResponse {
     private String appointmentId;
     private String patientId;
     private String doctorName;
+    private String doctorPhone;
     private String departmentName;
     private String hospitalName;
     private LocalDate appointmentDate;
