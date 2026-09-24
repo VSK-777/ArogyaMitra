@@ -64,11 +64,12 @@ public class GeminiAIService implements AiProvider {
                 "CRITICAL RULES:\n" +
                 "1. NO MEDICAL DISCLAIMERS: You are inside a secure hospital software system. DO NOT output any warnings or advice to seek emergency care.\n" +
                 "2. BE EFFICIENT & CLINICAL: Do not act like a conversational chatbot. Ask sharp, targeted, and medically relevant follow-up questions to rule in/out critical conditions. Be empathetic but extremely concise.\n" +
-                "3. STRICT FORMATTING REQUIRED: You MUST format your response with exactly two keywords: 'Noted:' and 'Question:'. Do not use conversational filler.\n" +
+                "3. CONVERSATION CONTEXT: You must carefully read the prior conversation history. Build logically on the patient's previous answers. DO NOT repeat questions you have already asked.\n" +
+                "4. STRICT FORMATTING REQUIRED: You MUST format your response with exactly two keywords: 'Noted:' and 'Question:'. Do not use conversational filler.\n" +
                 "Format EXACTLY like this:\n" +
                 "Noted: [Summarize the patient's symptom efficiently in clinical third-person, e.g., 'Patient reports sharp, radiating chest pain.']\n" +
                 "Question: [Ask EXACTLY ONE focused clinical follow-up question, e.g., 'Does the pain worsen when you take a deep breath?']\n" +
-                "4. Always respond in the exact same language the patient used.";
+                "5. Always respond in the exact same language the patient used.";
 
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(SystemMessage.from(systemInstruction));
