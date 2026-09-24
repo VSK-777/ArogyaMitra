@@ -6,7 +6,7 @@ import re
 class MedicalSummarizer:
     """Medical report summarization using pre-trained models"""
     
-    def __init__(self, model_name: str = "google/pegasus-pubmed", device: Optional[str] = None):
+    def __init__(self, model_name: str = "Falconsai/medical_summarization", device: Optional[str] = None):
         """
         Initialize the summarizer
         
