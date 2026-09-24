@@ -122,7 +122,7 @@ public class GeminiAIService implements AiProvider {
 
         } catch (Exception e) {
             logger.error("Error generating Gemini summary via LangChain: {}", e.getMessage(), e);
-            return "Could not generate summary due to an error. Please ensure GEMINI_API_KEY is configured and working.";
+            return "Could not generate summary due to an error: " + e.getMessage() + ". Please ensure GEMINI_API_KEY is valid and has quota.";
         }
     }
 
