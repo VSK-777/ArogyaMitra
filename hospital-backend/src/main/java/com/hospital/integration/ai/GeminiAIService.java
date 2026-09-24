@@ -99,9 +99,6 @@ public class GeminiAIService implements AiProvider {
         return callLangChainChatApi(messages);
     }
 
-    @Value("${python.ai.url:https://discolor-palpitate-lard.ngrok-free.dev}")
-    private String pythonAiBaseUrl;
-
     @Override
     public String generateStructuredSummary(String fullConversation) {
         try {
@@ -143,22 +140,34 @@ public class GeminiAIService implements AiProvider {
     @Override
     public java.util.Map<String, Object> summarizeClinicalRecord(String text) {
         try {
-            String pythonApiUrl = pythonAiBaseUrl + "/summarize";
-            java.util.Map<String, Object> request = java.util.Map.of("text", text);
+            String systemInstruction = "You are a medical AI summarizer. Read the following raw clinical text and extract key information into a structured JSON format with EXACTLY these keys: 'summary', 'key_findings', 'diagnoses'. Do not use markdown blocks, just raw JSON. If any data is missing, put an empty string or empty array.";
             
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<java.util.Map<String, Object>> entity = new HttpEntity<>(request, headers);
+            List<ChatMessage> messages = new ArrayList<>();
+            messages.add(SystemMessage.from(systemInstruction));
+            messages.add(UserMessage.from(text));
+
+            String aiResponse = callLangChainChatApi(messages);
             
-            ResponseEntity<java.util.Map> response = restTemplate.postForEntity(pythonApiUrl, entity, java.util.Map.class);
-            
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return response.getBody();
+            if (aiResponse.startsWith("```json")) {
+                aiResponse = aiResponse.substring(7);
             }
-            return java.util.Map.of("error", "Failed to generate summary from Python AI service. Invalid response.");
+            if (aiResponse.startsWith("```")) {
+                aiResponse = aiResponse.substring(3);
+            }
+            if (aiResponse.endsWith("```")) {
+                aiResponse = aiResponse.substring(0, aiResponse.length() - 3);
+            }
+            
+            // Basic manual JSON parsing or fallback if it isn't perfect json
+            try {
+                return new com.fasterxml.jackson.databind.ObjectMapper().readValue(aiResponse.trim(), java.util.Map.class);
+            } catch (Exception parseEx) {
+                return java.util.Map.of("summary", aiResponse, "key_findings", List.of(), "diagnoses", List.of());
+            }
+
         } catch (Exception e) {
-            logger.error("Error calling Python AI service for record summary: {}", e.getMessage(), e);
-            return java.util.Map.of("error", "Exception calling Python AI service: " + e.getMessage());
+            logger.error("Error calling Gemini for record summary: {}", e.getMessage(), e);
+            return java.util.Map.of("error", "Exception calling Gemini AI: " + e.getMessage());
         }
     }
 
