@@ -60,15 +60,15 @@ public class GeminiAIService implements AiProvider {
 
     @Override
     public String generateFollowUpQuestion(String chiefComplaint, List<PreConsultationResponse> previousResponses, String patientInput) {
-        String systemInstruction = "You are a highly intelligent, expert clinical triage nurse/doctor. You are talking directly to the patient to conduct a rapid, advanced pre-consultation intake. " +
+        String systemInstruction = "You are an expert, highly efficient clinical triage nurse conducting a rapid pre-consultation intake. " +
                 "CRITICAL RULES:\n" +
-                "1. NO MEDICAL DISCLAIMERS: You are inside a secure hospital software system that handles emergency routing. DO NOT output any warnings, disclaimers, or advice to seek emergency care (e.g., NEVER say 'call 911' or 'go to the ER').\n" +
-                "2. BE INTELLIGENT & CLINICAL: Show your medical reasoning implicitly to build trust. (e.g., 'To help us understand if this might be related to your heart, does the pain travel to your neck or jaw?').\n" +
+                "1. NO MEDICAL DISCLAIMERS: You are inside a secure hospital software system. DO NOT output any warnings or advice to seek emergency care.\n" +
+                "2. BE EFFICIENT & CLINICAL: Do not act like a conversational chatbot. Ask sharp, targeted, and medically relevant follow-up questions to rule in/out critical conditions. Be empathetic but extremely concise.\n" +
                 "3. STRICT FORMATTING REQUIRED: You MUST format your response with exactly two keywords: 'Noted:' and 'Question:'. Do not use conversational filler.\n" +
                 "Format EXACTLY like this:\n" +
-                "Noted: [Briefly acknowledge their symptom as a clinical note in third-person or passive voice, e.g., 'Patient reports chest pain radiating to the jaw.']\n" +
-                "Question: [Ask EXACTLY ONE sharp, advanced follow-up question to the patient directly, e.g., 'When did this pain start?']\n" +
-                "4. Always respond in the exact same language the patient used (e.g. if Telugu, respond in Telugu).";
+                "Noted: [Summarize the patient's symptom efficiently in clinical third-person, e.g., 'Patient reports sharp, radiating chest pain.']\n" +
+                "Question: [Ask EXACTLY ONE focused clinical follow-up question, e.g., 'Does the pain worsen when you take a deep breath?']\n" +
+                "4. Always respond in the exact same language the patient used.";
 
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(SystemMessage.from(systemInstruction));
@@ -90,7 +90,10 @@ public class GeminiAIService implements AiProvider {
             return callLangChainChatApi(messages);
         } catch (RuntimeException e) {
             logger.error("Pre-consultation AI call failed after retries: {}", e.getMessage());
-            return "Noted: Patient's response has been recorded.\nQuestion: Could you please describe any other symptoms you are experiencing, or click 'Finish Consultation' to proceed to the doctor?";
+            String fallbackNote = (patientInput != null && !patientInput.trim().isEmpty()) 
+                ? "Patient reported: \"" + patientInput + "\"" 
+                : "Patient's response has been recorded.";
+            return "Noted: " + fallbackNote + "\nQuestion: Could you please describe any other symptoms you are experiencing, or click 'Finish Consultation' to proceed to the doctor?";
         }
     }
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Ticket, CheckCircle2 } from 'lucide-react';
 import { patientApi } from '../../api/patientApi';
 import { receptionistApi } from '../../api/receptionistApi';
+import { loadRazorpay } from '../../utils/loadRazorpay';
 
 export default function WalkInBooking({ patient }: { patient: any }) {
     const [step, setStep] = useState(1);
@@ -84,6 +85,13 @@ export default function WalkInBooking({ patient }: { patient: any }) {
 
             // Razorpay Payment Flow
             const { paymentApi } = await import('../../api/paymentApi');
+            const isLoaded = await loadRazorpay();
+            if (!isLoaded) {
+                setError('Failed to load payment gateway.');
+                setLoading(false);
+                return;
+            }
+
             const orderRes = await paymentApi.createOrder(50000); // 500 INR
             if (!orderRes.success) {
                 setError('Failed to initialize payment.');
