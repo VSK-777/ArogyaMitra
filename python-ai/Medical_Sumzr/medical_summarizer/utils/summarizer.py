@@ -132,6 +132,13 @@ class MedicalSummarizer:
         full_summary = re.sub(r'(?i)\bmy\b', "the patient's", full_summary)
         full_summary = re.sub(r'(?i)\bwe have\b', 'the patient has', full_summary)
         
+        # Clean up conversational artifacts
+        full_summary = re.sub(r'(?i)Doctor AI:', '', full_summary)
+        full_summary = re.sub(r'(?i)Patient:', '', full_summary)
+        full_summary = re.sub(r'(?i)Question:', '', full_summary)
+        full_summary = re.sub(r'(?i)Noted:', '', full_summary)
+        full_summary = re.sub(r'\s+', ' ', full_summary).strip()
+        
         # Try to extract structured information
         structured = {
             "summary": full_summary,

@@ -118,7 +118,7 @@ public class GeminiAIService implements AiProvider {
             messages.add(UserMessage.from("Here is the consultation data:\n\n" + fullConversation));
 
             String aiResponse = callLangChainChatApi(messages);
-            return "AI-generated clinical summary:\n\n" + aiResponse;
+            return aiResponse;
 
         } catch (Exception e) {
             logger.error("Error generating Gemini summary via LangChain: {}", e.getMessage(), e);
@@ -142,7 +142,14 @@ public class GeminiAIService implements AiProvider {
                     
                     if (body.containsKey("summary") && body.get("summary") != null && !body.get("summary").toString().trim().isEmpty()) {
                         String pythonSummary = (String) body.get("summary");
-                        return "AI-generated clinical summary (via Python):\n\n" + pythonSummary;
+                        String symptoms = (String) body.getOrDefault("symptoms", "Not specified");
+                        String diagnosis = (String) body.getOrDefault("diagnosis", "Not specified");
+                        String meds = (String) body.getOrDefault("medications", "Not specified");
+                        
+                        return "• Summary: " + pythonSummary + "\n"
+                             + "• Symptoms: " + symptoms + "\n"
+                             + "• Diagnosis: " + diagnosis + "\n"
+                             + "• Medications: " + meds;
                     }
                 }
             } catch (Exception pythonEx) {
