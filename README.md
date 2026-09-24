@@ -344,11 +344,16 @@ The system handles sudden doctor unavailabilities robustly without indiscriminat
 - **Database Architecture:** A Postgres \DatabaseConstraintFixer\ runs on startup to ensure enum transitions on legacy database check constraints don't crash the reassignment engine.
 
 
-## 12. Unified AI Architecture
+## 12. Hybrid AI Architecture
 
-The system utilizes a unified AI architecture natively in Java to maximize performance and minimize infrastructure overhead:
+The system utilizes a hybrid AI architecture to maximize performance while ensuring maximum reliability and fallback capabilities:
 
-1. **Gemini 1.5 Flash API (Native Java Integration via LangChain4j)**
+1. **Gemini 3.6 Flash API (Primary - Native Java Integration via LangChain4j)**
    - **Role:** Conversational AI, Rapid Inference, and NLP Document Analysis
-   - **Responsibilities:** Powers the Pre-Consultation patient chat, asks contextual follow-up questions, extracts structured summaries from the chat, expands brief doctor notes into full clinical assessments, and summarizes dense clinical records and uploaded medical documents natively in the Spring Boot backend without needing external Python microservices.
+   - **Responsibilities:** Powers the Pre-Consultation patient chat, asks contextual follow-up questions, expands brief doctor notes into full clinical assessments, and acts as the primary engine for summarizing clinical records.
+
+2. **Python AI Microservice (Fallback - FastAPI + Falconsai)**
+   - **Role:** Reliable Medical Summarization Fallback
+   - **Responsibilities:** Acts as a fail-safe for generating structured clinical summaries if the Gemini API fails or rate-limits. It utilizes the lightweight `Falconsai/medical_summarization` model which runs efficiently within a 512MB RAM environment (like Render's Free Tier).
+   - **Deployment:** Can be run locally via Docker, or remotely using the provided Google Colab notebook (`Colab_AI_Service.ipynb`).
 

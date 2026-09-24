@@ -26,3 +26,19 @@ python-ai/
    ```bash
    uvicorn main:app --host 0.0.0.0 --port 8000
    ```
+
+## Deployment
+
+### 1. Google Colab (Recommended for Free GPU & RAM)
+Since medical AI models consume a lot of memory (preventing deployment on standard free-tier platforms like Render), we provide a Google Colab notebook for free high-performance hosting.
+- Open `Colab_AI_Service.ipynb` in Google Colab.
+- Run all cells.
+- It will automatically download dependencies, start the server, and provide a public Ngrok URL.
+- Add this URL to your Java Backend's environment as `PYTHON_AI_URL`.
+
+### 2. Docker (Cloud & Local)
+The included `Dockerfile` correctly exposes port `8000` and configures the environment.
+```bash
+docker build -t python-ai .
+docker run -p 8000:8000 python-ai
+```

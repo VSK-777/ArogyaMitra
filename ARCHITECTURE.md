@@ -82,8 +82,9 @@ The system is strictly divided into Role-Based Access Control (RBAC). A user can
 
 The backend (Java Spring Boot 3.3) is engineered for production-readiness, not just as a hackathon prototype.
 
-1.  **Unified AI Integration (Spring Boot + LangChain4j):** 
-    *   **Gemini 1.5 Flash API (Native Java):** Handles the Conversational AI for patient pre-consultation chat, extracting structured symptom/diagnosis bullet points seamlessly without hallucination. It also powers the Doctor Notes expansion and Medical Document Summarization natively through LangChain4j, eliminating the need for external Python NLP microservices.
+1.  **Hybrid AI Integration (Spring Boot + Python Microservice):** 
+    *   **Gemini 3.6 Flash API (Primary):** Handles the Conversational AI for patient pre-consultation chat and extracts structured symptom/diagnosis bullet points seamlessly natively through LangChain4j.
+    *   **Python AI Microservice (Fallback):** A FastAPI-based `python-ai` microservice running the lightweight `Falconsai/medical_summarization` model. It acts as a dedicated fail-safe for clinical document and chat summarization if the primary Gemini API is unavailable or rate-limited. It can be run locally via Docker or via the included Google Colab notebook for free cloud scaling.
     *   `GeminiSpeechToTextProvider` handles the heavy lifting of audio transcription natively.
     *   **Safety Policy:** The AI is strictly prompt-engineered to act as an assistant. It *never* outputs a final diagnosis, ensuring human-in-the-loop compliance.
 2.  **Supabase (S3) Document Storage:** 
