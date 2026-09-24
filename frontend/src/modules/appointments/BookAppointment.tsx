@@ -6,6 +6,7 @@ import { getUserFriendlyMessage } from '../../utils/errorUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, Trans } from 'react-i18next';
 import { loadRazorpay } from '../../utils/loadRazorpay';
+import { paymentApi } from '../../api/paymentApi';
 
 const formatDisplayDate = (dateStr: string) => {
   if (!dateStr) return '';
@@ -162,7 +163,6 @@ export default function BookAppointment() {
             return;
         }
 
-        const { paymentApi } = await import('../../api/paymentApi');
         const isLoaded = await loadRazorpay();
         if (!isLoaded) {
             setError('Failed to load payment gateway.');

@@ -3,6 +3,7 @@ import { Loader2, Ticket, CheckCircle2 } from 'lucide-react';
 import { patientApi } from '../../api/patientApi';
 import { receptionistApi } from '../../api/receptionistApi';
 import { loadRazorpay } from '../../utils/loadRazorpay';
+import { paymentApi } from '../../api/paymentApi';
 
 export default function WalkInBooking({ patient }: { patient: any }) {
     const [step, setStep] = useState(1);
@@ -84,7 +85,6 @@ export default function WalkInBooking({ patient }: { patient: any }) {
             }
 
             // Razorpay Payment Flow
-            const { paymentApi } = await import('../../api/paymentApi');
             const isLoaded = await loadRazorpay();
             if (!isLoaded) {
                 setError('Failed to load payment gateway.');
