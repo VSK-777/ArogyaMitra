@@ -42,7 +42,7 @@ public class FeedbackServiceTest {
         appointment.setId(10L);
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
-        appointment.setStatus("COMPLETED");
+        appointment.setStatus(com.hospital.entity.AppointmentStatus.COMPLETED);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class FeedbackServiceTest {
 
     @Test
     void submitFeedback_ShouldThrowException_WhenNotCompleted() {
-        appointment.setStatus("SCHEDULED");
+        appointment.setStatus(com.hospital.entity.AppointmentStatus.BOOKED);
         when(appointmentRepository.findById(10L)).thenReturn(Optional.of(appointment));
         
         assertThrows(IllegalStateException.class, () -> {

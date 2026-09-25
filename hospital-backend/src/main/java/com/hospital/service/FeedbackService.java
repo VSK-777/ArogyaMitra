@@ -42,7 +42,7 @@ public class FeedbackService {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        if (!"COMPLETED".equalsIgnoreCase(appointment.getStatus())) {
+        if (appointment.getStatus() != com.hospital.entity.AppointmentStatus.COMPLETED) {
             throw new IllegalStateException("Can only review completed appointments");
         }
 
