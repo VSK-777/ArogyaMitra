@@ -36,6 +36,7 @@ public class GroqAIService implements AiProvider {
                     .baseUrl("https://api.groq.com/openai/v1")
                     .apiKey(groqApiKey.trim())
                     .modelName(GROQ_MODEL)
+                    .maxTokens(800)
                     .temperature(0.7)
                     .timeout(Duration.ofSeconds(60))
                     .build();
