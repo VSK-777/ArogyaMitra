@@ -207,6 +207,36 @@ export default function ConsultationMode() {
                     </div>
                   </section>
 
+                  {/* Document Summary / Labs */}
+                  {parsedAi.labValues && parsedAi.labValues !== 'Not specified' && parsedAi.labValues !== 'See document text' && (
+                    <section className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                      <div className="bg-blue-50/80 border-b border-blue-100 px-3 py-2">
+                        <h4 className="font-bold text-blue-900 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                          <FileText className="h-3 w-3 text-blue-600" />
+                          Document Summary
+                        </h4>
+                      </div>
+                      <div className="px-3 py-2.5 bg-blue-50/10">
+                        <p className="text-[13px] text-slate-800 whitespace-pre-wrap leading-snug">{parsedAi.labValues}</p>
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Diagnosis / Medical History */}
+                  {parsedAi.diagnosis && parsedAi.diagnosis !== 'Not specified' && parsedAi.diagnosis !== 'N/A' && (
+                    <section className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                      <div className="bg-slate-50 border-b border-slate-100 px-3 py-2">
+                        <h4 className="font-bold text-slate-600 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                          <Activity className="h-3 w-3 text-slate-400" />
+                          Existing Diagnosis
+                        </h4>
+                      </div>
+                      <div className="px-3 py-2.5">
+                        <p className="text-[13px] text-slate-800 leading-snug">{parsedAi.diagnosis}</p>
+                      </div>
+                    </section>
+                  )}
+
                   {/* Reported Symptoms */}
                   <section className="bg-white border border-slate-200 rounded-lg overflow-hidden">
                     <div className="bg-slate-50 border-b border-slate-100 px-3 py-2">
@@ -221,7 +251,7 @@ export default function ConsultationMode() {
                   <section className="bg-white border border-slate-200 rounded-lg overflow-hidden">
                     <div className="bg-slate-50 border-b border-slate-100 px-3 py-2">
                       <h4 className="font-bold text-slate-600 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                        <Pill className="h-3 w-3" /> Medications & Allergies
+                        <Pill className="h-3 w-3 text-slate-400" /> Medications & Allergies
                       </h4>
                     </div>
                     <div className="px-3 py-2.5">
